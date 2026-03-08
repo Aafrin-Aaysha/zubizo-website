@@ -39,7 +39,7 @@ export async function PUT(req: NextRequest) {
         // Destructure all known fields including new ones
         const {
             about, terms, policyContent, termsContent,
-            shippingPolicyContent, refundPolicyContent,
+            shippingPolicyContent, refundPolicyContent, printingPolicyContent,
             address, phone, email, whatsappNumber,
             logoUrl, faviconUrl, aboutImageUrl,
             heroSlides, instagramUrl, facebookUrl, businessHours, homeTagline,
@@ -50,7 +50,7 @@ export async function PUT(req: NextRequest) {
             {},
             {
                 about, terms, policyContent, termsContent,
-                shippingPolicyContent, refundPolicyContent,
+                shippingPolicyContent, refundPolicyContent, printingPolicyContent,
                 address, phone, email, whatsappNumber,
                 logoUrl, faviconUrl, aboutImageUrl,
                 heroSlides, instagramUrl, facebookUrl, businessHours, homeTagline,
