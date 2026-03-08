@@ -16,10 +16,7 @@ const PackageSchema = new mongoose.Schema({
     title: { type: String, required: true },
     inclusions: {
         type: [String],
-        validate: {
-            validator: (arr: string[]) => arr.length > 0,
-            message: "Each package must have at least one inclusion."
-        }
+        default: []
     },
     priceTiers: {
         type: [PriceTierSchema],

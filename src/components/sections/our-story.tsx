@@ -101,38 +101,26 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
                         ))}
                     </motion.div>
 
-                    {/* Right: Icon Highlights */}
+                    {/* Right: Brand Image / Logo */}
                     <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="space-y-8"
+                        className="flex justify-center items-center lg:justify-end h-full w-full relative"
                     >
-                        {highlights.map((item: any, idx: number) => {
-                            const Icon = typeof item.icon === 'string' ? (Icons as any)[item.icon] : item.icon;
-                            return (
-                                <motion.div
-                                    key={idx}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: idx * 0.1 }}
-                                    className="flex gap-6 group"
-                                >
-                                    <div className="shrink-0 w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
-                                        {Icon && <Icon size={24} strokeWidth={1.5} />}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xl font-semibold text-charcoal mb-2 font-serif">
-                                            {item.title}
-                                        </h3>
-                                        <p className="text-charcoal/60 leading-relaxed font-sans font-medium text-sm">
-                                            {item.description}
-                                        </p>
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
+                        <div className="relative w-full max-w-[450px] aspect-square flex items-center justify-center p-12 bg-white/40 rounded-[3rem] border border-[#ae7fcb]/10 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_-15px_rgba(174,127,203,0.15)] transition-all duration-700 group hover:-translate-y-2">
+                            {/* Decorative Background Elements */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-[#ae7fcb]/5 to-transparent rounded-[3rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                            <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#ae7fcb]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100" />
+                            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#ae7fcb]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100" />
+
+                            {/* Logo Image */}
+                            <img
+                                src={data?.imageUrl || siteSettings?.aboutImageUrl || siteSettings?.logoUrl || '/brand.PNG'}
+                                alt="Zubizo Brand Logo"
+                                className="w-[85%] h-[85%] object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform duration-700 ease-out relative z-10"
+                            />
+                        </div>
                     </motion.div>
                 </div>
             </div>
