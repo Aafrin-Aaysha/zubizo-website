@@ -59,28 +59,28 @@ const Footer = () => {
                         <h4 className="text-sm font-bold uppercase tracking-widest text-gray-900 mb-8">Contact Us</h4>
                         <ul className="space-y-5">
                             <li>
-                                <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
-                                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-lavender">
+                                <a href="tel:+918124548133" className="flex items-center gap-3 text-sm text-gray-500 font-medium hover:text-lavender transition-all group">
+                                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
                                         <Phone size={14} strokeWidth={1.5} />
                                     </div>
                                     +91 81245 48133
-                                </div>
+                                </a>
                             </li>
                             <li>
-                                <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
-                                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-[#25D366]">
+                                <a href="https://wa.me/919092981748" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-500 font-medium hover:text-lavender transition-all group">
+                                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-[#25D366] group-hover:bg-[#25D366] group-hover:text-white transition-all">
                                         <WhatsAppIcon size={14} />
                                     </div>
                                     +91 90929 81748
-                                </div>
+                                </a>
                             </li>
                             <li>
-                                <div className="flex items-center gap-3 text-sm text-gray-500 font-medium">
-                                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-lavender">
+                                <a href="https://instagram.com/zubizo._art" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-500 font-medium hover:text-lavender transition-all group">
+                                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
                                         <Instagram size={14} strokeWidth={1.5} />
                                     </div>
                                     @zubizo._art
-                                </div>
+                                </a>
                             </li>
                         </ul>
                     </div>

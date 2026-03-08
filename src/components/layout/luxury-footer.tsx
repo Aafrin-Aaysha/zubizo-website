@@ -73,28 +73,28 @@ const Footer = () => {
                         <h4 className="text-sm font-bold uppercase tracking-widest text-charcoal mb-8">Connect</h4>
                         <ul className="space-y-5">
                             <li>
-                                <div className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group cursor-default">
+                                <a href="tel:+918124548133" className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group transition-all">
                                     <div className="w-8 h-8 rounded-lg bg-lavender/5 flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
                                         <Phone size={14} strokeWidth={1.5} />
                                     </div>
                                     +91 81245 48133
-                                </div>
+                                </a>
                             </li>
                             <li>
-                                <div className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group cursor-default">
-                                    <div className="w-8 h-8 rounded-lg bg-lavender/5 flex items-center justify-center text-[#25D366]">
+                                <a href="https://wa.me/919092981748" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group transition-all">
+                                    <div className="w-8 h-8 rounded-lg bg-lavender/5 flex items-center justify-center text-[#25D366] group-hover:bg-[#25D366] group-hover:text-white transition-all">
                                         <WhatsAppIcon size={14} />
                                     </div>
                                     +91 90929 81748
-                                </div>
+                                </a>
                             </li>
                             <li>
-                                <div className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group cursor-default">
+                                <a href="https://instagram.com/zubizo._art" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group transition-all">
                                     <div className="w-8 h-8 rounded-lg bg-lavender/5 flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
                                         <Instagram size={14} strokeWidth={1.5} />
                                     </div>
                                     @zubizo._art
-                                </div>
+                                </a>
                             </li>
                         </ul>
                     </div>
