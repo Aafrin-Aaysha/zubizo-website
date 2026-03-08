@@ -340,9 +340,15 @@ const HeroEditor = ({ data, onChange }: { data: any, onChange: (newData: any) =>
     );
 };
 
-// Specialized Editor for Shop By Price
+const defaultSlabs = [
+    { title: "Under ₹30", description: "Beautiful and affordable handcrafted invitations.", startingPrice: "Budget-Friendly", href: "/catalog?maxPrice=30", backgroundColor: "#F6F3FB" },
+    { title: "Under ₹60", description: "Elegant options with premium finishes.", startingPrice: "Most Popular", href: "/catalog?maxPrice=60", backgroundColor: "#EFE9F8" },
+    { title: "Under ₹90", description: "Luxurious designs with exquisite details.", startingPrice: "Premium Collection", href: "/catalog?maxPrice=90", backgroundColor: "#E9E0F6" },
+    { title: "₹120+", description: "Bespoke couture and exclusive materials.", startingPrice: "Luxury Couture", href: "/catalog?minPrice=120", backgroundColor: "#E2D6F3" },
+];
+
 const PriceSlabEditor = ({ data, onChange }: { data: any, onChange: (newData: any) => void }) => {
-    const slabs = data?.slabs || [];
+    const slabs = (data?.slabs && data.slabs.length > 0) ? data.slabs : defaultSlabs;
 
     const updateSlab = (idx: number, field: string, value: any) => {
         const newSlabs = [...slabs];
@@ -350,12 +356,36 @@ const PriceSlabEditor = ({ data, onChange }: { data: any, onChange: (newData: an
         onChange({ ...data, slabs: newSlabs });
     };
 
+    const addSlab = () => {
+        onChange({ ...data, slabs: [...slabs, { title: '', startingPrice: '', description: '', href: '/catalog', backgroundColor: '#F6F3FB' }] });
+    };
+
+    const removeSlab = (idx: number) => {
+        onChange({ ...data, slabs: slabs.filter((_: any, i: number) => i !== idx) });
+    };
+
     return (
         <div className="space-y-6">
-            <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Price Ranges</h4>
+            <div className="flex items-center justify-between">
+                <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Price Ranges</h4>
+                <button
+                    onClick={addSlab}
+                    type="button"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#ae7fcb]/10 text-[#ae7fcb] hover:bg-[#ae7fcb] hover:text-white rounded-lg text-xs font-bold transition-all"
+                >
+                    <Plus size={14} /> Add Range
+                </button>
+            </div>
             <div className="space-y-4">
                 {slabs.map((slab: any, idx: number) => (
-                    <div key={idx} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-3">
+                    <div key={idx} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-3 relative group">
+                        <button
+                            onClick={() => removeSlab(idx)}
+                            type="button"
+                            className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                        >
+                            <X size={14} />
+                        </button>
                         <span className="text-[10px] font-black text-gray-400 block uppercase tracking-widest">Range {idx + 1}</span>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
@@ -368,12 +398,32 @@ const PriceSlabEditor = ({ data, onChange }: { data: any, onChange: (newData: an
                                 />
                             </div>
                             <div>
-                                <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Starting Price</label>
+                                <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Label / Starting Price</label>
                                 <input
                                     type="text"
                                     value={slab.startingPrice || ''}
                                     onChange={(e) => updateSlab(idx, 'startingPrice', e.target.value)}
                                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Link URL</label>
+                                <input
+                                    type="text"
+                                    value={slab.href || ''}
+                                    onChange={(e) => updateSlab(idx, 'href', e.target.value)}
+                                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none"
+                                    placeholder="/catalog?maxPrice=30"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Card BG Color</label>
+                                <input
+                                    type="text"
+                                    value={slab.backgroundColor || ''}
+                                    onChange={(e) => updateSlab(idx, 'backgroundColor', e.target.value)}
+                                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none font-mono text-[11px]"
+                                    placeholder="#F6F3FB"
                                 />
                             </div>
                         </div>
