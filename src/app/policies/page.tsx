@@ -21,9 +21,10 @@ const PolicySection = ({ title, icon: Icon, content }: { title: string; icon: an
         </div>
         <div className="prose prose-neutral max-w-none">
             {content ? (
-                <div className="text-neutral-600 leading-relaxed whitespace-pre-wrap text-sm md:text-base">
-                    {content}
-                </div>
+                <div
+                    className="text-neutral-600 leading-relaxed text-sm md:text-base prose prose-neutral max-w-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h2]:text-xl [&_h3]:text-lg [&_a]:text-lavender [&_a]:underline"
+                    dangerouslySetInnerHTML={{ __html: content }}
+                />
             ) : (
                 <p className="text-neutral-400 italic text-sm">Content coming soon...</p>
             )}

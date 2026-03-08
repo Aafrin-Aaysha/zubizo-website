@@ -21,6 +21,10 @@ import {
     X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import dynamic from 'next/dynamic';
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+import 'react-quill/dist/quill.snow.css';
 
 export default function SettingsPage() {
     const [settings, setSettings] = useState<any>({
@@ -113,43 +117,39 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="space-y-4">
-                        <div>
-                            <label className="text-sm font-bold text-gray-700 block mb-2">Terms & Conditions</label>
-                            <textarea
-                                rows={4}
-                                value={settings.termsContent}
-                                onChange={e => setSettings({ ...settings, termsContent: e.target.value })}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#ae7fcb]/10 focus:border-[#ae7fcb] transition-all"
+                        <div className="bg-white rounded-2xl overflow-hidden [&_.ql-editor]:min-h-[150px] [&_.ql-toolbar]:rounded-t-2xl [&_.ql-container]:rounded-b-2xl [&_.ql-toolbar]:border-gray-200 [&_.ql-container]:border-gray-200">
+                            <label className="text-sm font-bold text-gray-700 block mb-2 px-1">Terms & Conditions</label>
+                            <ReactQuill
+                                theme="snow"
+                                value={settings.termsContent || ''}
+                                onChange={val => setSettings({ ...settings, termsContent: val })}
                                 placeholder="Detailed terms and conditions..."
                             />
                         </div>
-                        <div>
-                            <label className="text-sm font-bold text-gray-700 block mb-2">Privacy Policy</label>
-                            <textarea
-                                rows={4}
-                                value={settings.policyContent}
-                                onChange={e => setSettings({ ...settings, policyContent: e.target.value })}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#ae7fcb]/10 focus:border-[#ae7fcb] transition-all"
+                        <div className="bg-white rounded-2xl overflow-hidden [&_.ql-editor]:min-h-[150px] [&_.ql-toolbar]:rounded-t-2xl [&_.ql-container]:rounded-b-2xl [&_.ql-toolbar]:border-gray-200 [&_.ql-container]:border-gray-200">
+                            <label className="text-sm font-bold text-gray-700 block mb-2 px-1">Privacy Policy</label>
+                            <ReactQuill
+                                theme="snow"
+                                value={settings.policyContent || ''}
+                                onChange={val => setSettings({ ...settings, policyContent: val })}
                                 placeholder="Detailed privacy policy..."
                             />
                         </div>
-                        <div>
-                            <label className="text-sm font-bold text-gray-700 block mb-2">Shipping Policy</label>
-                            <textarea
-                                rows={4}
-                                value={settings.shippingPolicyContent}
-                                onChange={e => setSettings({ ...settings, shippingPolicyContent: e.target.value })}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#ae7fcb]/10 focus:border-[#ae7fcb] transition-all"
+                        <div className="bg-white rounded-2xl overflow-hidden [&_.ql-editor]:min-h-[150px] [&_.ql-toolbar]:rounded-t-2xl [&_.ql-container]:rounded-b-2xl [&_.ql-toolbar]:border-gray-200 [&_.ql-container]:border-gray-200">
+                            <label className="text-sm font-bold text-gray-700 block mb-2 px-1">Shipping Policy</label>
+                            <ReactQuill
+                                theme="snow"
+                                value={settings.shippingPolicyContent || ''}
+                                onChange={val => setSettings({ ...settings, shippingPolicyContent: val })}
                                 placeholder="Detailed shipping policy..."
                             />
                         </div>
-                        <div>
-                            <label className="text-sm font-bold text-gray-700 block mb-2">Refund Policy</label>
-                            <textarea
-                                rows={4}
-                                value={settings.refundPolicyContent}
-                                onChange={e => setSettings({ ...settings, refundPolicyContent: e.target.value })}
-                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#ae7fcb]/10 focus:border-[#ae7fcb] transition-all"
+                        <div className="bg-white rounded-2xl overflow-hidden [&_.ql-editor]:min-h-[150px] [&_.ql-toolbar]:rounded-t-2xl [&_.ql-container]:rounded-b-2xl [&_.ql-toolbar]:border-gray-200 [&_.ql-container]:border-gray-200">
+                            <label className="text-sm font-bold text-gray-700 block mb-2 px-1">Refund Policy</label>
+                            <ReactQuill
+                                theme="snow"
+                                value={settings.refundPolicyContent || ''}
+                                onChange={val => setSettings({ ...settings, refundPolicyContent: val })}
                                 placeholder="Detailed refund policy..."
                             />
                         </div>
