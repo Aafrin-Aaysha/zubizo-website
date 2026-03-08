@@ -26,12 +26,20 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await SiteSettings.findOne();
 
   return {
+    metadataBase: new URL('https://zubizoart.com'),
     title: {
       template: '%s | Zubizo',
       default: 'Zubizo – Premium Invitation & Handcrafted Stationery',
     },
     description: settings?.homeTagline || "Premier handcrafted invitations & luxury stationery for weddings, nikah, and special events. Elegant designs customized for your story by Zubizo Art.",
     keywords: ["zubizo", "zubizo art", "handcrafted invitations", "wedding cards india", "nikah invitations", "luxury stationery", "custom invitations", "invitation studio"],
+    icons: {
+      icon: [
+        { url: '/logo.png', sizes: 'any' },
+        { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+      ],
+      apple: '/logo.png',
+    },
     openGraph: {
       title: 'Zubizo Art – Premium Invitation & Handcrafted Stationery',
       description: 'Handcrafted with love for your special occasion.',
@@ -39,9 +47,9 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: 'Zubizo Art',
       images: [
         {
-          url: settings?.logoUrl || '/logo.png',
+          url: '/logo.png',
           width: 800,
-          height: 600,
+          height: 800,
         },
       ],
       locale: 'en_IN',
@@ -51,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title: 'Zubizo – Premium Invitations',
       description: 'Handcrafted stationery for your special moments.',
-      images: [settings?.logoUrl || '/logo.png'],
+      images: ['/logo.png'],
     },
   };
 }
