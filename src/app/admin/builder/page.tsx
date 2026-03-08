@@ -151,9 +151,23 @@ export default function HomepageBuilder() {
                     <EditPanel
                         section={editingSection}
                         onClose={() => setEditingSection(null)}
-                        onSave={(updated: any) => {
-                            setSections(sections.map(s => s._id === updated._id ? updated : s));
-                            setEditingSection(null);
+                        onSave={async (updated: any) => {
+                            try {
+                                const res = await fetch(`/api/homepage/sections/${updated._id}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(updated)
+                                });
+                                if (res.ok) {
+                                    setSections(sections.map(s => s._id === updated._id ? updated : s));
+                                    setEditingSection(null);
+                                    toast.success('Section updated directly');
+                                } else {
+                                    toast.error('Failed to update section to database');
+                                }
+                            } catch (err) {
+                                toast.error('Error saving section');
+                            }
                         }}
                     />
                 )}
