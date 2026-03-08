@@ -15,8 +15,8 @@ const Footer = () => {
                     {/* Brand Column */}
                     <div className="space-y-6">
                         <Link href="/" className="group inline-flex flex-col items-start gap-4">
-                            <div className="p-2 bg-lavender/5 rounded-xl text-charcoal group-hover:text-lavender transition-colors">
-                                <LogoIcon size={32} />
+                            <div className="p-3 bg-lavender/5 rounded-xl text-charcoal group-hover:text-lavender transition-colors">
+                                <LogoIcon size={48} />
                             </div>
                             <span className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-bold">
                                 Zubizo Invitation Studio

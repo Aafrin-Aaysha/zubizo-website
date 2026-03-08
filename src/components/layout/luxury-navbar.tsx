@@ -77,7 +77,7 @@ export const LuxuryNavbar = () => {
                     {/* Left: Logo */}
                     <div className="flex-shrink-0">
                         <Link href="/" className="group flex items-center gap-4">
-                            <LogoIcon size={32} className="text-lavender transition-transform group-hover:scale-110 duration-500" />
+                            <LogoIcon size={40} className="text-lavender transition-transform group-hover:scale-110 duration-500" />
                             <div className="flex flex-col leading-none">
                                 <span className="text-base font-black tracking-[0.2em] uppercase text-charcoal font-serif">
                                     ZUBIZO
