@@ -517,7 +517,7 @@ export default function DesignsPage() {
                                 <button onClick={closeModal} className="w-10 h-10 hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors"><X size={20} /></button>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-10 pb-32">
+                            <form id="design-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-10 pb-32">
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                                     {/* Column 1: Core Details */}
                                     <div className="space-y-8">
@@ -865,7 +865,8 @@ export default function DesignsPage() {
                                         Discard
                                     </button>
                                     <button
-                                        onClick={handleSubmit}
+                                        type="submit"
+                                        form="design-form"
                                         disabled={isSubmitting}
                                         className="px-10 py-4 bg-charcoal hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-charcoal/20 transition-all flex items-center justify-center gap-2"
                                     >

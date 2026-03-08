@@ -96,6 +96,6 @@ export async function POST(req: NextRequest) {
                 message: error.keyPattern?.sku ? 'SKU already exists' : 'Slug already exists'
             }, { status: 400 });
         }
-        return NextResponse.json({ message: 'Error creating design' }, { status: 500 });
+        return NextResponse.json({ message: error.message || 'Error creating design' }, { status: 500 });
     }
 }
