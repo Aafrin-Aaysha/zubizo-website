@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { LuxuryNavbar } from "@/components/layout/luxury-navbar";
 import { LuxuryFooter } from "@/components/layout/luxury-footer";

@@ -1,6 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Parisienne } from "next/font/google";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  themeColor: "#b19cd9",
+};
 
 const cormorantGaramond = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -52,7 +56,6 @@ export async function generateMetadata(): Promise<Metadata> {
     icons: {
       icon: settings?.faviconUrl || "/luxury-favicon.png",
     },
-    themeColor: "#b19cd9",
   };
 }
 
