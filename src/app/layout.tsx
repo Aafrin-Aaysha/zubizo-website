@@ -1,21 +1,17 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Montserrat } from "next/font/google";
+import { Cormorant_Garamond, Parisienne } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const fontMontserrat = Montserrat({
-  variable: "--font-montserrat",
+const parisienne = Parisienne({
+  variable: "--font-parisienne",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
+  weight: ["400"],
 });
 
 import dbConnect from "@/lib/db";
@@ -54,14 +50,16 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [settings?.logoUrl || '/logo.png'],
     },
     icons: {
-      icon: settings?.faviconUrl || "/favicon.ico",
+      icon: settings?.faviconUrl || "/luxury-favicon.png",
     },
+    themeColor: "#b19cd9",
   };
 }
 
 import { CartProvider } from "@/context/cart-context";
 import { Toaster } from "react-hot-toast";
 import GoogleAnalytics from "@/components/layout/GoogleAnalytics";
+import { CustomCursor } from "@/components/ui/custom-cursor";
 
 export default function RootLayout({
   children,
@@ -72,9 +70,13 @@ export default function RootLayout({
 
   return (
     <html lang="en">
+      <head>
+        <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,300,400&display=swap" rel="stylesheet" />
+      </head>
       <body
-        className={`${inter.variable} ${playfair.variable} ${fontMontserrat.variable} antialiased`}
+        className={`${cormorantGaramond.variable} ${parisienne.variable} antialiased`}
       >
+        <CustomCursor />
         <GoogleAnalytics GA_MEASUREMENT_ID={gaId} />
         <CartProvider>
           {children}

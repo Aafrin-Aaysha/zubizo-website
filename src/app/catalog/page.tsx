@@ -124,7 +124,7 @@ export default async function CatalogPage({
     const serializedCategories = JSON.parse(JSON.stringify(categories));
 
     return (
-        <main className="min-h-screen bg-[#faf9f7]">
+        <main className="min-h-screen bg-white">
             <LuxuryNavbar />
 
             {/* Page Header */}

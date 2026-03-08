@@ -25,22 +25,20 @@ export const bootstrapSections = [
             ]
         },
         styling: {
-            backgroundColor: '#faf9f7',
+            backgroundColor: '#faf9fb',
             padding: '150px 0 60px',
             overlayOpacity: 0.5
         }
     },
     {
-        sectionId: 'shop-by-price',
-        sectionType: 'shopByPrice',
+        sectionId: 'featured-main',
+        sectionType: 'featuredCollections',
         order: 2,
         isVisible: true,
-        title: 'Shop by Price',
-        subtitle: 'PRICE RANGES',
-        description: 'Discover invitation designs across every price range, crafted with elegance and premium materials.',
+        title: 'Featured Designs',
+        subtitle: 'CURATED COLLECTION',
         styling: {
-            backgroundColor: '#ffffff',
-            padding: '120px 0'
+            backgroundColor: '#ffffff'
         }
     },
     {
@@ -51,7 +49,7 @@ export const bootstrapSections = [
         title: 'Trending on Instagram',
         subtitle: 'SOCIAL SHOWCASE',
         styling: {
-            backgroundColor: '#ffffff',
+            backgroundColor: '#faf9fb',
             padding: '120px 0'
         }
     },
@@ -63,32 +61,56 @@ export const bootstrapSections = [
         title: 'Our Story',
         subtitle: 'About Zubizo',
         styling: {
-            backgroundColor: '#fafafa',
+            backgroundColor: '#ffffff',
             padding: '120px 0'
         }
     },
     {
-        sectionId: 'contact-main',
-        sectionType: 'contact',
+        sectionId: 'craft-process',
+        sectionType: 'craftProcess',
+        order: 5,
+        isVisible: true,
+        title: 'Our Artisan Process',
+        subtitle: 'THE CRAFTSMANSHIP',
+        styling: {
+            backgroundColor: '#faf9fb'
+        }
+    },
+    {
+        sectionId: 'testimonials-main',
+        sectionType: 'testimonials',
         order: 6,
         isVisible: true,
-        title: 'Luxury Invitation Studio',
-        subtitle: 'Connect With Us',
-        description: 'We’d love to help you create something beautiful.',
+        title: 'Loved by Our Clients',
+        subtitle: 'Client Love',
         styling: {
             backgroundColor: '#ffffff',
             padding: '120px 0'
         }
     },
     {
-        sectionId: 'testimonials-main',
-        sectionType: 'testimonials',
-        order: 5,
+        sectionId: 'shop-by-price',
+        sectionType: 'shopByPrice',
+        order: 7,
         isVisible: true,
-        title: 'Loved by Our Clients',
-        subtitle: 'Client Love',
+        title: 'Shop by Price',
+        subtitle: 'PRICE RANGES',
+        description: 'Discover invitation designs across every price range, crafted with elegance and premium materials.',
         styling: {
-            backgroundColor: '#faf9f7',
+            backgroundColor: '#faf9fb',
+            padding: '120px 0'
+        }
+    },
+    {
+        sectionId: 'contact-main',
+        sectionType: 'contact',
+        order: 8,
+        isVisible: true,
+        title: 'Luxury Invitation Studio',
+        subtitle: 'Connect With Us',
+        description: 'We’d love to help you create something beautiful.',
+        styling: {
+            backgroundColor: '#ffffff',
             padding: '120px 0'
         }
     }

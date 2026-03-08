@@ -76,7 +76,7 @@ export default function ContactPage() {
                         </div>
 
                         {/* Google Maps Placeholder */}
-                        <div className="relative h-80 w-full overflow-hidden rounded-[2rem] bg-soft-grey shadow-inner">
+                        <div className="relative h-80 w-full overflow-hidden rounded-[2rem] bg-white border border-lavender/10 shadow-sm">
                             <iframe
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3773.2198424269!2d72.825126!3d18.966964!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7ce2d9489269d%3A0xc3687353f478a2e4!2sMarine%20Drive!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
                                 className="h-full w-full border-0 opacity-80"
@@ -90,7 +90,7 @@ export default function ContactPage() {
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="flex flex-col items-center justify-center rounded-[3rem] bg-soft-grey p-12 text-center"
+                        className="flex flex-col items-center justify-center rounded-[3rem] bg-lavender/5 border border-lavender/10 p-12 text-center"
                     >
                         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600 mb-6 shadow-lg shadow-green-100">
                             <MessageCircle className="h-10 w-10" />

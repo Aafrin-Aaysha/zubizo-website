@@ -47,26 +47,27 @@ export const ShopByPrice = ({ data, styling, title, subtitle, description }: any
     return (
         <section
             id="shop-by-price"
-            className="py-[120px] bg-white relative"
+            className="py-16 md:py-20 relative"
             style={{
                 backgroundColor: styling?.backgroundColor || '#ffffff',
+                padding: styling?.padding || '80px 0'
             }}
         >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-12">
                     <span
-                        className="text-lavender font-black uppercase tracking-[0.4em] text-[10px] mb-6 block"
+                        className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
                         style={{ color: styling?.accentColor }}
                     >
-                        {subtitle || "PRICE RANGES"}
+                        CURATED PRICE SLABS
                     </span>
                     <h2
-                        className="text-5xl md:text-6xl font-black text-charcoal font-serif mb-4"
+                        className="text-[36px] font-medium text-charcoal font-serif mb-4"
                         style={{ color: styling?.textColor }}
                     >
                         {title || "Shop by Price"}
                     </h2>
-                    <p className="text-neutral-600 text-sm font-medium max-w-xl mx-auto leading-relaxed">
+                    <p className="font-sans text-[15px] font-medium text-charcoal/70 leading-relaxed max-w-2xl mx-auto">
                         {description || "Discover invitation designs across every price range, crafted with elegance and premium materials."}
                     </p>
                 </div>
@@ -83,7 +84,7 @@ export const ShopByPrice = ({ data, styling, title, subtitle, description }: any
                             <Link
                                 href={slab.href || `/catalog?price=${slab.priceParam}`}
                                 className={cn(
-                                    "group block p-6 h-full rounded-[20px] border border-[#E6E2EA] transition-all duration-300 hover:-translate-y-[4px] hover:shadow-[0_10px_30px_rgba(0,0,0,0.06)] hover:border-[#D6C7F1]",
+                                    "group block p-8 h-full floating-card",
                                     slab.bgColor
                                 )}
                                 style={{

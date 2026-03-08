@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
         const categoryId = searchParams.get('categoryId');
         const search = searchParams.get('search');
         const isTrending = searchParams.get('isTrending');
+        const limit = searchParams.get('limit');
         const maxPrice = searchParams.get('maxPrice');
         const minPrice = searchParams.get('minPrice');
 
@@ -37,9 +38,15 @@ export async function GET(req: NextRequest) {
             query.isActive = true;
         }
 
-        let designs = await Design.find(query)
+        let queryBuilder = Design.find(query)
             .populate('categoryId')
             .sort({ createdAt: -1 });
+
+        if (limit) {
+            queryBuilder = queryBuilder.limit(parseInt(limit));
+        }
+
+        let designs = await queryBuilder;
 
         // Filter by price ranges (based on cheapest package pricePerCard)
         if (maxPrice || minPrice) {

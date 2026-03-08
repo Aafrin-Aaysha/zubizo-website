@@ -49,10 +49,10 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
     return (
         <section
             id="about"
-            className="py-[120px] bg-soft-white"
+            className="py-16 md:py-20"
             style={{
-                backgroundColor: styling?.backgroundColor || '#fafafa',
-                padding: styling?.padding || '120px 0'
+                backgroundColor: styling?.backgroundColor || 'var(--color-pearl-white)',
+                padding: styling?.padding || '80px 0'
             }}
         >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -61,16 +61,16 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mb-20"
+                    className="text-center mb-16"
                 >
                     <span
-                        className="text-lavender font-bold uppercase tracking-[0.4em] text-[10px] mb-6 block"
+                        className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
                         style={{ color: styling?.accentColor }}
                     >
-                        {subtitle || "About Zubizo"}
+                        ABOUT ZUBIZO
                     </span>
                     <h2
-                        className="text-4xl md:text-5xl font-bold text-charcoal font-serif"
+                        className="text-[36px] font-medium text-charcoal font-serif"
                         style={{ color: styling?.textColor }}
                     >
                         {title || "Our Story"}
@@ -90,7 +90,7 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
                             p.isHtml ? (
                                 <p
                                     key={idx}
-                                    className="text-lg text-gray-600 leading-relaxed"
+                                    className="text-lg text-charcoal/70 font-medium leading-relaxed"
                                     dangerouslySetInnerHTML={{ __html: p.text }}
                                 />
                             ) : (
@@ -123,10 +123,10 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
                                         {Icon && <Icon size={24} strokeWidth={1.5} />}
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-bold text-charcoal mb-2 font-serif">
+                                        <h3 className="text-xl font-semibold text-charcoal mb-2 font-serif">
                                             {item.title}
                                         </h3>
-                                        <p className="text-gray-600 leading-relaxed">
+                                        <p className="text-charcoal/60 leading-relaxed font-sans font-medium text-sm">
                                             {item.description}
                                         </p>
                                     </div>

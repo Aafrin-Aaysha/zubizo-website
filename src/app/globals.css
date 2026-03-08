@@ -3,15 +3,23 @@
 @theme {
   --color-primary: #ae7fcb;
   --color-lavender: #ae7fcb;
-  --color-soft-white: #fafafa;
-  --color-charcoal: #2e2e2e;
-  --color-gold: #c5a059;
+  --color-soft-lilac: #e9e2f5;
+  --color-blush-rose: #f5e6eb;
+  --color-champagne-cream: #f8f4ef;
+  --color-pearl-white: #faf9fb;
+  --color-dusty-mauve: #c8a6c8;
+  --color-soft-gold: #d8c9a6;
 
-  --font-serif: var(--font-playfair);
-  --font-sans: var(--font-montserrat);
+  --color-soft-white: #faf9fb;
+  --color-charcoal: #2e2e2e;
+
+  --font-serif: var(--font-cormorant);
+  --font-sans: 'Satoshi', sans-serif;
+  --font-script: var(--font-parisienne);
 
   --animate-fade-in: fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  --animate-slide-up: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-fade-up: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-soft-slide-in: soft-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-float: float 6s ease-in-out infinite;
   --animate-slow-zoom: slow-zoom 15s ease-in-out infinite alternate;
 
@@ -25,14 +33,26 @@
     }
   }
 
-  @keyframes slide-up {
+  @keyframes fade-up {
     from {
-      transform: translateY(30px);
+      transform: translateY(20px);
       opacity: 0;
     }
 
     to {
       transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes soft-slide-in {
+    from {
+      transform: translateX(-20px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateX(0);
       opacity: 1;
     }
   }
@@ -71,8 +91,10 @@
 }
 
 :root {
-  --background: #faf9f7;
+  --background: #faf9fb;
+  /* Pearl White */
   --foreground: #2e2e2e;
+  /* Charcoal */
   --lavender: #ae7fcb;
   --charcoal: #2e2e2e;
   scroll-behavior: smooth;
@@ -81,7 +103,9 @@
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-montserrat), var(--font-inter), sans-serif;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 15px;
+  /* Base body size */
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -92,23 +116,72 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-playfair), serif;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: var(--font-cormorant), serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
   color: var(--charcoal);
   line-height: 1.2;
 }
 
-.shadow-premium {
-  box-shadow: 0 10px 40px -15px rgba(0, 0, 0, 0.05);
+h1 {
+  font-size: 56px;
 }
 
-.shadow-luxury {
-  box-shadow: 0 8px 25px -8px rgba(174, 127, 203, 0.1);
+h2 {
+  font-size: 36px;
 }
+
+h3 {
+  font-size: 22px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
+/* Card Titles */
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .meta-label {
+    font-size: 12px;
+  }
+
+  /* Floating card styles */
+  .floating-card {
+    background-color: var(--color-pearl-white);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(174, 127, 203, 0.05);
+    /* very soft lavender shadow */
+    border: 1px solid rgba(174, 127, 203, 0.15);
+    /* soft lavender border */
+    transition: all 300ms ease;
+  }
+
+  .floating-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(174, 127, 203, 0.15);
+    /* deeper shadow on hover */
+  }
+
+  /* Image zoom hover effect */
+  .hover-zoom-img {
+    transition: transform 300ms ease;
+  }
+
+  .group:hover .hover-zoom-img,
+  .hover-zoom-img:hover {
+    transform: scale(1.03);
+  }
+
+  .shadow-premium {
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+  }
+
+  .shadow-luxury {
+    box-shadow: 0 8px 25px -8px rgba(174, 127, 203, 0.1);
   }
 }

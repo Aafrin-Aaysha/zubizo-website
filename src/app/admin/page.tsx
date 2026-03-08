@@ -39,7 +39,7 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <main className="min-h-screen bg-soft-grey flex items-center justify-center px-4">
+        <main className="min-h-screen bg-pearl-white flex items-center justify-center px-4">
             <Navbar />
 
             <motion.div
@@ -47,12 +47,12 @@ export default function AdminLoginPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="w-full max-w-md overflow-hidden rounded-[2rem] bg-white shadow-2xl"
             >
-                <div className="bg-charcoal px-8 py-12 text-center text-white">
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-lavender/20 text-lavender">
+                <div className="bg-lavender/5 px-8 py-12 text-center text-charcoal border-b border-lavender/10">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm text-lavender">
                         <Lock className="h-8 w-8" />
                     </div>
-                    <h1 className="text-3xl font-bold font-serif">Admin Portal</h1>
-                    <p className="mt-2 text-sm text-white/60 uppercase tracking-widest font-semibold">
+                    <h1 className="text-3xl font-bold font-serif text-charcoal">Admin Portal</h1>
+                    <p className="mt-2 text-sm text-charcoal/40 uppercase tracking-widest font-semibold">
                         Restricted Access
                     </p>
                 </div>
@@ -67,7 +67,7 @@ export default function AdminLoginPage() {
                                 type="email"
                                 required
                                 placeholder="admin@zubizo.com"
-                                className="w-full rounded-2xl bg-gray-50 border-2 border-transparent px-6 py-4 text-gray-900 focus:border-[#ae7fcb] focus:bg-white focus:outline-none transition-all"
+                                className="w-full rounded-2xl bg-gray-50 border-2 border-transparent px-6 py-4 text-gray-900 focus:border-lavender focus:bg-white focus:outline-none transition-all"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
@@ -80,7 +80,7 @@ export default function AdminLoginPage() {
                                 type="password"
                                 required
                                 placeholder="••••••••"
-                                className="w-full rounded-2xl bg-gray-50 border-2 border-transparent px-6 py-4 text-gray-900 focus:border-[#ae7fcb] focus:bg-white focus:outline-none transition-all"
+                                className="w-full rounded-2xl bg-gray-50 border-2 border-transparent px-6 py-4 text-gray-900 focus:border-lavender focus:bg-white focus:outline-none transition-all"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />

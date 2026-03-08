@@ -3,8 +3,7 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_SLIDES = [
@@ -44,140 +43,131 @@ export const LuxuryHero = ({ data, styling }: any) => {
 
     React.useEffect(() => {
         if (slides.length <= 1) return;
-        const timer = setInterval(next, 6000);
+        const timer = setInterval(next, 5000);
         return () => clearInterval(timer);
     }, [current, slides.length]);
 
-    const variants = {
-        enter: (dir: number) => ({
-            opacity: 0,
-            scale: 1.05,
-        }),
-        center: {
-            opacity: 1,
-            scale: 1,
-        },
-        exit: (dir: number) => ({
-            opacity: 0,
-            scale: 0.95,
-        }),
+    const imageVariants = {
+        enter: (dir: number) => ({ opacity: 0, x: dir > 0 ? 30 : -30, scale: 0.95 }),
+        center: { opacity: 1, x: 0, scale: 1 },
+        exit: (dir: number) => ({ opacity: 0, x: dir < 0 ? 30 : -30, scale: 0.95 }),
     };
 
     return (
         <section
             className="relative w-full overflow-hidden"
             style={{
-                backgroundColor: styling?.backgroundColor || '#faf9f7',
-                paddingTop: '120px',
-                paddingBottom: '120px',
-                paddingLeft: '1rem',
-                paddingRight: '1rem'
+                backgroundColor: styling?.backgroundColor || '#faf9fb', // Pearl white tone
+                paddingTop: '160px',
+                paddingBottom: '80px',
             }}
         >
-            {/* The Main Banner Container */}
-            <div className="relative w-full max-w-[1440px] mx-auto h-[85vh] min-h-[600px] rounded-[2.5rem] lg:rounded-[3.5rem] overflow-hidden shadow-2xl shadow-charcoal/10">
-                {/* Slides */}
-                <AnimatePresence custom={direction} mode="popLayout">
-                    <motion.div
-                        key={current}
-                        custom={direction}
-                        variants={variants}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                        className="absolute inset-0"
-                    >
-                        <img
-                            src={slides[current].image}
-                            alt=""
-                            className="h-full w-full object-cover"
-                        />
-                        {/* Elegant Overlay - Stronger for better text visibility */}
-                        <div
-                            className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/30"
-                            style={{ opacity: styling?.overlayOpacity }}
-                        />
-                        <div className="absolute inset-0 bg-charcoal/30 backdrop-brightness-75" />
-                    </motion.div>
-                </AnimatePresence>
+            <div className="w-full max-w-[1300px] mx-auto px-6 sm:px-8 lg:px-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
-                {/* Content Overlay */}
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center px-6">
-                    <motion.div
-                        key={current}
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="max-w-4xl"
-                    >
-                        <span className="inline-block text-[13px] font-black uppercase tracking-[0.6em] !text-white/90 mb-8 drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">
-                            {slides[current].tag || "Bespoke Invitation Atelier"}
-                        </span>
+                    {/* Left: Editorial Text Content */}
+                    <div className="flex flex-col items-start justify-center text-left order-2 lg:order-1">
+                        <div className="max-w-xl">
+                            <motion.span
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8 }}
+                                className="inline-block font-script text-3xl sm:text-4xl text-lavender mb-6"
+                            >
+                                Bespoke Invitation Atelier
+                            </motion.span>
 
-                        <h1
-                            className="text-4xl sm:text-6xl font-black !text-white leading-[1.1] tracking-tight font-serif mb-8 drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)] whitespace-pre-line"
-                            style={{ color: styling?.textColor || 'white' }}
+                            <motion.h1
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.2 }}
+                                className="text-[44px] sm:text-[56px] lg:text-[72px] font-semibold text-charcoal leading-[1.1] tracking-tight font-serif mb-6 whitespace-pre-line"
+                                style={{ color: styling?.textColor || '#2e2e2e' }}
+                            >
+                                Crafting Invitations That Tell Your Story
+                            </motion.h1>
+
+                            <motion.p
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.8, delay: 0.4 }}
+                                className="text-[16px] lg:text-[18px] text-charcoal/70 font-medium leading-relaxed mb-10 whitespace-pre-line"
+                            >
+                                Experience the pinnacle of luxury with handcrafted stationery. Every piece is meticulously designed with premium materials to capture the essence of your most beautiful moments.
+                            </motion.p>
+
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.8, delay: 0.6 }}
+                                className="flex flex-col sm:flex-row items-center justify-start gap-4 w-full sm:w-auto"
+                            >
+                                <Link
+                                    href="/catalog"
+                                    className="w-full sm:w-auto h-14 px-8 bg-lavender text-white rounded-full font-bold text-[15px] hover:bg-lavender/90 transition-all duration-300 flex items-center justify-center gap-2 group shadow-premium hover:shadow-luxury hover:-translate-y-1"
+                                >
+                                    Explore Catalogue
+                                    <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                                <Link
+                                    href="#trending"
+                                    className="w-full sm:w-auto h-14 px-8 bg-transparent border-2 border-lavender/20 text-charcoal rounded-full font-bold text-[15px] hover:border-lavender hover:text-lavender transition-all duration-300 flex items-center justify-center hover:-translate-y-1"
+                                >
+                                    View Trending
+                                </Link>
+                            </motion.div>
+                        </div>
+                    </div>
+
+                    {/* Right: Framed Image Content */}
+                    <div className="relative order-1 lg:order-2 flex justify-center lg:justify-end">
+                        <motion.div
+                            initial={{ opacity: 0, x: 40 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 1, ease: 'easeOut' }}
+                            className="relative w-full max-w-[500px] aspect-[4/5] rounded-[2rem] floating-card overflow-hidden shadow-luxury border-4 border-white group bg-gray-50 drop-shadow-2xl"
                         >
-                            {slides[current].title}
-                        </h1>
+                            <AnimatePresence custom={direction} mode="wait">
+                                <motion.div
+                                    key={current}
+                                    custom={direction}
+                                    variants={imageVariants}
+                                    initial="enter"
+                                    animate="center"
+                                    exit="exit"
+                                    transition={{ duration: 0.6, ease: "easeInOut" }}
+                                    className="absolute inset-0"
+                                >
+                                    <img
+                                        src={slides[current].image}
+                                        alt="Luxury Invitation"
+                                        className="h-full w-full object-cover transition-transform duration-[10s] group-hover:scale-105"
+                                    />
+                                    {/* Exceedingly subtle overlay just to make images pop slightly */}
+                                    <div className="absolute inset-0 bg-black/5" />
+                                </motion.div>
+                            </AnimatePresence>
 
-                        <p className="text-sm sm:text-base !text-white/95 font-semibold leading-relaxed max-w-xl mx-auto mb-10 drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] whitespace-pre-line">
-                            {slides[current].subtitle}
-                        </p>
+                            {/* Navigation controls for image frame */}
+                            {slides.length > 1 && (
+                                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full border border-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <button onClick={prev} className="p-1.5 hover:text-lavender text-charcoal/60 transition-colors rounded-full hover:bg-lavender/5">
+                                        <ChevronLeft size={18} />
+                                    </button>
+                                    <div className="flex gap-2">
+                                        {slides.map((_: any, i: number) => (
+                                            <div key={i} className={cn("w-1.5 h-1.5 rounded-full transition-all duration-300", current === i ? "bg-lavender w-4" : "bg-charcoal/20")} />
+                                        ))}
+                                    </div>
+                                    <button onClick={next} className="p-1.5 hover:text-lavender text-charcoal/60 transition-colors rounded-full hover:bg-lavender/5">
+                                        <ChevronRight size={18} />
+                                    </button>
+                                </div>
+                            )}
+                        </motion.div>
+                    </div>
 
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
-                            <Link
-                                href="/catalog"
-                                className="h-12 px-8 bg-[#9C7AE6] text-white rounded-xl font-bold text-sm hover:bg-[#8B69D5] transition-all duration-300 flex items-center justify-center gap-2 group tracking-wide shadow-lg shadow-lavender/25"
-                            >
-                                Explore Catalogue
-                                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                            </Link>
-                            <Link
-                                href="#trending"
-                                className="h-12 px-8 bg-white/10 backdrop-blur-md border border-white/40 text-white rounded-xl font-bold text-sm hover:bg-white hover:text-charcoal transition-all duration-300 flex items-center justify-center tracking-wide"
-                            >
-                                View Trending
-                            </Link>
-                        </div>
-                    </motion.div>
                 </div>
-
-                {/* Navigation Controls */}
-                {slides.length > 1 && (
-                    <>
-                        {/* Navigation Arrows */}
-                        <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 z-20 flex justify-between pointer-events-none">
-                            <button
-                                onClick={prev}
-                                className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-lg border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-charcoal transition-all pointer-events-auto transform hover:scale-110 active:scale-95"
-                            >
-                                <ChevronLeft size={28} />
-                            </button>
-                            <button
-                                onClick={next}
-                                className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-lg border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-charcoal transition-all pointer-events-auto transform hover:scale-110 active:scale-95"
-                            >
-                                <ChevronRight size={28} />
-                            </button>
-                        </div>
-
-                        {/* Pagination Dots */}
-                        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
-                            {slides.map((_: any, i: number) => (
-                                <button
-                                    key={i}
-                                    onClick={() => setCurrent(i)}
-                                    className={cn(
-                                        "h-1.5 transition-all duration-500 rounded-full",
-                                        current === i ? "w-8 bg-white" : "w-1.5 bg-white/40 hover:bg-white/60"
-                                    )}
-                                />
-                            ))}
-                        </div>
-                    </>
-                )}
             </div>
         </section>
     );

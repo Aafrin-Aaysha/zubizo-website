@@ -3,17 +3,16 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export const FeaturedCarousel = () => {
+export const FeaturedCarousel = ({ styling, title, subtitle, description }: any) => {
     const [designs, setDesigns] = React.useState<any[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
 
     React.useEffect(() => {
         const fetchFeatured = async () => {
             try {
-                // Fetch top 8 designs as featured
-                const res = await fetch('/api/designs?limit=8');
+                const res = await fetch('/api/designs?limit=4');
                 if (res.ok) {
                     const data = await res.json();
                     setDesigns(data);
@@ -30,57 +29,78 @@ export const FeaturedCarousel = () => {
     if (!isLoading && designs.length === 0) return null;
 
     return (
-        <section className="py-32 bg-white overflow-hidden">
-            <div className="mx-auto max-w-7xl px-8 mb-16 flex items-end justify-between">
+        <section
+            className="py-16 md:py-20"
+            style={{ backgroundColor: styling?.backgroundColor }}
+        >
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-12 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
                 <div>
-                    <span className="text-lavender font-black uppercase tracking-[0.4em] text-[10px] mb-3 block">
-                        Curated Selection
+                    <span className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block">
+                        {subtitle || "CURATED COLLECTION"}
                     </span>
-                    <h2 className="text-4xl md:text-5xl font-black text-charcoal font-serif">
-                        Featured Designs
+                    <h2 className="text-[36px] font-medium text-charcoal font-serif mb-4">
+                        {title || "Featured Designs"}
                     </h2>
+                    {description && (
+                        <p className="text-charcoal/60 font-sans text-sm max-w-xl leading-relaxed">
+                            {description}
+                        </p>
+                    )}
                 </div>
-                <Link href="/catalog" className="text-xs font-black uppercase tracking-widest text-charcoal/40 hover:text-lavender transition-colors flex items-center gap-2 group">
-                    View All Collections
-                    <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                <Link href="/catalog" className="text-sm font-bold uppercase tracking-widest text-charcoal/60 hover:text-lavender transition-colors flex items-center gap-2 group pb-2">
+                    View All <span className="hidden sm:inline">Collections</span>
+                    <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
             </div>
-
-            <div className="relative">
-                <div className="flex gap-10 animate-scroll hover:[animation-play-state:paused]"
-                    style={{
-                        width: "max-content",
-                        "--scroll-width": `calc(-450px * ${designs.length} - 2.5rem * ${designs.length})`
-                    } as React.CSSProperties}
-                >
+            {/* Responsive Grid Layout */}
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12 sm:gap-x-8 sm:gap-y-16">
                     {isLoading ? (
                         [...Array(4)].map((_, i) => (
-                            <div key={i} className="w-[450px] aspect-[16/10] bg-gray-50 rounded-[2rem] animate-pulse" />
+                            <div key={i} className="flex flex-col gap-4">
+                                <div className="w-full aspect-[3/4] bg-gray-50 rounded-[1.5rem] animate-pulse" />
+                                <div className="h-6 w-3/4 bg-gray-50 rounded animate-pulse" />
+                                <div className="h-4 w-1/4 bg-gray-50 rounded animate-pulse" />
+                            </div>
                         ))
                     ) : (
                         <>
-                            {[...designs, ...designs].map((design, idx) => (
+                            {designs.map((design, idx) => (
                                 <Link
                                     key={`${design._id}-${idx}`}
                                     href={`/catalog/${design.slug}`}
-                                    className="group relative w-[450px] aspect-[16/10] rounded-[2.5rem] overflow-hidden bg-gray-50 shadow-luxury hover:shadow-2xl transition-all duration-700"
+                                    className="group flex flex-col"
                                 >
-                                    <img
-                                        src={design.images?.[0] || "/placeholder.jpg"}
-                                        alt={design.name}
-                                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                                    {/* Image Container */}
+                                    <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[1.5rem] shadow-sm group-hover:shadow-premium transition-shadow duration-500 bg-gray-50 mb-5">
+                                        <img
+                                            src={design.images?.[0] || "/placeholder.jpg"}
+                                            alt={design.name}
+                                            className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                                        />
 
-                                    <div className="absolute bottom-0 left-0 right-0 p-8 text-white translate-y-6 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-100">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-lavender mb-2">{design.sku}</p>
-                                        <h3 className="text-2xl font-black font-serif mb-1">{design.name}</h3>
-                                        <p className="text-sm font-medium text-white/70">From ₹{design.packages?.[0]?.pricePerCard || design.basePrice || 0}</p>
+                                        {/* Glass Badge */}
+                                        <div className="absolute top-4 right-4 px-3 py-1.5 bg-white/40 backdrop-blur-md border border-white/40 rounded-full shadow-sm">
+                                            <span className="text-[9px] font-bold text-charcoal uppercase tracking-widest font-sans">Featured</span>
+                                        </div>
                                     </div>
 
-                                    {/* Glass Badge */}
-                                    <div className="absolute top-6 right-6 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full">
-                                        <span className="text-[9px] font-black text-white uppercase tracking-widest">Featured</span>
+                                    {/* Content Container Below Image */}
+                                    <div className="flex pl-1 flex-col">
+                                        <h3 className="text-[18px] md:text-[20px] font-serif font-medium text-charcoal group-hover:text-lavender transition-colors decoration-1 underline-offset-4 group-hover:underline line-clamp-1">
+                                            {design.name}
+                                        </h3>
+
+                                        <div className="flex items-center justify-between mt-1">
+                                            <p className="text-[14px] font-sans text-charcoal/70">
+                                                From ₹{design.packages?.[0]?.pricePerCard || design.basePrice || 0}
+                                            </p>
+                                        </div>
+
+                                        <div className="text-[13px] font-sans font-semibold text-lavender flex items-center gap-1 mt-3 opacity-80 group-hover:opacity-100 transition-opacity">
+                                            View Details
+                                            <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                        </div>
                                     </div>
                                 </Link>
                             ))}

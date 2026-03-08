@@ -59,27 +59,27 @@ export const TrendingRow = ({ data, styling, title, subtitle }: any) => {
     return (
         <section
             id="trending"
-            className="py-[120px] bg-soft-white overflow-hidden relative"
+            className="py-16 md:py-20 overflow-hidden relative"
             style={{
-                backgroundColor: styling?.backgroundColor || '#fafafa',
-                padding: styling?.padding || '120px 0'
+                backgroundColor: styling?.backgroundColor || 'var(--color-pearl-white)',
+                padding: styling?.padding || '80px 0'
             }}
         >
-            <div className="mx-auto max-w-7xl px-8 mb-20 flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="mx-auto max-w-[1200px] px-8 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mb-20 px-4"
+                    className="text-center md:text-left mb-8 md:mb-0 px-4"
                 >
                     <span
-                        className="text-lavender font-black uppercase tracking-[0.4em] text-[10px] mb-6 block"
+                        className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
                         style={{ color: styling?.accentColor }}
                     >
-                        {subtitle || "Instagram Feed"}
+                        SOCIAL SHOWCASE
                     </span>
                     <h2
-                        className="text-4xl md:text-5xl font-black text-charcoal font-serif"
+                        className="text-[36px] font-medium text-charcoal font-serif"
                         style={{ color: styling?.textColor }}
                     >
                         {title || "Trending on Instagram"}
@@ -142,8 +142,8 @@ export const TrendingRow = ({ data, styling, title, subtitle }: any) => {
                             <Link
                                 key={`${design._id}-${idx}`}
                                 href={`/catalog/${design.slug}`}
-                                className="group relative w-[320px] md:w-[350px] aspect-[3/4] rounded-[2.5rem] overflow-hidden shrink-0 bg-[#faf9f7] shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.12)] transition-all duration-700 snap-center"
-                                style={{ borderRadius: styling?.borderRadius }}
+                                className="group relative w-[320px] md:w-[350px] aspect-[3/4] floating-card overflow-hidden shrink-0 snap-center"
+                                style={{ borderRadius: styling?.borderRadius || '1rem' }}
                             >
                                 <div className="absolute inset-0 transition-transform duration-1000 group-hover:scale-[1.03]">
                                     {design.videoUrl ? (

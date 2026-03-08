@@ -44,10 +44,10 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
     return (
         <section
             id="testimonials"
-            className="py-[120px] bg-white relative overflow-hidden"
+            className="py-16 md:py-20 relative overflow-hidden"
             style={{
-                backgroundColor: styling?.backgroundColor || '#ffffff',
-                padding: styling?.padding || '120px 0'
+                backgroundColor: styling?.backgroundColor || 'var(--color-pearl-white)',
+                padding: styling?.padding || '80px 0'
             }}
         >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -56,17 +56,17 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6"
+                    className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6"
                 >
                     <div>
                         <span
-                            className="text-lavender font-bold uppercase tracking-[0.4em] text-[10px] mb-6 block"
+                            className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
                             style={{ color: styling?.accentColor }}
                         >
-                            {subtitle || "Client Love"}
+                            CLIENT LOVE
                         </span>
                         <h2
-                            className="text-4xl md:text-5xl font-bold text-charcoal font-serif"
+                            className="text-[36px] font-medium text-charcoal font-serif"
                             style={{ color: styling?.textColor }}
                         >
                             {title || "Loved by Our Clients"}
@@ -78,14 +78,14 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
                         <div className="flex gap-4">
                             <button
                                 onClick={() => scroll('left')}
-                                className="p-4 rounded-full border border-gray-200 hover:border-[#ae7fcb] hover:bg-[#ae7fcb] hover:text-white transition-all text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ae7fcb]/50 group"
+                                className="p-4 rounded-full border border-lavender/30 hover:border-lavender hover:bg-lavender hover:text-white transition-all text-charcoal/50 group shadow-sm hover:shadow-luxury"
                                 aria-label="Scroll left"
                             >
                                 <ChevronLeft size={24} className="group-hover:scale-110 transition-transform" />
                             </button>
                             <button
                                 onClick={() => scroll('right')}
-                                className="p-4 rounded-full border border-gray-200 hover:border-[#ae7fcb] hover:bg-[#ae7fcb] hover:text-white transition-all text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ae7fcb]/50 group"
+                                className="p-4 rounded-full border border-lavender/30 hover:border-lavender hover:bg-lavender hover:text-white transition-all text-charcoal/50 group shadow-sm hover:shadow-luxury"
                                 aria-label="Scroll right"
                             >
                                 <ChevronRight size={24} className="group-hover:scale-110 transition-transform" />
@@ -108,7 +108,7 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: Math.min(idx * 0.1, 0.5) }} // Cap delay
-                                className="relative bg-white rounded-3xl p-8 shadow-premium hover:shadow-luxury transition-all border border-gray-50 flex-none w-[85vw] sm:w-[400px] snap-center"
+                                className="relative floating-card p-8 flex-none w-[85vw] sm:w-[400px] snap-center"
                                 style={{ borderRadius: styling?.borderRadius }}
                             >
                                 {/* Lavender Accent Line */}
@@ -125,14 +125,14 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
                                 </div>
 
                                 {/* Review Text */}
-                                <p className="text-gray-600 leading-relaxed mb-6 text-sm italic min-h-[100px]">
+                                <p className="text-charcoal/80 font-serif leading-relaxed mb-6 text-[16px] italic min-h-[100px]">
                                     "{testimonial.review}"
                                 </p>
 
                                 {/* Client Info */}
-                                <div className="border-t border-gray-100 pt-4">
+                                <div className="pt-2">
                                     <h4 className="font-bold text-charcoal text-sm">{testimonial.name}</h4>
-                                    <p className="text-[10px] uppercase tracking-widest text-gray-400 mt-1">
+                                    <p className="text-[10px] uppercase tracking-widest text-charcoal/40 mt-1">
                                         {testimonial.location}
                                     </p>
                                 </div>

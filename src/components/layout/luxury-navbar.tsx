@@ -14,11 +14,11 @@ export const LuxuryNavbar = () => {
     const [isSearching, setIsSearching] = React.useState(false);
     const { scrollY } = useScroll();
 
-    // Semi-transparent initially for that "glass" feel, solid white on scroll
+    // Semi-transparent initially for that "glass" feel, pearl white on scroll
     const bgColor = useTransform(
         scrollY,
         [0, 50],
-        ["rgba(250, 249, 247, 0.4)", "rgba(255, 255, 255, 0.85)"]
+        ["rgba(250, 249, 251, 0.4)", "rgba(250, 249, 251, 0.85)"]
     );
 
     const backdropBlur = useTransform(
@@ -79,8 +79,7 @@ export const LuxuryNavbar = () => {
                         <Link href="/" className="group flex items-center gap-4">
                             <LogoIcon size={32} className="text-lavender transition-transform group-hover:scale-110 duration-500" />
                             <div className="flex flex-col leading-none">
-                                <span className="text-base font-black tracking-[0.2em] uppercase text-charcoal"
-                                    style={{ fontFamily: "var(--font-playfair), serif" }}>
+                                <span className="text-base font-black tracking-[0.2em] uppercase text-charcoal font-serif">
                                     ZUBIZO
                                 </span>
                                 <span className="text-[8px] font-black tracking-[0.4em] uppercase text-lavender/60">
@@ -96,10 +95,10 @@ export const LuxuryNavbar = () => {
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="text-sm font-semibold uppercase tracking-[0.1em] text-charcoal/70 hover:text-lavender transition-all relative group"
+                                className="font-sans text-sm font-medium uppercase tracking-[0.12em] text-charcoal/70 hover:text-lavender transition-all relative group py-2"
                             >
                                 {link.name}
-                                <span className="absolute -bottom-1.5 left-0 w-0 h-px bg-lavender transition-all group-hover:w-full" />
+                                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-lavender/60 rounded-full transition-all duration-300 group-hover:w-full" />
                             </Link>
                         ))}
                     </div>
@@ -123,7 +122,7 @@ export const LuxuryNavbar = () => {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
-                                        className="absolute top-full mt-4 w-full bg-white rounded-3xl shadow-2xl border border-charcoal/5 overflow-hidden p-2"
+                                        className="absolute top-full mt-4 w-full bg-pearl-white rounded-3xl shadow-luxury border border-charcoal/5 overflow-hidden p-2"
                                     >
                                         {isSearching ? (
                                             <div className="p-8 text-center text-[10px] font-black uppercase tracking-widest text-charcoal/20">Searching...</div>
@@ -175,7 +174,7 @@ export const LuxuryNavbar = () => {
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -20 }}
-                        className="lg:hidden bg-white border-b border-charcoal/5 shadow-xl"
+                        className="lg:hidden bg-pearl-white border-b border-charcoal/5 shadow-luxury"
                     >
                         <div className="p-8 space-y-6">
                             <div className="relative">

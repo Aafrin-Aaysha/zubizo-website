@@ -60,7 +60,7 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
     return (
         <div className="space-y-6">
             <div
-                className="relative aspect-[3/4] rounded-xl overflow-hidden bg-white border border-neutral-200 shadow-sm cursor-zoom-in"
+                className="relative aspect-[3/4] floating-card rounded-[2rem] overflow-hidden bg-white border border-lavender/10 cursor-zoom-in group"
                 onMouseEnter={() => setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
                 onMouseMove={handleMouseMove}
@@ -222,7 +222,7 @@ Please share further details.`;
 
             {/* Right: Configuration Panel (40%) */}
             <div className="lg:col-span-5 sticky top-28">
-                <div className="bg-white rounded-2xl p-8 shadow-premium border border-neutral-100 space-y-8">
+                <div className="bg-white rounded-[2.5rem] p-8 shadow-luxury border border-lavender/10 space-y-8 floating-card">
                     {/* Package Selection */}
                     <div>
                         <div className="flex items-center justify-between mb-8">
@@ -236,10 +236,10 @@ Please share further details.`;
                                     key={pkg._id}
                                     onClick={() => setSelectedPackage(pkg)}
                                     className={cn(
-                                        "w-full p-5 rounded-xl border-2 text-left transition-all relative group",
+                                        "w-full p-5 rounded-[1.5rem] border outline-none text-left transition-all duration-300 relative group",
                                         selectedPackage._id === pkg._id
-                                            ? "border-lavender bg-lavender/[0.02] shadow-sm"
-                                            : "border-neutral-50 hover:border-lavender/20 bg-neutral-50/30"
+                                            ? "border-lavender bg-lavender/5 shadow-sm"
+                                            : "border-transparent bg-gray-50/50 hover:bg-gray-50 hover:border-lavender/20 text-charcoal/80 hover:shadow-sm"
                                     )}
                                 >
                                     <div className="flex justify-between items-start mb-4">
@@ -298,10 +298,10 @@ Please share further details.`;
                                     setQuantity(parseInt(val) || 0);
                                 }}
                                 className={cn(
-                                    "w-full h-14 pl-6 pr-20 bg-neutral-100 border rounded-lg font-bold text-base transition-all outline-none",
+                                    "w-full h-14 pl-6 pr-20 bg-white border-2 rounded-[1rem] font-bold text-base transition-all outline-none placeholder:font-medium placeholder:text-gray-400",
                                     (typeof quantity === 'number' && quantity > 0 && quantity < (design.minQuantity || 50))
-                                        ? "border-red-200 bg-red-50/30 text-red-600"
-                                        : "border-neutral-200 text-neutral-800 focus:border-lavender/40 focus:bg-white"
+                                        ? "border-red-200 bg-red-50/50 text-red-600 focus:border-red-400"
+                                        : "border-gray-100 text-charcoal focus:border-lavender focus:shadow-sm"
                                 )}
                             />
                             <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-widest text-neutral-400">Cards</span>
@@ -322,28 +322,24 @@ Please share further details.`;
 
                     {/* Pricing Summary */}
                     <div className="pt-2">
-                        <div className="bg-charcoal rounded-[2rem] p-8 shadow-2xl space-y-6">
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center text-[10px] text-white/40 font-bold uppercase tracking-[0.25em]">
+                        <div className="floating-card rounded-[2rem] p-8 space-y-6 bg-white border border-lavender/20">
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center text-[10px] text-charcoal/50 font-bold uppercase tracking-[0.25em]">
                                     <span>{selectedPackage.title}</span>
-                                    <span>₹{selectedPackage.pricePerCard} × {typeof quantity === 'string' ? (parseInt(quantity) || 0) : quantity}</span>
+                                    <span className="text-charcoal/70">₹{selectedPackage.pricePerCard} × {typeof quantity === 'string' ? (parseInt(quantity) || 0) : quantity}</span>
                                 </div>
-                                <div className="flex justify-between items-center text-[10px] text-white/40 font-bold uppercase tracking-[0.25em]">
+                                <div className="flex justify-between items-center text-[10px] text-charcoal/50 font-bold uppercase tracking-[0.25em]">
                                     <span>Personalization</span>
-                                    <span className="text-green-400">Included</span>
-                                </div>
-                                <div className="flex justify-between items-center text-[10px] text-white/40 font-bold uppercase tracking-[0.25em]">
-                                    <span>Envelope + Wax</span>
-                                    <span>Standard</span>
+                                    <span className="text-[#aebdc1] italic font-serif capitalize tracking-normal text-sm">Included</span>
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-white/10 flex justify-between items-end">
+                            <div className="pt-6 border-t border-gray-100 flex justify-between items-end">
                                 <div>
-                                    <span className="text-[10px] text-lavender font-black uppercase tracking-[0.3em] block mb-1">Total Estimate</span>
-                                    <span className="text-4xl font-black text-white tracking-tight">₹{estimatedTotal.toLocaleString('en-IN')}</span>
+                                    <span className="text-[10px] text-lavender font-black uppercase tracking-[0.3em] block mb-2">Total Estimate</span>
+                                    <span className="text-4xl lg:text-5xl font-black text-charcoal font-serif tracking-tight">₹{estimatedTotal.toLocaleString('en-IN')}</span>
                                 </div>
-                                <span className="text-[9px] text-white/30 font-bold mb-1 uppercase tracking-widest">* Excl. Shipping</span>
+                                <span className="text-[9px] text-charcoal/30 font-bold mb-1.5 uppercase tracking-widest">* Excl. Shipping</span>
                             </div>
                         </div>
                     </div>
@@ -366,7 +362,7 @@ Please share further details.`;
 
                     <p className="text-center text-[11px] text-gray-400 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
                         <Check size={14} className="text-green-500" />
-                        Free design proof within 24 hours
+                        Free design proof within 48 hours
                     </p>
                 </div>
             </div>

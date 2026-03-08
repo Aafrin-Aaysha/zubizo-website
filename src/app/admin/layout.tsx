@@ -63,19 +63,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <motion.aside
                 initial={false}
                 animate={{ width: isSidebarOpen ? 280 : 80 }}
-                className="fixed inset-y-0 left-0 z-30 bg-[#1a1c23] text-white overflow-hidden flex flex-col transition-all duration-300 ease-in-out"
+                className="fixed inset-y-0 left-0 z-30 bg-white border-r border-lavender/10 text-charcoal overflow-hidden flex flex-col transition-all duration-300 ease-in-out"
             >
                 {/* Sidebar Header */}
-                <div className="h-16 flex items-center px-6 border-b border-gray-700/50">
+                <div className="h-16 flex items-center px-6 border-b border-lavender/10">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-[#ae7fcb] rounded-lg flex items-center justify-center font-bold text-white">
+                        <div className="w-8 h-8 bg-lavender rounded-lg flex items-center justify-center font-bold text-white">
                             Z
                         </div>
                         {isSidebarOpen && (
                             <motion.span
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="font-bold text-xl tracking-tight"
+                                className="font-bold text-xl tracking-tight text-charcoal/80"
                             >
                                 Zubizo
                             </motion.span>
@@ -92,11 +92,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 key={item.href}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${isActive
-                                    ? 'bg-[#ae7fcb] text-white shadow-lg shadow-[#ae7fcb]/20'
-                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                    ? 'bg-lavender text-white shadow-sm'
+                                    : 'text-charcoal/60 hover:bg-lavender/5 hover:text-lavender'
                                     }`}
                             >
-                                <item.icon size={20} className={isActive ? 'text-white' : 'text-gray-400 group-hover:text-[#ae7fcb]'} />
+                                <item.icon size={20} className={isActive ? 'text-white' : 'text-charcoal/40 group-hover:text-lavender'} />
                                 {isSidebarOpen && (
                                     <motion.span
                                         initial={{ opacity: 0 }}
@@ -117,10 +117,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </nav>
 
                 {/* Sidebar Footer */}
-                <div className="p-3 border-t border-gray-700/50">
+                <div className="p-3 border-t border-lavender/10">
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-3 py-2.5 text-gray-400 hover:bg-red-500/10 hover:text-red-400 rounded-xl transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-charcoal/60 hover:bg-red-50 hover:text-red-500 rounded-xl transition-colors"
                     >
                         <LogOut size={20} />
                         {isSidebarOpen && <span className="font-medium">Sign Out</span>}
@@ -150,11 +150,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <div className="flex items-center gap-3">
                             <div className="text-right hidden sm:block">
                                 <p className="text-sm font-semibold text-gray-900 leading-none">Admin</p>
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-[#ae7fcb] bg-[#ae7fcb]/10 px-1.5 py-0.5 rounded mt-1 inline-block">
+                                <span className="text-[10px] font-bold uppercase tracking-wider text-lavender bg-lavender/10 px-1.5 py-0.5 rounded mt-1 inline-block">
                                     Super Admin
                                 </span>
                             </div>
-                            <div className="w-10 h-10 bg-gradient-to-tr from-[#ae7fcb] to-[#d8b4fe] rounded-full border-2 border-white shadow-sm flex items-center justify-center text-white font-bold">
+                            <div className="w-10 h-10 bg-lavender rounded-full border-2 border-white shadow-sm flex items-center justify-center text-white font-bold">
                                 A
                             </div>
                         </div>

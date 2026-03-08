@@ -47,34 +47,33 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
     return (
         <section
             id="contact"
-            className="py-[120px] bg-soft-white relative overflow-hidden"
+            className="py-16 md:py-20 relative overflow-hidden"
             style={{
                 backgroundColor: styling?.backgroundColor || '#fafafa',
-                padding: styling?.padding || '120px 0'
+                padding: styling?.padding || '80px 0'
             }}
         >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Section Header */}
-                <div className="text-center mb-16">
+                <div className="text-center mb-12">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="mb-20"
                     >
                         <span
-                            className="text-lavender font-bold uppercase tracking-[0.4em] text-[10px] mb-6 block"
+                            className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
                             style={{ color: styling?.accentColor }}
                         >
-                            {subtitle || "Connect With Us"}
+                            GET IN TOUCH
                         </span>
                         <h2
-                            className="text-4xl md:text-5xl font-bold text-gray-900 font-serif mb-4"
+                            className="text-[36px] font-medium text-charcoal font-serif mb-4"
                             style={{ color: styling?.textColor }}
                         >
                             {title || "Luxury Invitation Studio"}
                         </h2>
-                        <p className="text-gray-500 max-w-2xl mx-auto">
+                        <p className="font-sans text-[15px] font-medium text-charcoal/70 leading-relaxed max-w-2xl mx-auto">
                             {data?.description || "We’d love to help you create something beautiful."}
                         </p>
                     </motion.div>
@@ -89,7 +88,7 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                         className="space-y-10"
                     >
                         {/* Address Card */}
-                        <div className="bg-white p-8 rounded-3xl border border-gray-100" style={{ borderRadius: styling?.borderRadius }}>
+                        <div className="floating-card p-8" style={{ borderRadius: styling?.borderRadius }}>
                             <div className="flex gap-5">
                                 <div className="w-12 h-12 rounded-2xl bg-lavender/10 flex items-center justify-center text-lavender shrink-0" style={{ color: styling?.accentColor, background: `${styling?.accentColor}15` }}>
                                     <MapPin size={24} strokeWidth={1.5} />
@@ -113,7 +112,7 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                         </div>
 
                         {/* Working Hours Card */}
-                        <div className="bg-white p-8 rounded-3xl border border-gray-100" style={{ borderRadius: styling?.borderRadius }}>
+                        <div className="floating-card p-8" style={{ borderRadius: styling?.borderRadius }}>
                             <div className="flex gap-5">
                                 <div className="w-12 h-12 rounded-2xl bg-lavender/10 flex items-center justify-center text-lavender shrink-0" style={{ color: styling?.accentColor, background: `${styling?.accentColor}15` }}>
                                     <Clock size={24} strokeWidth={1.5} />
@@ -136,7 +135,7 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                         className="space-y-6"
                     >
                         {/* Phone */}
-                        <div className="flex items-center gap-6 p-6 rounded-3xl border border-gray-100 bg-white" style={{ borderRadius: styling?.borderRadius }}>
+                        <div className="floating-card flex items-center gap-6 p-6" style={{ borderRadius: styling?.borderRadius }}>
                             <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center" style={{ color: styling?.accentColor }}>
                                 <Phone size={20} strokeWidth={1.5} />
                             </div>
@@ -149,7 +148,7 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                         </div>
 
                         {/* WhatsApp */}
-                        <div className="flex items-center gap-6 p-6 rounded-3xl border border-gray-100 bg-white" style={{ borderRadius: styling?.borderRadius }}>
+                        <div className="floating-card flex items-center gap-6 p-6" style={{ borderRadius: styling?.borderRadius }}>
                             <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-[#25D366]">
                                 <WhatsAppIcon size={24} />
                             </div>
@@ -169,7 +168,7 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                         </div>
 
                         {/* Instagram */}
-                        <div className="flex items-center gap-6 p-6 rounded-3xl border border-gray-100 bg-white" style={{ borderRadius: styling?.borderRadius }}>
+                        <div className="floating-card flex items-center gap-6 p-6" style={{ borderRadius: styling?.borderRadius }}>
                             <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center" style={{ color: styling?.accentColor }}>
                                 <Instagram size={20} strokeWidth={1.5} />
                             </div>

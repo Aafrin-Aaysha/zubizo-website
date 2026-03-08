@@ -10,7 +10,7 @@ const HomePageSectionSchema = new mongoose.Schema({
     sectionType: {
         type: String,
         required: true,
-        enum: ['hero', 'shopByPrice', 'trending', 'ourStory', 'instagram', 'testimonials', 'contact', 'cta', 'gallery', 'custom'],
+        enum: ['hero', 'shopByPrice', 'trending', 'ourStory', 'instagram', 'testimonials', 'contact', 'cta', 'gallery', 'custom', 'featuredCollections', 'craftProcess'],
         description: "Type of section to render on the home page"
     },
     title: String,

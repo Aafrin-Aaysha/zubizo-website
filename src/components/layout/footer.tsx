@@ -13,7 +13,7 @@ const footerLinks = [
 
 const Footer = () => {
     return (
-        <footer className="bg-white border-t border-gray-100 pt-20 pb-10">
+        <footer className="bg-pearl-white border-t border-lavender/10 pt-20 pb-10">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
                     {/* Brand Column */}
@@ -22,7 +22,7 @@ const Footer = () => {
                             <span className="text-2xl font-bold tracking-tighter text-gray-900 transition-colors group-hover:text-lavender font-serif">
                                 ZUBIZO
                             </span>
-                            <span className="text-[10px] uppercase tracking-[0.3em] text-gray-400">
+                            <span className="text-[10px] uppercase tracking-[0.3em] text-charcoal/40 mt-1">
                                 Luxury Invitation Studio
                             </span>
                         </Link>
@@ -81,7 +81,7 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="pt-8 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div className="pt-8 border-t border-lavender/10 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <p className="text-xs text-gray-400 font-medium">
                         © 2026 Zubizo. All Rights Reserved.
                     </p>

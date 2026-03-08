@@ -20,7 +20,7 @@ export default function TermsPage() {
     }, []);
 
     return (
-        <main className="min-h-screen bg-[#faf9f7]">
+        <main className="min-h-screen bg-white">
             <LuxuryNavbar />
             <div className="pt-40 pb-24 px-8 max-w-4xl mx-auto">
                 <motion.div

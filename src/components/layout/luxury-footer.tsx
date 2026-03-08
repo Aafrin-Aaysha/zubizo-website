@@ -6,23 +6,23 @@ import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 const Footer = () => {
     return (
-        <footer id="contact" className="bg-white pt-20 pb-10">
+        <footer id="contact" className="bg-pearl-white pt-20 pb-10">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Thin Lavender Divider */}
-                <div className="h-px bg-lavender/10 w-full mb-20" />
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-lavender/30 to-transparent w-full mb-16" />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
                     {/* Brand Column */}
                     <div className="space-y-6">
                         <Link href="/" className="group inline-flex flex-col items-start gap-4">
-                            <div className="p-2 bg-soft-white rounded-xl text-charcoal group-hover:text-lavender transition-colors">
+                            <div className="p-2 bg-lavender/5 rounded-xl text-charcoal group-hover:text-lavender transition-colors">
                                 <LogoIcon size={32} />
                             </div>
-                            <span className="text-[10px] uppercase tracking-[0.4em] text-gray-400 font-bold">
+                            <span className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-bold">
                                 Luxury Invitation Studio
                             </span>
                         </Link>
-                        <p className="text-sm text-gray-500 font-medium max-w-xs leading-relaxed">
+                        <p className="text-sm text-charcoal/60 font-medium max-w-xs leading-relaxed font-sans">
                             Premium handcrafted invitation designs with elegance.
                         </p>
                     </div>
@@ -40,7 +40,7 @@ const Footer = () => {
                                     <li key={link.name}>
                                         <Link
                                             href={link.href}
-                                            className="text-[10px] text-gray-400 hover:text-lavender transition-colors font-bold uppercase tracking-widest"
+                                            className="text-[10px] text-charcoal/50 hover:text-lavender transition-colors font-bold uppercase tracking-widest"
                                         >
                                             {link.name}
                                         </Link>
@@ -58,7 +58,7 @@ const Footer = () => {
                                     <li key={link.name}>
                                         <Link
                                             href={link.href}
-                                            className="text-[10px] text-gray-400 hover:text-lavender transition-colors font-bold uppercase tracking-widest"
+                                            className="text-[10px] text-charcoal/50 hover:text-lavender transition-colors font-bold uppercase tracking-widest"
                                         >
                                             {link.name}
                                         </Link>
@@ -73,24 +73,24 @@ const Footer = () => {
                         <h4 className="text-sm font-bold uppercase tracking-widest text-charcoal mb-8">Connect</h4>
                         <ul className="space-y-5">
                             <li>
-                                <div className="flex items-center gap-3 text-sm text-gray-500 font-medium group cursor-default">
-                                    <div className="w-8 h-8 rounded-lg bg-soft-white flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
+                                <div className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group cursor-default">
+                                    <div className="w-8 h-8 rounded-lg bg-lavender/5 flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
                                         <Phone size={14} strokeWidth={1.5} />
                                     </div>
                                     +91 81245 48133
                                 </div>
                             </li>
                             <li>
-                                <div className="flex items-center gap-3 text-sm text-gray-500 font-medium group cursor-default">
-                                    <div className="w-8 h-8 rounded-lg bg-soft-white flex items-center justify-center text-[#25D366]">
+                                <div className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group cursor-default">
+                                    <div className="w-8 h-8 rounded-lg bg-lavender/5 flex items-center justify-center text-[#25D366]">
                                         <WhatsAppIcon size={14} />
                                     </div>
                                     +91 90929 81748
                                 </div>
                             </li>
                             <li>
-                                <div className="flex items-center gap-3 text-sm text-gray-500 font-medium group cursor-default">
-                                    <div className="w-8 h-8 rounded-lg bg-soft-white flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
+                                <div className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group cursor-default">
+                                    <div className="w-8 h-8 rounded-lg bg-lavender/5 flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
                                         <Instagram size={14} strokeWidth={1.5} />
                                     </div>
                                     @zubizo._art
@@ -101,11 +101,11 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="pt-8 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
-                    <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">
+                <div className="pt-8 border-t border-charcoal/5 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+                    <p className="text-[10px] uppercase tracking-widest text-charcoal/40 font-bold">
                         © 2026 Zubizo
                     </p>
-                    <p className="text-[10px] uppercase tracking-widest text-gray-300 font-bold">
+                    <p className="text-[10px] uppercase tracking-widest text-charcoal/30 font-bold">
                         Handcrafted with Love In India
                     </p>
                 </div>

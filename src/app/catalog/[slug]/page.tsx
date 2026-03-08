@@ -50,7 +50,7 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ s
     const serialized = JSON.parse(JSON.stringify(design));
 
     return (
-        <main className="min-h-screen bg-[#fafafa]">
+        <main className="min-h-screen bg-white">
             <LuxuryNavbar />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">

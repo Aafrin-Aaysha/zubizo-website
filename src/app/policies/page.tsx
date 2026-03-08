@@ -52,14 +52,14 @@ export default function PoliciesPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#FAF9F7]">
+            <div className="min-h-screen flex items-center justify-center bg-white">
                 <Loader2 className="animate-spin text-lavender" size={40} />
             </div>
         );
     }
 
     return (
-        <main className="min-h-screen bg-[#FAF9F7]">
+        <main className="min-h-screen bg-white">
             <LuxuryNavbar />
 
             {/* Hero Section */}

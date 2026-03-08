@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Feather, Paintbrush, ShieldCheck, Zap } from "lucide-react";
+import * as Icons from "lucide-react";
+const { Feather, Paintbrush, ShieldCheck, Zap } = Icons;
 
 const steps = [
     {
@@ -27,21 +28,34 @@ const steps = [
     },
 ];
 
-const ArtisanProcess = () => {
+const ArtisanProcess = ({ styling, title, label, description, data }: any) => {
+    const displaySteps = (data?.steps && data.steps.length > 0) ? data.steps.map((s: any) => ({
+        ...s,
+        icon: typeof s.icon === 'string' ? (Icons as any)[s.icon] : (s.icon || Feather)
+    })) : steps;
+
     return (
-        <section className="bg-soft-grey/30 py-24 rounded-[4rem] px-8 sm:px-12">
+        <section
+            className="py-16 md:py-20 px-8 sm:px-12"
+            style={{ backgroundColor: styling?.backgroundColor }}
+        >
             <div className="mx-auto max-w-7xl">
-                <div className="mb-20 text-center">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-lavender block mb-4">
-                        The Craftsmanship
+                <div className="mb-12 text-center">
+                    <span className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block">
+                        {label || "THE CRAFTSMANSHIP"}
                     </span>
-                    <h2 className="text-4xl font-bold text-charcoal sm:text-5xl font-serif">
-                        Our Artisan Process
+                    <h2 className="text-[36px] font-medium text-charcoal font-serif mb-4">
+                        {title || "Our Artisan Process"}
                     </h2>
+                    {description && (
+                        <p className="text-charcoal/60 font-sans text-sm max-w-2xl mx-auto leading-relaxed">
+                            {description}
+                        </p>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                    {steps.map((step, index) => (
+                    {displaySteps.map((step: any, index: number) => (
                         <motion.div
                             key={step.title}
                             initial={{ opacity: 0, y: 20 }}
@@ -54,14 +68,11 @@ const ArtisanProcess = () => {
                                 <div className="h-16 w-16 rounded-3xl bg-white shadow-premium flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all duration-500">
                                     <step.icon className="h-6 w-6" />
                                 </div>
-                                {index < steps.length - 1 && (
-                                    <div className="hidden lg:block absolute top-8 left-full w-full h-[1px] bg-charcoal/10 -z-10" />
-                                )}
                             </div>
                             <h3 className="text-lg font-bold text-charcoal mb-3 font-serif">
                                 {step.title}
                             </h3>
-                            <p className="text-sm font-medium text-charcoal/40 leading-relaxed">
+                            <p className="text-sm font-medium text-charcoal/60 leading-relaxed font-sans">
                                 {step.description}
                             </p>
                         </motion.div>
