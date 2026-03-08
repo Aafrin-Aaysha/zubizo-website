@@ -1,6 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { Instagram, Phone } from "lucide-react";
+import { LogoIcon } from "@/components/ui/logo-icon";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 const footerLinks = [
@@ -18,13 +19,18 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-16">
                     {/* Brand Column */}
                     <div className="space-y-6">
-                        <Link href="/" className="group inline-flex flex-col items-start">
-                            <span className="text-2xl font-bold tracking-tighter text-gray-900 transition-colors group-hover:text-lavender font-serif">
-                                ZUBIZO
-                            </span>
-                            <span className="text-[10px] uppercase tracking-[0.3em] text-charcoal/40 mt-1">
-                                Zubizo Invitation Studio
-                            </span>
+                        <Link href="/" className="group inline-flex flex-col items-start gap-4">
+                            <div className="p-2 bg-lavender/5 rounded-xl text-charcoal group-hover:text-lavender transition-colors">
+                                <LogoIcon size={32} />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-2xl font-bold tracking-tighter text-gray-900 transition-colors group-hover:text-lavender font-serif">
+                                    ZUBIZO
+                                </span>
+                                <span className="text-[10px] uppercase tracking-[0.3em] text-charcoal/40 mt-1">
+                                    Zubizo Invitation Studio
+                                </span>
+                            </div>
                         </Link>
                         <p className="text-sm text-gray-500 font-medium max-w-xs leading-relaxed">
                             Crafting timeless memories with premium stationery and bespoke invitation designs for life's most beautiful moments.

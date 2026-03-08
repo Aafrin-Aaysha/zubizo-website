@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
+import { Phone, MapPin, Clock, MessageCircle } from "lucide-react";
+import { LogoIcon } from "@/components/ui/logo-icon";
 import { LuxuryNavbar } from "@/components/layout/luxury-navbar";
 import { LuxuryFooter } from "@/components/layout/luxury-footer";
 
@@ -70,7 +71,7 @@ export default function ContactPage() {
                     >
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
                             <InfoCard icon={Phone} title="Call Us" value={settings?.phone} />
-                            <InfoCard icon={Mail} title="Email Us" value={settings?.email} />
+                            <InfoCard icon={LogoIcon} title="Email Us" value={settings?.email} />
                             <InfoCard icon={MapPin} title="Visit Studio" value={settings?.address} />
                             <InfoCard icon={Clock} title="Business Hours" value={settings?.businessHours} />
                         </div>

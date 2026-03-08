@@ -16,6 +16,7 @@ import {
     X,
     ChevronRight
 } from 'lucide-react';
+import { LogoIcon } from '@/components/ui/logo-icon';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const sidebarItems = [
@@ -68,8 +69,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 {/* Sidebar Header */}
                 <div className="h-16 flex items-center px-6 border-b border-lavender/10">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-lavender rounded-lg flex items-center justify-center font-bold text-white">
-                            Z
+                        <div className="w-10 h-10 bg-lavender/5 rounded-xl flex items-center justify-center group-hover:bg-lavender transition-all">
+                            <LogoIcon size={32} />
                         </div>
                         {isSidebarOpen && (
                             <motion.span
