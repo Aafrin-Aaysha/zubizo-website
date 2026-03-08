@@ -2,12 +2,11 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
+import { getStartingPrice } from '@/lib/utils';
 
 export default function DesignCard({ design }: { design: any }) {
-    // Find starting price (lowest package price)
-    const startingPrice = design.packages && design.packages.length > 0
-        ? Math.min(...design.packages.map((p: any) => p.pricePerCard))
-        : design.basePrice || 0;
+    // Find starting price using centralized utility
+    const startingPrice = getStartingPrice(design);
 
     const firstImage = design.images?.[0] || '/placeholder.png';
 

@@ -27,6 +27,16 @@ const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 import 'react-quill/dist/quill.snow.css';
 import ReactDOM from 'react-dom';
 
+const modules = {
+    toolbar: [
+        [{ 'header': [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+        [{ 'align': [] }],
+        ['link', 'clean']
+    ],
+};
+
 // Fix for React 19 compatibility with react-quill
 if (typeof window !== 'undefined') {
     (ReactDOM as any).findDOMNode = (instance: any) => {
@@ -41,6 +51,7 @@ export default function SettingsPage() {
         termsContent: '',
         shippingPolicyContent: '',
         refundPolicyContent: '',
+        printingPolicyContent: '',
         address: '',
         phone: '',
         email: '',
@@ -129,6 +140,7 @@ export default function SettingsPage() {
                             <label className="text-sm font-bold text-gray-700 block mb-2 px-1">Terms & Conditions</label>
                             <ReactQuill
                                 theme="snow"
+                                modules={modules}
                                 value={settings.termsContent || ''}
                                 onChange={val => setSettings({ ...settings, termsContent: val })}
                                 placeholder="Detailed terms and conditions..."
@@ -138,6 +150,7 @@ export default function SettingsPage() {
                             <label className="text-sm font-bold text-gray-700 block mb-2 px-1">Privacy Policy</label>
                             <ReactQuill
                                 theme="snow"
+                                modules={modules}
                                 value={settings.policyContent || ''}
                                 onChange={val => setSettings({ ...settings, policyContent: val })}
                                 placeholder="Detailed privacy policy..."
@@ -147,6 +160,7 @@ export default function SettingsPage() {
                             <label className="text-sm font-bold text-gray-700 block mb-2 px-1">Shipping Policy</label>
                             <ReactQuill
                                 theme="snow"
+                                modules={modules}
                                 value={settings.shippingPolicyContent || ''}
                                 onChange={val => setSettings({ ...settings, shippingPolicyContent: val })}
                                 placeholder="Detailed shipping policy..."
@@ -156,9 +170,20 @@ export default function SettingsPage() {
                             <label className="text-sm font-bold text-gray-700 block mb-2 px-1">Refund Policy</label>
                             <ReactQuill
                                 theme="snow"
+                                modules={modules}
                                 value={settings.refundPolicyContent || ''}
                                 onChange={val => setSettings({ ...settings, refundPolicyContent: val })}
                                 placeholder="Detailed refund policy..."
+                            />
+                        </div>
+                        <div className="bg-white rounded-2xl overflow-hidden [&_.ql-editor]:min-h-[150px] [&_.ql-toolbar]:rounded-t-2xl [&_.ql-container]:rounded-b-2xl [&_.ql-toolbar]:border-gray-200 [&_.ql-container]:border-gray-200">
+                            <label className="text-sm font-bold text-gray-700 block mb-2 px-1">Printing Policy</label>
+                            <ReactQuill
+                                theme="snow"
+                                modules={modules}
+                                value={settings.printingPolicyContent || ''}
+                                onChange={val => setSettings({ ...settings, printingPolicyContent: val })}
+                                placeholder="Detailed printing policy..."
                             />
                         </div>
                     </div>

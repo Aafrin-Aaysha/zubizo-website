@@ -4,6 +4,7 @@ import * as React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getStartingPrice } from "@/lib/utils";
 
 export const FeaturedCarousel = ({ styling, title, subtitle, description, data }: any) => {
     const [designs, setDesigns] = React.useState<any[]>([]);
@@ -98,7 +99,7 @@ export const FeaturedCarousel = ({ styling, title, subtitle, description, data }
 
                                         <div className="flex items-center justify-between mt-1">
                                             <p className="text-[14px] font-sans text-charcoal/70">
-                                                From ₹{design.packages?.[0]?.pricePerCard || design.basePrice || 0}
+                                                From ₹{getStartingPrice(design)}
                                             </p>
                                         </div>
 

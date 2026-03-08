@@ -17,3 +17,26 @@ export function getWhatsAppNumber() {
     const randomIndex = Math.floor(Math.random() * numbers.length);
     return numbers[randomIndex];
 }
+
+export function getStartingPrice(design: any) {
+    if (!design.packages || design.packages.length === 0) {
+        return design.basePrice || 0;
+    }
+
+    let minPrice = Infinity;
+
+    design.packages.forEach((pkg: any) => {
+        if (pkg.priceTiers && pkg.priceTiers.length > 0) {
+            pkg.priceTiers.forEach((tier: any) => {
+                if (tier.pricePerCard < minPrice) {
+                    minPrice = tier.pricePerCard;
+                }
+            });
+        } else if (pkg.pricePerCard > 0 && pkg.pricePerCard < minPrice) {
+            // Fallback to legacy field if tiers are missing but legacy price exists
+            minPrice = pkg.pricePerCard;
+        }
+    });
+
+    return minPrice === Infinity ? (design.basePrice || 0) : minPrice;
+}

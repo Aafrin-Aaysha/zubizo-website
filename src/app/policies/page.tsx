@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { LuxuryNavbar } from "@/components/layout/luxury-navbar";
 import { LuxuryFooter } from "@/components/layout/luxury-footer";
-import { Shield, FileText, Truck, RefreshCcw, Loader2 } from "lucide-react";
+import { Shield, FileText, Truck, RefreshCcw, Loader2, Printer } from "lucide-react";
 
 const PolicySection = ({ title, icon: Icon, content }: { title: string; icon: any; content: string }) => (
     <motion.section
@@ -100,6 +100,11 @@ export default function PoliciesPage() {
                         title="Refund Policy"
                         icon={RefreshCcw}
                         content={settings?.refundPolicyContent}
+                    />
+                    <PolicySection
+                        title="Printing Policy"
+                        icon={Printer}
+                        content={settings?.printingPolicyContent}
                     />
                 </div>
             </section>

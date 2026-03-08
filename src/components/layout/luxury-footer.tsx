@@ -19,7 +19,7 @@ const Footer = () => {
                                 <LogoIcon size={32} />
                             </div>
                             <span className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-bold">
-                                Luxury Invitation Studio
+                                Zubizo Invitation Studio
                             </span>
                         </Link>
                         <p className="text-sm text-charcoal/60 font-medium max-w-xs leading-relaxed font-sans">

@@ -106,7 +106,7 @@ export const bootstrapSections = [
         sectionType: 'contact',
         order: 8,
         isVisible: true,
-        title: 'Luxury Invitation Studio',
+        title: 'Zubizo Invitation Studio',
         subtitle: 'Connect With Us',
         description: 'We’d love to help you create something beautiful.',
         styling: {

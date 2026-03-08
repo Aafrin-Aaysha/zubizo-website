@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { DesignCard } from "@/components/ui/design-card";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { getStartingPrice } from "@/lib/utils";
 
 const trendingDesigns = [
     {
@@ -98,13 +99,13 @@ const TrendingSection = () => {
                         designs.map((design) => (
                             <DesignCard
                                 key={design._id}
-                                id={design._id}
+                                id={design.slug}
                                 variant="overlay"
                                 title={design.name}
                                 category={design.categoryId?.name || "Stationery"}
                                 description={design.description}
                                 imageUrl={design.images?.[0] || ""}
-                                price={design.basePrice}
+                                price={getStartingPrice(design)}
                                 isTrending={design.isTrending}
                                 isNew={design.isNewCollection}
                             />

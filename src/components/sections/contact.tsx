@@ -71,7 +71,7 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                             className="text-[36px] font-medium text-charcoal font-serif mb-4"
                             style={{ color: styling?.textColor }}
                         >
-                            {title || "Luxury Invitation Studio"}
+                            {title || "Zubizo Invitation Studio"}
                         </h2>
                         <p className="font-sans text-[15px] font-medium text-charcoal/70 leading-relaxed max-w-2xl mx-auto">
                             {data?.description || "We’d love to help you create something beautiful."}

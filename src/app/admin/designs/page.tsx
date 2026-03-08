@@ -21,7 +21,7 @@ import {
     AlertCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { cn } from '@/lib/utils';
+import { cn, getStartingPrice } from '@/lib/utils';
 
 export default function DesignsPage() {
     const router = useRouter();
@@ -428,7 +428,7 @@ export default function DesignsPage() {
                                     <td className="px-8 py-5">
                                         <div className="flex flex-col gap-1">
                                             <p className="text-xs font-black text-gray-900">
-                                                ₹{design.packages?.[0]?.pricePerCard || design.basePrice}
+                                                ₹{getStartingPrice(design)}
                                                 <span className="text-[10px] text-gray-400 font-medium ml-1">Starting</span>
                                             </p>
                                             <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">

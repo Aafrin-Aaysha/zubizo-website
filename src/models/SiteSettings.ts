@@ -14,6 +14,7 @@ const SiteSettingsSchema = new mongoose.Schema({
     termsContent: String,
     shippingPolicyContent: String,
     refundPolicyContent: String,
+    printingPolicyContent: String,
     address: String,
     phone: String,
     email: String,

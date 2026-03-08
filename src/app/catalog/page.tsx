@@ -7,6 +7,7 @@ import Design from "@/models/Design";
 import Category from "@/models/Category";
 import CatalogUI from "@/components/catalog/CatalogUI";
 import { Metadata } from "next";
+import { getStartingPrice } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -113,8 +114,8 @@ export default async function CatalogPage({
     // In-memory price sorting if needed because nested Price is hard to sort via simple find()
     if (sort === 'price_asc' || sort === 'price_desc') {
         designs = (designs as any[]).sort((a, b) => {
-            const priceA = a.packages?.[0]?.pricePerCard || 0;
-            const priceB = b.packages?.[0]?.pricePerCard || 0;
+            const priceA = getStartingPrice(a);
+            const priceB = getStartingPrice(b);
             return sort === 'price_asc' ? priceA - priceB : priceB - priceA;
         });
     }

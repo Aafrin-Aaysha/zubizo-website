@@ -52,14 +52,26 @@ export async function GET(req: NextRequest) {
 
         let designs = await queryBuilder;
 
-        // Filter by price ranges (based on cheapest package pricePerCard)
+        // Filter by price ranges (based on cheapest package pricePerCard across all tiers)
         if (maxPrice || minPrice) {
             const max = maxPrice ? parseFloat(maxPrice) : Infinity;
             const min = minPrice ? parseFloat(minPrice) : 0;
             designs = designs.filter((d: any) => {
-                const prices = d.packages?.map((p: any) => p.pricePerCard) || [];
-                if (prices.length === 0) return false;
-                const cheapest = Math.min(...prices);
+                let cheapest = Infinity;
+                if (!d.packages || d.packages.length === 0) {
+                    cheapest = d.basePrice || 0;
+                } else {
+                    d.packages.forEach((pkg: any) => {
+                        if (pkg.priceTiers && pkg.priceTiers.length > 0) {
+                            pkg.priceTiers.forEach((tier: any) => {
+                                if (tier.pricePerCard < cheapest) cheapest = tier.pricePerCard;
+                            });
+                        } else if (pkg.pricePerCard > 0 && pkg.pricePerCard < cheapest) {
+                            cheapest = pkg.pricePerCard;
+                        }
+                    });
+                }
+                if (cheapest === Infinity) cheapest = d.basePrice || 0;
                 return cheapest >= min && cheapest <= max;
             });
         }

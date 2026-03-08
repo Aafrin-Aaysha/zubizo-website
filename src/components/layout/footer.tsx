@@ -23,7 +23,7 @@ const Footer = () => {
                                 ZUBIZO
                             </span>
                             <span className="text-[10px] uppercase tracking-[0.3em] text-charcoal/40 mt-1">
-                                Luxury Invitation Studio
+                                Zubizo Invitation Studio
                             </span>
                         </Link>
                         <p className="text-sm text-gray-500 font-medium max-w-xs leading-relaxed">
