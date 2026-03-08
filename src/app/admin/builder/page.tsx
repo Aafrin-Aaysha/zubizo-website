@@ -480,6 +480,56 @@ const StoryEditor = ({ data, onChange }: { data: any, onChange: (newData: any) =
 
     return (
         <div className="space-y-8">
+            {/* Image Preview & Upload — Added this section */}
+            <div className="space-y-4">
+                <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Section Image / Logo</h4>
+                <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100 space-y-4">
+                    <div className="flex items-center gap-6">
+                        <div className="w-24 h-24 rounded-2xl border-2 border-dashed border-gray-200 overflow-hidden flex items-center justify-center bg-white shadow-sm shrink-0">
+                            {data?.imageUrl ? (
+                                <img src={data.imageUrl} alt="preview" className="w-full h-full object-contain" />
+                            ) : (
+                                <ImageIcon size={24} className="text-gray-300" />
+                            )}
+                        </div>
+                        <div className="flex-1 space-y-3">
+                            <input
+                                type="text"
+                                value={data?.imageUrl || ''}
+                                onChange={(e) => onChange({ ...data, imageUrl: e.target.value })}
+                                className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none"
+                                placeholder="Paste image URL..."
+                            />
+                            <label className="flex items-center justify-center gap-2 w-full py-2.5 bg-[#ae7fcb]/10 text-[#ae7fcb] hover:bg-[#ae7fcb] hover:text-white rounded-xl text-xs font-bold cursor-pointer transition-all">
+                                <Upload size={14} />
+                                {data?.imageUrl ? 'Replace Image' : 'Upload Image'}
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0];
+                                        if (!file) return;
+                                        const formData = new FormData();
+                                        formData.append('file', file);
+                                        try {
+                                            const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                                            const result = await res.json();
+                                            if (result.url) {
+                                                onChange({ ...data, imageUrl: result.url });
+                                                toast.success('Upload successful');
+                                            }
+                                        } catch {
+                                            toast.error('Upload failed');
+                                        }
+                                    }}
+                                />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div className="space-y-4">
                 <div className="flex items-center justify-between">
                     <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Story Content</h4>

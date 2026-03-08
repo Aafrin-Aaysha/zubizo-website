@@ -171,7 +171,7 @@ export default function SettingsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
-                                <MapPin size={16} className="text-[#ae7fcb]" /> Store Address
+                                <MapPin size={16} className="text-[#ae7fcb]" /> Office Address
                             </label>
                             <input
                                 type="text"

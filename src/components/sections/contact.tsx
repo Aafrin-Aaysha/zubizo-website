@@ -9,7 +9,7 @@ import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 // Fallback defaults below.
 const DEFAULT_CONTACT = {
     address: {
-        title: "Studio Address",
+        title: "Office Address",
         line1: "SS ARCADE, No.3F 3rd Floor",
         line2: "Convent Rd, Melapudur",
         line3: "Sangillyandapuram",
