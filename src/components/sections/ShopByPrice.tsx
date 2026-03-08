@@ -47,14 +47,14 @@ export const ShopByPrice = ({ data, styling, title, subtitle, description }: any
     return (
         <section
             id="shop-by-price"
-            className="py-16 md:py-20 relative"
+            className="py-10 md:py-12 relative"
             style={{
                 backgroundColor: styling?.backgroundColor || '#ffffff',
-                padding: styling?.padding || '80px 0'
+                padding: styling?.padding || '40px 0'
             }}
         >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-12">
+                <div className="text-center mb-8">
                     <span
                         className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
                         style={{ color: styling?.accentColor }}

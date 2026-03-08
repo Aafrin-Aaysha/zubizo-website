@@ -59,13 +59,13 @@ export const TrendingRow = ({ data, styling, title, subtitle }: any) => {
     return (
         <section
             id="trending"
-            className="py-16 md:py-20 overflow-hidden relative"
+            className="py-10 md:py-12 overflow-hidden relative"
             style={{
                 backgroundColor: styling?.backgroundColor || 'var(--color-pearl-white)',
-                padding: styling?.padding || '80px 0'
+                padding: styling?.padding || '40px 0'
             }}
         >
-            <div className="mx-auto max-w-[1200px] px-8 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="mx-auto max-w-[1200px] px-8 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}

@@ -49,10 +49,10 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
     return (
         <section
             id="about"
-            className="py-16 md:py-20"
+            className="py-10 md:py-12"
             style={{
                 backgroundColor: styling?.backgroundColor || 'var(--color-pearl-white)',
-                padding: styling?.padding || '80px 0'
+                padding: styling?.padding || '40px 0'
             }}
         >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -61,7 +61,7 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center mb-16"
+                    className="text-center mb-10"
                 >
                     <span
                         className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"

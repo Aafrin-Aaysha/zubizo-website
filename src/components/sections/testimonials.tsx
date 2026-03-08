@@ -44,10 +44,10 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
     return (
         <section
             id="testimonials"
-            className="py-16 md:py-20 relative overflow-hidden"
+            className="py-10 md:py-12 relative overflow-hidden"
             style={{
                 backgroundColor: styling?.backgroundColor || 'var(--color-pearl-white)',
-                padding: styling?.padding || '80px 0'
+                padding: styling?.padding || '40px 0'
             }}
         >
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -56,7 +56,7 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6"
+                    className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6"
                 >
                     <div>
                         <span

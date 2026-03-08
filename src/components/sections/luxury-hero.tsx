@@ -59,7 +59,7 @@ export const LuxuryHero = ({ data, styling }: any) => {
             style={{
                 backgroundColor: styling?.backgroundColor || '#faf9fb', // Pearl white tone
                 paddingTop: '160px',
-                paddingBottom: '80px',
+                paddingBottom: '40px',
             }}
         >
             <div className="w-full max-w-[1300px] mx-auto px-6 sm:px-8 lg:px-12">
