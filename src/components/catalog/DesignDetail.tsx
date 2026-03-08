@@ -453,10 +453,6 @@ Please share further details.`;
                         )}
                     </button>
 
-                    <p className="text-center text-[11px] text-gray-400 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                        <Check size={14} className="text-green-500" />
-                        Free design proof within 48 hours
-                    </p>
                 </div>
             </div>
         </div>
