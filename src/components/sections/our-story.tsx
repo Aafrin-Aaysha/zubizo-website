@@ -114,9 +114,8 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
                             <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#ae7fcb]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100" />
                             <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#ae7fcb]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100" />
 
-                            {/* Logo Image */}
                             <img
-                                src={data?.imageUrl || siteSettings?.aboutImageUrl || siteSettings?.logoUrl || '/brand.PNG'}
+                                src={data?.imageUrl || siteSettings?.aboutImageUrl || siteSettings?.logoUrl || '/brand.png'}
                                 alt="Zubizo Brand Logo"
                                 className="w-[85%] h-[85%] object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform duration-700 ease-out relative z-10"
                             />
