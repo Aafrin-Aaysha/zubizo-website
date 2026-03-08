@@ -12,7 +12,10 @@ export async function GET() {
 
         const existing = await Admin.findOne({ email });
         if (existing) {
-            return NextResponse.json({ message: "Admin user already exists." }, { status: 400 });
+            return NextResponse.json({
+                message: "Admin user already exists.",
+                hint: "If you forgot your password, contact technical support."
+            }, { status: 400 });
         }
 
         const hashedPassword = await hashPassword(password);
@@ -23,9 +26,16 @@ export async function GET() {
             role: "super-admin"
         });
 
-        return NextResponse.json({ message: "Initial admin account created successfully!" });
+        return NextResponse.json({
+            message: "Initial admin account created successfully!",
+            email: email,
+            loginUrl: "https://www.zubizoart.com/admin/login"
+        });
     } catch (error: any) {
         console.error('Setup Error:', error);
-        return NextResponse.json({ message: error.message }, { status: 500 });
+        return NextResponse.json({
+            error: "Setup failed",
+            message: error.message
+        }, { status: 500 });
     }
 }
