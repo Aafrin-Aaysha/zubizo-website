@@ -216,7 +216,7 @@ export default function DesignsPage() {
 
     const addTier = (pkgIdx: number) => {
         const pkgs = [...formData.packages] as any[];
-        pkgs[pkgIdx].priceTiers = [...(pkgs[pkgIdx].priceTiers || []), { minQty: 0, maxQty: null, pricePerCard: 0 }];
+        pkgs[pkgIdx].priceTiers = [...(pkgs[pkgIdx].priceTiers || []), { minQty: 1, maxQty: null, pricePerCard: 0 }];
         setFormData({ ...formData, packages: pkgs });
     };
 
@@ -714,7 +714,7 @@ export default function DesignsPage() {
                                                                             <div className="flex items-center gap-1 flex-1">
                                                                                 <input
                                                                                     type="number" placeholder="Min" value={tier.minQty}
-                                                                                    onChange={e => updateTier(idx, tIdx, 'minQty', parseInt(e.target.value) || 0)}
+                                                                                    onChange={e => updateTier(idx, tIdx, 'minQty', Math.max(1, parseInt(e.target.value) || 1))}
                                                                                     className="w-20 px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-bold text-charcoal outline-none focus:border-lavender"
                                                                                 />
                                                                                 <span className="text-gray-300 text-xs">–</span>
