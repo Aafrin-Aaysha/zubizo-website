@@ -5,7 +5,6 @@ import { LuxuryHero } from './luxury-hero';
 import { FeaturedCarousel } from './FeaturedCarousel';
 import { TrendingRow } from './trending-row';
 import { OurStory } from './our-story';
-import { ArtisanProcess } from './artisan-process';
 import { Testimonials } from './testimonials';
 import { ShopByPrice } from './ShopByPrice';
 import { ContactSection } from './contact';
@@ -16,7 +15,6 @@ const sectionComponents: Record<string, React.ComponentType<any>> = {
     featuredCollections: FeaturedCarousel,
     trending: TrendingRow,
     ourStory: OurStory,
-    craftProcess: ArtisanProcess,
     testimonials: Testimonials,
     shopByPrice: ShopByPrice,
     contact: ContactSection,

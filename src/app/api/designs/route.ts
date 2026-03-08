@@ -17,10 +17,14 @@ export async function GET(req: NextRequest) {
         const limit = searchParams.get('limit');
         const maxPrice = searchParams.get('maxPrice');
         const minPrice = searchParams.get('minPrice');
+        const ids = searchParams.get('ids');
 
         await dbConnect();
 
         let query: any = { isDeleted: false };
+        if (ids) {
+            query._id = { $in: ids.split(',').filter(id => id.length === 24) };
+        }
         if (categoryId) query.categoryId = categoryId;
 
         if (search) {

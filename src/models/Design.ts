@@ -1,22 +1,32 @@
 import mongoose from 'mongoose';
 
+const PriceTierSchema = new mongoose.Schema({
+    minQty: { type: Number, required: true, min: 1 },
+    maxQty: { type: Number, default: null }, // null = unlimited (last tier)
+    pricePerCard: { type: Number, required: true, min: 0 }
+}, { _id: false });
+
+const AddOnSchema = new mongoose.Schema({
+    label: { type: String, required: true },
+    pricePerCard: { type: Number, required: true, default: 0 },
+    note: { type: String, default: '' } // e.g. "Free", "₹6 extra"
+}, { _id: false });
+
 const PackageSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true
-    },
-    pricePerCard: {
-        type: Number,
-        required: true,
-        min: 0
-    },
+    title: { type: String, required: true },
     inclusions: {
         type: [String],
         validate: {
             validator: (arr: string[]) => arr.length > 0,
             message: "Each package must have at least one inclusion."
         }
-    }
+    },
+    priceTiers: {
+        type: [PriceTierSchema],
+        default: []
+    },
+    // Legacy field - kept for backwards compat, not used in UI
+    pricePerCard: { type: Number, default: 0 }
 });
 
 const DesignSchema = new mongoose.Schema({
@@ -52,6 +62,10 @@ const DesignSchema = new mongoose.Schema({
             validator: (arr: any[]) => arr.length > 0,
             message: "At least one package is required."
         }
+    },
+    addOns: {
+        type: [AddOnSchema],
+        default: []
     },
     images: [String],
     categoryId: {

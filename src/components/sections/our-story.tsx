@@ -67,7 +67,7 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
                         className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
                         style={{ color: styling?.accentColor }}
                     >
-                        ABOUT ZUBIZO
+                        {subtitle || "ABOUT ZUBIZO"}
                     </span>
                     <h2
                         className="text-[36px] font-medium text-charcoal font-serif"

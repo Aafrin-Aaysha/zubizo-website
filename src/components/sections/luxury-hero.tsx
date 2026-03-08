@@ -74,7 +74,7 @@ export const LuxuryHero = ({ data, styling }: any) => {
                                 transition={{ duration: 0.8 }}
                                 className="inline-block font-script text-3xl sm:text-4xl text-lavender mb-6"
                             >
-                                Bespoke Invitation Atelier
+                                {data?.label || "Bespoke Invitation Atelier"}
                             </motion.span>
 
                             <motion.h1
@@ -84,7 +84,7 @@ export const LuxuryHero = ({ data, styling }: any) => {
                                 className="text-[44px] sm:text-[56px] lg:text-[72px] font-semibold text-charcoal leading-[1.1] tracking-tight font-serif mb-6 whitespace-pre-line"
                                 style={{ color: styling?.textColor || '#2e2e2e' }}
                             >
-                                Crafting Invitations That Tell Your Story
+                                {slides[current]?.title || "Crafting Invitations That Tell Your Story"}
                             </motion.h1>
 
                             <motion.p
@@ -93,7 +93,7 @@ export const LuxuryHero = ({ data, styling }: any) => {
                                 transition={{ duration: 0.8, delay: 0.4 }}
                                 className="text-[16px] lg:text-[18px] text-charcoal/70 font-medium leading-relaxed mb-10 whitespace-pre-line"
                             >
-                                Experience the pinnacle of luxury with handcrafted stationery. Every piece is meticulously designed with premium materials to capture the essence of your most beautiful moments.
+                                {slides[current]?.subtitle || "Experience the pinnacle of luxury with handcrafted stationery. Every piece is meticulously designed with premium materials to capture the essence of your most beautiful moments."}
                             </motion.p>
 
                             <motion.div

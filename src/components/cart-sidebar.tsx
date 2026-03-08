@@ -6,6 +6,7 @@ import { ShoppingBag, X, Trash2, Plus, Minus, MessageCircle } from "lucide-react
 import { useCart } from "@/context/cart-context";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import { sanitizeWhatsAppNumber, getWhatsAppNumber } from "@/lib/utils";
 
 const CartSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
     const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
@@ -19,7 +20,8 @@ const CartSidebar = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
         const itemsList = cart.map(item => `${item.name} – Qty: ${item.quantity}`).join("\n");
         const message = `Hi Zubizo, I would like to order the following designs:\n\n${itemsList}\n\nPlease share the final pricing and timeline.`;
         const encodedMessage = encodeURIComponent(message);
-        window.open(`https://wa.me/911234567890?text=${encodedMessage}`, "_blank");
+        const whatsappNumber = getWhatsAppNumber();
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, "_blank");
     };
 
     return (

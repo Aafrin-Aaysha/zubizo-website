@@ -94,7 +94,7 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                                     <MapPin size={24} strokeWidth={1.5} />
                                 </div>
                                 <div className="flex-1">
-                                    <p className="font-sans text-[12px] font-medium uppercase tracking-[0.08em] text-[#8A8A8A] mb-1">Studio Address</p>
+                                    <p className="font-sans text-[12px] font-medium uppercase tracking-[0.08em] text-[#8A8A8A] mb-1">Office Address</p>
                                     <div className="font-sans text-[18px] text-[#1A1A1A] font-medium leading-relaxed whitespace-pre-line">
                                         {isLoading ? <div className="h-20 w-full bg-gray-100 animate-pulse rounded" /> : address}
                                     </div>

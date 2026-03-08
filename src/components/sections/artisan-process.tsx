@@ -28,7 +28,7 @@ const steps = [
     },
 ];
 
-const ArtisanProcess = ({ styling, title, label, description, data }: any) => {
+const ArtisanProcess = ({ styling, title, subtitle, description, data }: any) => {
     const displaySteps = (data?.steps && data.steps.length > 0) ? data.steps.map((s: any) => ({
         ...s,
         icon: typeof s.icon === 'string' ? (Icons as any)[s.icon] : (s.icon || Feather)
@@ -42,7 +42,7 @@ const ArtisanProcess = ({ styling, title, label, description, data }: any) => {
             <div className="mx-auto max-w-7xl">
                 <div className="mb-12 text-center">
                     <span className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block">
-                        {label || "THE CRAFTSMANSHIP"}
+                        {subtitle || "THE CRAFTSMANSHIP"}
                     </span>
                     <h2 className="text-[36px] font-medium text-charcoal font-serif mb-4">
                         {title || "Our Artisan Process"}

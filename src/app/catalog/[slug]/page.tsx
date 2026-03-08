@@ -43,7 +43,6 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ s
     }
 
     const s = siteSettings as any;
-    const whatsappNumber = s?.whatsappNumber || '7639390868';
     const categoryName = design.categoryId?.name || 'Invitation';
 
     // Serialize mongoose document
@@ -73,13 +72,13 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ s
                 </Link>
 
                 {/* Client-side interactive detail */}
-                <DesignDetailClient design={serialized} whatsappNumber={whatsappNumber} />
+                <DesignDetailClient design={serialized} />
             </div>
 
             {/* Mobile Sticky CTA */}
             <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-lg border-t border-neutral-100 z-50">
                 <a
-                    href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(`Hello! I'm interested in *${design.name}* (${design.sku}) from your catalogue.`)}`}
+                    href={`https://wa.me/${['8124548133', '9092981748'][Math.floor(Math.random() * 2)]}?text=${encodeURIComponent(`Hello! I'm interested in *${design.name}* (${design.sku}) from your catalogue.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 w-full h-12 bg-[#25D366] text-white rounded-lg font-bold text-sm shadow-lg"

@@ -7,19 +7,31 @@ import {
     ChevronRight,
     MessageCircle,
     Check,
-    Info,
     ArrowRight,
-    Loader2
+    Loader2,
+    Plus
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getWhatsAppNumber } from '@/lib/utils';
 
 // ── Types ───────────────────────────────────────────────────────────────────
-// ── Types ───────────────────────────────────────────────────────────────────
+interface PriceTier {
+    minQty: number;
+    maxQty?: number | null;
+    pricePerCard: number;
+}
+
+interface AddOn {
+    label: string;
+    pricePerCard: number;
+    note?: string;
+}
+
 interface Package {
     _id: string;
     title: string;
-    pricePerCard: number;
     inclusions: string[];
+    priceTiers: PriceTier[];
+    pricePerCard?: number; // legacy fallback
 }
 
 interface Design {
@@ -30,13 +42,30 @@ interface Design {
     description?: string;
     images: string[];
     packages: Package[];
+    addOns?: AddOn[];
     minQuantity?: number;
     basePrice?: number;
     categoryId?: { name: string; slug: string };
 }
 
-// ── Components ──────────────────────────────────────────────────────────────
+// ── Helper ───────────────────────────────────────────────────────────────────
+function getTierPrice(tiers: PriceTier[], qty: number): PriceTier | null {
+    if (!tiers || tiers.length === 0) return null;
+    return tiers.find(t => qty >= t.minQty && (t.maxQty == null || qty <= t.maxQty)) || null;
+}
 
+function formatTierLabel(tier: PriceTier, index: number, tiers: PriceTier[]): string {
+    const isLast = index === tiers.length - 1;
+    if (isLast && tier.maxQty == null) {
+        return `${tier.minQty}+ cards`;
+    }
+    if (tier.maxQty != null && tier.maxQty === tier.minQty) {
+        return `${tier.minQty} cards`;
+    }
+    return `${tier.minQty} – ${tier.maxQty ?? '∞'} cards`;
+}
+
+// ── Image Gallery ────────────────────────────────────────────────────────────
 function ImageGallery({ images, name }: { images: string[]; name: string }) {
     const [current, setCurrent] = useState(0);
     const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
@@ -128,26 +157,28 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
     );
 }
 
-export function DesignDetailClient({ design, whatsappNumber }: { design: Design; whatsappNumber: string }) {
+// ── Main ─────────────────────────────────────────────────────────────────────
+export function DesignDetailClient({ design }: { design: Design }) {
     const safePackages = useMemo(() => {
         if (design.packages && design.packages.length > 0) return design.packages;
         return [{
             _id: 'default',
             title: 'Standard',
-            pricePerCard: design.basePrice || 0,
-            inclusions: ["Premium Material", "Custom Printing"]
+            inclusions: ["Premium Material", "Custom Printing"],
+            priceTiers: [{ minQty: design.minQuantity || 50, maxQty: null, pricePerCard: design.basePrice || 0 }],
         }];
     }, [design.packages, design.basePrice]);
 
     const [selectedPackage, setSelectedPackage] = useState<Package>(safePackages[0]);
-    const [quantity, setQuantity] = useState<number | string>(design.minQuantity || 50);
+    const [quantity, setQuantity] = useState<number | string>(design.minQuantity || 100);
+    const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
     const [isLogging, setIsLogging] = useState(false);
 
-    const estimatedTotal = useMemo(() => {
-        if (!selectedPackage) return 0;
-        const q = typeof quantity === 'string' ? parseInt(quantity) : quantity;
-        if (isNaN(q)) return 0;
-        return selectedPackage.pricePerCard * q;
+    const addOns: AddOn[] = design.addOns || [];
+
+    const activeTier = useMemo(() => {
+        const q = typeof quantity === 'string' ? (parseInt(quantity) || 0) : quantity;
+        return getTierPrice(selectedPackage.priceTiers || [], q);
     }, [selectedPackage, quantity]);
 
     const isInvalidQuantity = useMemo(() => {
@@ -155,8 +186,16 @@ export function DesignDetailClient({ design, whatsappNumber }: { design: Design;
         return q < (design.minQuantity || 50);
     }, [quantity, design.minQuantity]);
 
+    const toggleAddOn = (label: string) => {
+        setSelectedAddOns(prev =>
+            prev.includes(label) ? prev.filter(a => a !== label) : [...prev, label]
+        );
+    };
+
     const handleEnquire = async () => {
         setIsLogging(true);
+        const q = typeof quantity === 'string' ? parseInt(quantity) : quantity;
+
         try {
             await fetch('/api/inquiries', {
                 method: 'POST',
@@ -166,14 +205,23 @@ export function DesignDetailClient({ design, whatsappNumber }: { design: Design;
                     designName: design.name,
                     sku: design.sku,
                     selectedPackage: selectedPackage.title,
-                    quantity,
-                    estimatedTotal,
-                    source: 'detail'
+                    quantity: q,
+                    estimatedTotal: 0,
+                    source: 'detail',
+                    addOns: selectedAddOns
                 })
             });
         } catch (error) {
             console.error("Inquiry logging failed", error);
         }
+
+        const addOnText = selectedAddOns.length > 0
+            ? `\n*Add-ons:* ${selectedAddOns.join(', ')}`
+            : '';
+
+        const tierText = activeTier
+            ? `\n*Price Per Card:* ₹${activeTier.pricePerCard} (for ${q} cards)`
+            : '';
 
         const message = `*Inquiry from Website*
 
@@ -182,18 +230,18 @@ Hello Zubizo, I'm interested in:
 *SKU:* ${design.sku}
 *Package:* ${selectedPackage.title}
 *Inclusions:* ${selectedPackage.inclusions?.join(', ')}
-*Quantity:* ${quantity} cards
-*Price Estimate:* ₹${estimatedTotal.toLocaleString('en-IN')}
+*Quantity:* ${q} cards${tierText}${addOnText}
 
 Please share further details.`;
 
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        const cleanNumber = getWhatsAppNumber();
+        window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`, '_blank');
         setIsLogging(false);
     };
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-            {/* Left: Info & Gallery (60%) */}
+            {/* Left: Gallery + Description */}
             <div className="lg:col-span-7 space-y-12">
                 <ImageGallery images={design.images} name={design.name} />
 
@@ -220,130 +268,175 @@ Please share further details.`;
                 </div>
             </div>
 
-            {/* Right: Configuration Panel (40%) */}
+            {/* Right: Configuration Panel */}
             <div className="lg:col-span-5 sticky top-28">
                 <div className="bg-white rounded-[2.5rem] p-8 shadow-luxury border border-lavender/10 space-y-8 floating-card">
-                    {/* Package Selection */}
-                    <div>
-                        <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-2xl font-black text-charcoal font-serif">Choose Package</h2>
-                            <Info size={18} className="text-gray-300 cursor-help" />
-                        </div>
 
-                        <div className="grid grid-cols-1 gap-4">
-                            {safePackages.map((pkg) => (
-                                <button
-                                    key={pkg._id}
-                                    onClick={() => setSelectedPackage(pkg)}
-                                    className={cn(
-                                        "w-full p-5 rounded-[1.5rem] border outline-none text-left transition-all duration-300 relative group",
-                                        selectedPackage._id === pkg._id
-                                            ? "border-lavender bg-lavender/5 shadow-sm"
-                                            : "border-transparent bg-gray-50/50 hover:bg-gray-50 hover:border-lavender/20 text-charcoal/80 hover:shadow-sm"
-                                    )}
-                                >
-                                    <div className="flex justify-between items-start mb-4">
+                    {/* Package Selection */}
+                    {safePackages.length > 1 && (
+                        <div>
+                            <h2 className="text-2xl font-black text-charcoal font-serif mb-6">Choose Package</h2>
+                            <div className="grid grid-cols-1 gap-3">
+                                {safePackages.map((pkg) => (
+                                    <button
+                                        key={pkg._id}
+                                        onClick={() => setSelectedPackage(pkg)}
+                                        className={cn(
+                                            "w-full p-4 rounded-[1.5rem] border outline-none text-left transition-all duration-300",
+                                            selectedPackage._id === pkg._id
+                                                ? "border-lavender bg-lavender/5 shadow-sm"
+                                                : "border-transparent bg-gray-50/50 hover:bg-gray-50 hover:border-lavender/20"
+                                        )}
+                                    >
                                         <div className="flex items-center gap-3">
                                             <div className={cn(
-                                                "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
-                                                selectedPackage._id === pkg._id ? "border-lavender bg-lavender scale-110" : "border-gray-200"
+                                                "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                                                selectedPackage._id === pkg._id ? "border-lavender bg-lavender" : "border-gray-200"
                                             )}>
-                                                {selectedPackage._id === pkg._id && <Check size={14} className="text-white" />}
+                                                {selectedPackage._id === pkg._id && <Check size={12} className="text-white" />}
                                             </div>
-                                            <span className={cn("font-black text-base tracking-tight", selectedPackage._id === pkg._id ? "text-charcoal" : "text-gray-500")}>
+                                            <span className={cn("font-black text-sm tracking-tight", selectedPackage._id === pkg._id ? "text-charcoal" : "text-gray-500")}>
                                                 {pkg.title}
                                             </span>
                                         </div>
-                                        <div className="text-right">
-                                            <span className="text-xl font-black text-charcoal block">₹{pkg.pricePerCard}</span>
-                                            <span className="text-[10px] text-gray-400 uppercase font-black tracking-widest">per card</span>
-                                        </div>
-                                    </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
-                                    {/* Inclusions */}
-                                    <div className="space-y-2 mt-2">
-                                        {pkg.inclusions?.map((inc, i) => (
-                                            <div key={i} className="flex items-center gap-2 text-xs text-gray-500 font-medium">
-                                                <div className="w-1 h-1 rounded-full bg-green-500" />
-                                                {inc}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </button>
+                    {/* Inclusions */}
+                    <div className="space-y-3">
+                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">What's Included</h3>
+                        <div className="space-y-2">
+                            {selectedPackage.inclusions?.map((inc, i) => (
+                                <div key={i} className="flex items-start gap-2.5 text-sm text-charcoal/80 font-medium">
+                                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-lavender shrink-0" />
+                                    {inc}
+                                </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* Quantity Selection */}
-                    <div className="pt-8 border-t border-gray-50">
-                        <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-2xl font-black text-charcoal font-serif">Quantity</h2>
-                            <div className="text-right">
-                                <span className="text-[10px] text-lavender font-black uppercase tracking-widest block mb-1">Scale Discounts</span>
-                                <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-none">Available for bulk orders</span>
+                    {/* Price Tiers */}
+                    {selectedPackage.priceTiers && selectedPackage.priceTiers.length > 0 && (
+                        <div className="space-y-3">
+                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Price Per Card</h3>
+                            <div className="rounded-[1.5rem] border border-gray-100 overflow-hidden">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="bg-gray-50/80 text-gray-400 text-[10px] uppercase tracking-widest font-black">
+                                            <th className="px-5 py-3 text-left">Quantity</th>
+                                            <th className="px-5 py-3 text-right">Per Card</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-50">
+                                        {selectedPackage.priceTiers.map((tier, idx) => {
+                                            const q = typeof quantity === 'string' ? (parseInt(quantity) || 0) : quantity;
+                                            const isActive = q >= tier.minQty && (tier.maxQty == null || q <= tier.maxQty);
+                                            return (
+                                                <tr
+                                                    key={idx}
+                                                    className={cn(
+                                                        "transition-colors",
+                                                        isActive ? "bg-lavender/5" : "bg-white hover:bg-gray-50/50"
+                                                    )}
+                                                >
+                                                    <td className="px-5 py-3">
+                                                        <div className="flex items-center gap-2">
+                                                            {isActive && (
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-lavender inline-block shrink-0" />
+                                                            )}
+                                                            <span className={cn("font-bold", isActive ? "text-charcoal" : "text-gray-500")}>
+                                                                {formatTierLabel(tier, idx, selectedPackage.priceTiers)}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-5 py-3 text-right">
+                                                        <span className={cn("font-black", isActive ? "text-lavender text-base" : "text-gray-500")}>
+                                                            ₹{tier.pricePerCard}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
+                    )}
 
-                        <div className="relative group mb-4">
+                    {/* Quantity Input */}
+                    <div className="space-y-3">
+                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Your Quantity</h3>
+                        <div className="relative">
                             <input
                                 type="number"
                                 placeholder="Enter quantity..."
                                 value={quantity}
                                 onChange={(e) => {
                                     const val = e.target.value;
-                                    if (val === '') {
-                                        setQuantity('');
-                                        return;
-                                    }
+                                    if (val === '') { setQuantity(''); return; }
                                     setQuantity(parseInt(val) || 0);
                                 }}
                                 className={cn(
                                     "w-full h-14 pl-6 pr-20 bg-white border-2 rounded-[1rem] font-bold text-base transition-all outline-none placeholder:font-medium placeholder:text-gray-400",
-                                    (typeof quantity === 'number' && quantity > 0 && quantity < (design.minQuantity || 50))
+                                    isInvalidQuantity
                                         ? "border-red-200 bg-red-50/50 text-red-600 focus:border-red-400"
-                                        : "border-gray-100 text-charcoal focus:border-lavender focus:shadow-sm"
+                                        : "border-gray-100 text-charcoal focus:border-lavender"
                                 )}
                             />
                             <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-widest text-neutral-400">Cards</span>
                         </div>
-
-                        {typeof quantity === 'number' && quantity > 0 && quantity < (design.minQuantity || 50) && (
-                            <p className="flex items-center gap-1.5 text-[10px] font-black text-red-500 uppercase tracking-widest animate-in fade-in slide-in-from-top-1">
-                                <Info size={12} />
+                        {isInvalidQuantity && (
+                            <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">
                                 Minimum order is {design.minQuantity || 50} cards
                             </p>
                         )}
-                        {(!quantity || (typeof quantity === 'number' && quantity >= (design.minQuantity || 50))) && (
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                Minimum order: {design.minQuantity || 50} cards
-                            </p>
-                        )}
                     </div>
 
-                    {/* Pricing Summary */}
-                    <div className="pt-2">
-                        <div className="floating-card rounded-[2rem] p-8 space-y-6 bg-white border border-lavender/20">
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center text-[10px] text-charcoal/50 font-bold uppercase tracking-[0.25em]">
-                                    <span>{selectedPackage.title}</span>
-                                    <span className="text-charcoal/70">₹{selectedPackage.pricePerCard} × {typeof quantity === 'string' ? (parseInt(quantity) || 0) : quantity}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-[10px] text-charcoal/50 font-bold uppercase tracking-[0.25em]">
-                                    <span>Personalization</span>
-                                    <span className="text-[#aebdc1] italic font-serif capitalize tracking-normal text-sm">Included</span>
-                                </div>
-                            </div>
-
-                            <div className="pt-6 border-t border-gray-100 flex justify-between items-end">
-                                <div>
-                                    <span className="text-[10px] text-lavender font-black uppercase tracking-[0.3em] block mb-2">Total Estimate</span>
-                                    <span className="text-4xl lg:text-5xl font-black text-charcoal font-serif tracking-tight">₹{estimatedTotal.toLocaleString('en-IN')}</span>
-                                </div>
-                                <span className="text-[9px] text-charcoal/30 font-bold mb-1.5 uppercase tracking-widest">* Excl. Shipping</span>
+                    {/* Add-ons */}
+                    {addOns.length > 0 && (
+                        <div className="space-y-3">
+                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">Optional Add-ons</h3>
+                            <div className="space-y-2">
+                                {addOns.map((addOn, idx) => {
+                                    const isSelected = selectedAddOns.includes(addOn.label);
+                                    return (
+                                        <button
+                                            key={idx}
+                                            onClick={() => toggleAddOn(addOn.label)}
+                                            className={cn(
+                                                "w-full flex items-center justify-between px-5 py-3.5 rounded-[1.2rem] border text-left transition-all duration-200",
+                                                isSelected
+                                                    ? "border-lavender bg-lavender/5"
+                                                    : "border-gray-100 hover:border-lavender/30 hover:bg-gray-50/50"
+                                            )}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className={cn(
+                                                    "w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all shrink-0",
+                                                    isSelected ? "border-lavender bg-lavender" : "border-gray-200"
+                                                )}>
+                                                    {isSelected && <Check size={12} className="text-white" />}
+                                                </div>
+                                                <span className={cn("text-sm font-bold", isSelected ? "text-charcoal" : "text-gray-600")}>
+                                                    {addOn.label}
+                                                </span>
+                                            </div>
+                                            <span className={cn("text-sm font-black shrink-0", isSelected ? "text-lavender" : "text-gray-400")}>
+                                                {addOn.pricePerCard === 0
+                                                    ? (addOn.note || 'Free')
+                                                    : `+₹${addOn.pricePerCard}/card`}
+                                            </span>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
-                    </div>
+                    )}
 
+                    {/* Enquire Button */}
                     <button
                         onClick={handleEnquire}
                         disabled={isLogging || isInvalidQuantity}

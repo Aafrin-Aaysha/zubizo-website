@@ -76,7 +76,7 @@ export const TrendingRow = ({ data, styling, title, subtitle }: any) => {
                         className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
                         style={{ color: styling?.accentColor }}
                     >
-                        SOCIAL SHOWCASE
+                        {subtitle || "SOCIAL SHOWCASE"}
                     </span>
                     <h2
                         className="text-[36px] font-medium text-charcoal font-serif"

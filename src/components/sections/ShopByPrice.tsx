@@ -59,7 +59,7 @@ export const ShopByPrice = ({ data, styling, title, subtitle, description }: any
                         className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
                         style={{ color: styling?.accentColor }}
                     >
-                        CURATED PRICE SLABS
+                        {subtitle || "CURATED PRICE SLABS"}
                     </span>
                     <h2
                         className="text-[36px] font-medium text-charcoal font-serif mb-4"

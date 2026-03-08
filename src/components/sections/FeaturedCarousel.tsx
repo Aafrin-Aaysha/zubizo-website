@@ -5,14 +5,19 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export const FeaturedCarousel = ({ styling, title, subtitle, description }: any) => {
+export const FeaturedCarousel = ({ styling, title, subtitle, description, data }: any) => {
     const [designs, setDesigns] = React.useState<any[]>([]);
     const [isLoading, setIsLoading] = React.useState(true);
 
     React.useEffect(() => {
         const fetchFeatured = async () => {
             try {
-                const res = await fetch('/api/designs?limit=4');
+                const designIds = data?.designIds || [];
+                const url = (Array.isArray(designIds) && designIds.length > 0)
+                    ? `/api/designs?ids=${designIds.join(',')}`
+                    : '/api/designs?limit=4';
+
+                const res = await fetch(url);
                 if (res.ok) {
                     const data = await res.json();
                     setDesigns(data);
@@ -24,7 +29,7 @@ export const FeaturedCarousel = ({ styling, title, subtitle, description }: any)
             }
         };
         fetchFeatured();
-    }, []);
+    }, [data?.designIds]);
 
     if (!isLoading && designs.length === 0) return null;
 

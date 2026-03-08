@@ -382,6 +382,7 @@ const PriceSlabEditor = ({ data, onChange }: { data: any, onChange: (newData: an
 // Specialized Editor for Our Story
 const StoryEditor = ({ data, onChange }: { data: any, onChange: (newData: any) => void }) => {
     const highlights = data?.highlights || [];
+    const paragraphs = data?.paragraphs || [];
 
     const updateHighlight = (idx: number, field: string, value: any) => {
         const newHighlights = [...highlights];
@@ -398,24 +399,180 @@ const StoryEditor = ({ data, onChange }: { data: any, onChange: (newData: any) =
         onChange({ ...data, highlights: newHighlights });
     };
 
+    const updateParagraph = (idx: number, text: string) => {
+        const newParagraphs = [...paragraphs];
+        newParagraphs[idx] = { ...newParagraphs[idx], text };
+        onChange({ ...data, paragraphs: newParagraphs });
+    };
+
+    const addParagraph = () => {
+        onChange({ ...data, paragraphs: [...paragraphs, { text: '', isHtml: true }] });
+    };
+
+    const removeParagraph = (idx: number) => {
+        const newParagraphs = paragraphs.filter((_: any, i: number) => i !== idx);
+        onChange({ ...data, paragraphs: newParagraphs });
+    };
+
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Features / Highlights</h4>
-                <button
-                    onClick={addHighlight}
-                    type="button"
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#ae7fcb]/10 text-[#ae7fcb] hover:bg-[#ae7fcb] hover:text-white rounded-lg text-xs font-bold transition-all"
-                >
-                    <Plus size={14} /> Add Feature
-                </button>
+        <div className="space-y-8">
+            <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Story Content</h4>
+                    <button
+                        onClick={addParagraph}
+                        type="button"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#ae7fcb]/10 text-[#ae7fcb] hover:bg-[#ae7fcb] hover:text-white rounded-lg text-xs font-bold transition-all"
+                    >
+                        <Plus size={14} /> Add Paragraph
+                    </button>
+                </div>
+                {paragraphs.map((p: any, idx: number) => (
+                    <div key={idx} className="relative group">
+                        <button
+                            onClick={() => removeParagraph(idx)}
+                            type="button"
+                            className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10"
+                        >
+                            <X size={14} />
+                        </button>
+                        <textarea
+                            rows={3}
+                            value={p.text || ''}
+                            onChange={(e) => updateParagraph(idx, e.target.value)}
+                            className="w-full px-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:border-[#ae7fcb] outline-none"
+                            placeholder="HTML content supported... (use <span class='font-bold text-lavender'> for accents)"
+                        />
+                    </div>
+                ))}
             </div>
 
             <div className="space-y-4">
-                {highlights.map((item: any, idx: number) => (
+                <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Features / Highlights</h4>
+                    <button
+                        onClick={addHighlight}
+                        type="button"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#ae7fcb]/10 text-[#ae7fcb] hover:bg-[#ae7fcb] hover:text-white rounded-lg text-xs font-bold transition-all"
+                    >
+                        <Plus size={14} /> Add Feature
+                    </button>
+                </div>
+
+                <div className="space-y-4">
+                    {highlights.map((item: any, idx: number) => (
+                        <div key={idx} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 relative group">
+                            <button
+                                onClick={() => removeHighlight(idx)}
+                                type="button"
+                                className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                            >
+                                <X size={14} />
+                            </button>
+                            <div className="grid grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Title</label>
+                                    <input
+                                        type="text"
+                                        value={item.title || ''}
+                                        onChange={(e) => updateHighlight(idx, 'title', e.target.value)}
+                                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Icon Name (Lucide)</label>
+                                    <input
+                                        type="text"
+                                        value={item.icon || ''}
+                                        onChange={(e) => updateHighlight(idx, 'icon', e.target.value)}
+                                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none"
+                                        placeholder="Heart, Star, etc."
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Description</label>
+                                <textarea
+                                    rows={2}
+                                    value={item.description || ''}
+                                    onChange={(e) => updateHighlight(idx, 'description', e.target.value)}
+                                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none resize-none"
+                                />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Specialized Editor for Trending / Instagram
+const TrendingEditor = ({ data, onChange }: { data: any, onChange: (newData: any) => void }) => {
+    return (
+        <div className="space-y-4">
+            <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Social Settings</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Instagram URL</label>
+                    <input
+                        type="text"
+                        value={data?.instagramUrl || ''}
+                        onChange={(e) => onChange({ ...data, instagramUrl: e.target.value })}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none"
+                        placeholder="https://instagram.com/..."
+                    />
+                </div>
+                <div>
+                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Autoplay Speed (seconds)</label>
+                    <input
+                        type="number"
+                        value={data?.autoplaySpeed || 25}
+                        onChange={(e) => onChange({ ...data, autoplaySpeed: parseInt(e.target.value) })}
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none"
+                    />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Specialized Editor for Artisan Process
+const ArtisanProcessEditor = ({ data, onChange }: { data: any, onChange: (newData: any) => void }) => {
+    const steps = data?.steps || [];
+
+    const updateStep = (idx: number, field: string, value: any) => {
+        const newSteps = [...steps];
+        newSteps[idx] = { ...newSteps[idx], [field]: value };
+        onChange({ ...data, steps: newSteps });
+    };
+
+    const addStep = () => {
+        onChange({ ...data, steps: [...steps, { title: '', description: '', icon: 'Feather' }] });
+    };
+
+    const removeStep = (idx: number) => {
+        const newSteps = steps.filter((_: any, i: number) => i !== idx);
+        onChange({ ...data, steps: newSteps });
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center justify-between">
+                <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Process Steps</h4>
+                <button
+                    onClick={addStep}
+                    type="button"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-[#ae7fcb]/10 text-[#ae7fcb] hover:bg-[#ae7fcb] hover:text-white rounded-lg text-xs font-bold transition-all"
+                >
+                    <Plus size={14} /> Add Step
+                </button>
+            </div>
+            <div className="space-y-4">
+                {steps.map((step: any, idx: number) => (
                     <div key={idx} className="p-4 bg-gray-50 rounded-2xl border border-gray-100 relative group">
                         <button
-                            onClick={() => removeHighlight(idx)}
+                            onClick={() => removeStep(idx)}
                             type="button"
                             className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                         >
@@ -426,8 +583,8 @@ const StoryEditor = ({ data, onChange }: { data: any, onChange: (newData: any) =
                                 <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Title</label>
                                 <input
                                     type="text"
-                                    value={item.title || ''}
-                                    onChange={(e) => updateHighlight(idx, 'title', e.target.value)}
+                                    value={step.title || ''}
+                                    onChange={(e) => updateStep(idx, 'title', e.target.value)}
                                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none"
                                 />
                             </div>
@@ -435,10 +592,10 @@ const StoryEditor = ({ data, onChange }: { data: any, onChange: (newData: any) =
                                 <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Icon Name (Lucide)</label>
                                 <input
                                     type="text"
-                                    value={item.icon || ''}
-                                    onChange={(e) => updateHighlight(idx, 'icon', e.target.value)}
+                                    value={step.icon || ''}
+                                    onChange={(e) => updateStep(idx, 'icon', e.target.value)}
                                     className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none"
-                                    placeholder="Heart, Star, etc."
+                                    placeholder="Feather, Zap, etc."
                                 />
                             </div>
                         </div>
@@ -446,13 +603,38 @@ const StoryEditor = ({ data, onChange }: { data: any, onChange: (newData: any) =
                             <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Description</label>
                             <textarea
                                 rows={2}
-                                value={item.description || ''}
-                                onChange={(e) => updateHighlight(idx, 'description', e.target.value)}
+                                value={step.description || ''}
+                                onChange={(e) => updateStep(idx, 'description', e.target.value)}
                                 className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none resize-none"
                             />
                         </div>
                     </div>
                 ))}
+            </div>
+        </div>
+    );
+};
+
+// Specialized Editor for Featured Carousel
+const FeaturedCarouselEditor = ({ data, onChange }: { data: any, onChange: (newData: any) => void }) => {
+    const designIds = data?.designIds || [];
+
+    return (
+        <div className="space-y-4">
+            <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Selection Settings</h4>
+            <div>
+                <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Specific Design IDs (comma separated)</label>
+                <input
+                    type="text"
+                    value={Array.isArray(designIds) ? designIds.join(', ') : ''}
+                    onChange={(e) => {
+                        const ids = e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                        onChange({ ...data, designIds: ids });
+                    }}
+                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none font-mono"
+                    placeholder="65e... , 65f..."
+                />
+                <p className="text-[10px] text-gray-400 mt-1 italic">Leave empty to show latest 4 featured designs.</p>
             </div>
         </div>
     );
@@ -531,6 +713,64 @@ const TestimonialEditor = ({ data, onChange }: { data: any, onChange: (newData: 
                                 className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none resize-none"
                                 placeholder="Write the review here..."
                             />
+                        </div>
+
+                        {/* Profile Picture */}
+                        <div className="mt-3">
+                            <label className="text-[10px] font-bold text-gray-500 uppercase mb-2 block">Profile Photo (optional)</label>
+                            <div className="flex items-center gap-3">
+                                {/* Preview */}
+                                <div className="w-12 h-12 rounded-full border-2 border-dashed border-gray-200 overflow-hidden flex items-center justify-center bg-gray-50 shrink-0">
+                                    {item.avatarUrl ? (
+                                        <img src={item.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <span className="text-xs font-black text-gray-300">{item.name?.charAt(0) || '?'}</span>
+                                    )}
+                                </div>
+                                <div className="flex-1 space-y-2">
+                                    <input
+                                        type="text"
+                                        value={item.avatarUrl || ''}
+                                        onChange={(e) => updateTestimonial(idx, 'avatarUrl', e.target.value)}
+                                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs focus:border-[#ae7fcb] outline-none"
+                                        placeholder="Paste image URL or upload..."
+                                    />
+                                    <label className="flex items-center justify-center gap-2 w-full py-2 bg-[#ae7fcb]/10 text-[#ae7fcb] hover:bg-[#ae7fcb] hover:text-white rounded-xl text-xs font-bold cursor-pointer transition-all">
+                                        <Upload size={12} />
+                                        Upload Photo
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+                                                const formDataUpload = new FormData();
+                                                formDataUpload.append('file', file);
+                                                try {
+                                                    const res = await fetch('/api/upload', { method: 'POST', body: formDataUpload });
+                                                    const uploadResult = await res.json();
+                                                    if (uploadResult.url) {
+                                                        updateTestimonial(idx, 'avatarUrl', uploadResult.url);
+                                                    }
+                                                } catch {
+                                                    toast.error('Upload failed');
+                                                }
+                                            }}
+                                        />
+                                    </label>
+                                </div>
+                                {item.avatarUrl && (
+                                    <button
+                                        type="button"
+                                        onClick={() => updateTestimonial(idx, 'avatarUrl', '')}
+                                        className="p-2 text-red-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors shrink-0"
+                                        title="Remove photo"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 ))}
@@ -681,10 +921,22 @@ function EditPanel({ section, onClose, onSave }: any) {
                             <div className="pt-4 border-t border-gray-100">
                                 {/* Dynamic specialized editor components */}
                                 {formData?.sectionType === 'hero' && (
-                                    <HeroEditor
-                                        data={formData.content}
-                                        onChange={(newContent) => setFormData({ ...formData, content: newContent })}
-                                    />
+                                    <div className="space-y-6">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Top Accent Label</label>
+                                            <input
+                                                type="text"
+                                                value={formData.content?.label || ''}
+                                                onChange={e => setFormData({ ...formData, content: { ...formData.content, label: e.target.value } })}
+                                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#ae7fcb]/10 focus:border-[#ae7fcb] transition-all"
+                                                placeholder="Bespoke Invitation Atelier"
+                                            />
+                                        </div>
+                                        <HeroEditor
+                                            data={formData.content}
+                                            onChange={(newContent) => setFormData({ ...formData, content: newContent })}
+                                        />
+                                    </div>
                                 )}
                                 {formData?.sectionType === 'shopByPrice' && (
                                     <PriceSlabEditor
@@ -704,8 +956,26 @@ function EditPanel({ section, onClose, onSave }: any) {
                                         onChange={(newContent) => setFormData({ ...formData, content: newContent })}
                                     />
                                 )}
+                                {formData?.sectionType === 'trending' && (
+                                    <TrendingEditor
+                                        data={formData.content}
+                                        onChange={(newContent) => setFormData({ ...formData, content: newContent })}
+                                    />
+                                )}
+                                {formData?.sectionType === 'craftProcess' && (
+                                    <ArtisanProcessEditor
+                                        data={formData.content}
+                                        onChange={(newContent) => setFormData({ ...formData, content: newContent })}
+                                    />
+                                )}
+                                {formData?.sectionType === 'featuredCollections' && (
+                                    <FeaturedCarouselEditor
+                                        data={formData.content}
+                                        onChange={(newContent) => setFormData({ ...formData, content: newContent })}
+                                    />
+                                )}
 
-                                {!['hero', 'shopByPrice', 'ourStory', 'testimonials', 'contact'].includes(formData?.sectionType) && (
+                                {!['hero', 'shopByPrice', 'ourStory', 'testimonials', 'trending', 'craftProcess', 'featuredCollections', 'contact'].includes(formData?.sectionType) && (
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">RAW CONTENT (JSON)</label>
                                         <textarea

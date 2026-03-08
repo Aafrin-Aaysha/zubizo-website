@@ -63,7 +63,7 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
                             className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
                             style={{ color: styling?.accentColor }}
                         >
-                            CLIENT LOVE
+                            {subtitle || "CLIENT LOVE"}
                         </span>
                         <h2
                             className="text-[36px] font-medium text-charcoal font-serif"
@@ -130,11 +130,27 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
                                 </p>
 
                                 {/* Client Info */}
-                                <div className="pt-2">
-                                    <h4 className="font-bold text-charcoal text-sm">{testimonial.name}</h4>
-                                    <p className="text-[10px] uppercase tracking-widest text-charcoal/40 mt-1">
-                                        {testimonial.location}
-                                    </p>
+                                <div className="flex items-center gap-3 pt-3 border-t border-gray-50">
+                                    {/* Avatar */}
+                                    <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-lavender/20 shrink-0 bg-lavender/10 flex items-center justify-center" style={{ borderColor: `${styling?.accentColor}30` }}>
+                                        {testimonial.avatarUrl ? (
+                                            <img
+                                                src={testimonial.avatarUrl}
+                                                alt={testimonial.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-lavender font-black text-sm" style={{ color: styling?.accentColor }}>
+                                                {testimonial.name?.charAt(0) || '?'}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-charcoal text-sm">{testimonial.name}</h4>
+                                        <p className="text-[10px] uppercase tracking-widest text-charcoal/40 mt-0.5">
+                                            {testimonial.location}
+                                        </p>
+                                    </div>
                                 </div>
                             </motion.div>
                         ))}

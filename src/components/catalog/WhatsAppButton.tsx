@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { getWhatsAppNumber } from '@/lib/utils';
 
 interface WhatsAppButtonProps {
     designId: string;
@@ -71,7 +72,8 @@ ${estimatedTotal ? `*Estimated Total:* ₹${estimatedTotal.toLocaleString('en-IN
 Please share details.`;
 
         const encodedMessage = encodeURIComponent(message);
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
+        const cleanNumber = getWhatsAppNumber();
+        window.open(`https://wa.me/${cleanNumber}?text=${encodedMessage}`, '_blank');
 
         setIsLoading(false);
     };

@@ -45,7 +45,8 @@ export default function DesignsPage() {
         categoryId: '',
         minQuantity: 50,
         basePrice: 0,
-        packages: [] as { title: string; pricePerCard: number }[],
+        packages: [] as { title: string; inclusions: string[]; priceTiers: { minQty: number; maxQty: number | null; pricePerCard: number }[] }[],
+        addOns: [] as { label: string; pricePerCard: number; note: string }[],
         isTrending: false,
         isActive: true,
         images: [] as string[],
@@ -193,7 +194,11 @@ export default function DesignsPage() {
     const addPackage = () => {
         setFormData({
             ...formData,
-            packages: [...formData.packages, { title: '', pricePerCard: 0 }]
+            packages: [...formData.packages, {
+                title: '',
+                inclusions: [],
+                priceTiers: [{ minQty: 100, maxQty: null, pricePerCard: 0 }]
+            }]
         });
     };
 
@@ -204,9 +209,47 @@ export default function DesignsPage() {
     };
 
     const updatePackage = (index: number, field: string, value: any) => {
-        const pkgs = [...formData.packages];
+        const pkgs = [...formData.packages] as any[];
         pkgs[index] = { ...pkgs[index], [field]: value };
         setFormData({ ...formData, packages: pkgs });
+    };
+
+    const addTier = (pkgIdx: number) => {
+        const pkgs = [...formData.packages] as any[];
+        pkgs[pkgIdx].priceTiers = [...(pkgs[pkgIdx].priceTiers || []), { minQty: 0, maxQty: null, pricePerCard: 0 }];
+        setFormData({ ...formData, packages: pkgs });
+    };
+
+    const removeTier = (pkgIdx: number, tierIdx: number) => {
+        const pkgs = [...formData.packages] as any[];
+        pkgs[pkgIdx].priceTiers = pkgs[pkgIdx].priceTiers.filter((_: any, i: number) => i !== tierIdx);
+        setFormData({ ...formData, packages: pkgs });
+    };
+
+    const updateTier = (pkgIdx: number, tierIdx: number, field: string, value: any) => {
+        const pkgs = [...formData.packages] as any[];
+        const tiers = [...pkgs[pkgIdx].priceTiers];
+        tiers[tierIdx] = { ...tiers[tierIdx], [field]: value };
+        pkgs[pkgIdx].priceTiers = tiers;
+        setFormData({ ...formData, packages: pkgs });
+    };
+
+    const addAddOn = () => {
+        setFormData({
+            ...formData,
+            addOns: [...formData.addOns, { label: '', pricePerCard: 0, note: '' }]
+        });
+    };
+
+    const removeAddOn = (idx: number) => {
+        const newAddOns = formData.addOns.filter((_, i) => i !== idx);
+        setFormData({ ...formData, addOns: newAddOns });
+    };
+
+    const updateAddOn = (idx: number, field: string, value: any) => {
+        const newAddOns = [...formData.addOns] as any[];
+        newAddOns[idx] = { ...newAddOns[idx], [field]: value };
+        setFormData({ ...formData, addOns: newAddOns });
     };
 
     const openModal = (design: any = null) => {
@@ -220,7 +263,14 @@ export default function DesignsPage() {
                 categoryId: design.categoryId?._id || design.categoryId || '',
                 minQuantity: design.minQuantity || 50,
                 basePrice: design.basePrice || 0,
-                packages: design.packages || [],
+                packages: (design.packages || []).map((p: any) => ({
+                    title: p.title,
+                    inclusions: p.inclusions || [],
+                    priceTiers: p.priceTiers && p.priceTiers.length > 0
+                        ? p.priceTiers
+                        : [{ minQty: design.minQuantity || 50, maxQty: null, pricePerCard: p.pricePerCard || 0 }]
+                })),
+                addOns: design.addOns || [],
                 isTrending: design.isTrending || false,
                 isActive: design.isActive !== undefined ? design.isActive : true,
                 images: design.images || [],
@@ -234,9 +284,14 @@ export default function DesignsPage() {
                 slug: '',
                 description: '',
                 categoryId: categories[0]?._id || '',
-                minQuantity: 50,
+                minQuantity: 100,
                 basePrice: 0,
-                packages: [{ title: 'Envelope + Wax + Card', pricePerCard: 45 }],
+                packages: [{
+                    title: 'Standard Package',
+                    inclusions: [],
+                    priceTiers: [{ minQty: 100, maxQty: null, pricePerCard: 0 }]
+                }],
+                addOns: [],
                 isTrending: false,
                 isActive: true,
                 images: [],
@@ -570,7 +625,7 @@ export default function DesignsPage() {
                                         <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
                                             <div className="flex items-center justify-between">
                                                 <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                                    <PackageIcon size={14} /> Package Builder
+                                                    <PackageIcon size={14} /> Package &amp; Pricing
                                                 </h3>
                                                 <button
                                                     type="button"
@@ -587,75 +642,9 @@ export default function DesignsPage() {
                                                     <p className="text-xs font-bold uppercase tracking-widest">No Packages Added</p>
                                                 </div>
                                             ) : (
-                                                <div className="space-y-4">
-                                                    {formData.packages.map((pkg: any, idx) => (
-                                                        <div key={idx} className="p-6 bg-gray-50 rounded-[2rem] border border-transparent hover:border-lavender/10 relative group transition-all space-y-4">
-                                                            <div className="grid grid-cols-2 gap-4">
-                                                                <div>
-                                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Package Title</label>
-                                                                    <input
-                                                                        type="text" required value={pkg.title}
-                                                                        onChange={e => updatePackage(idx, 'title', e.target.value)}
-                                                                        className="w-full px-4 py-2 bg-white border border-gray-100 rounded-xl font-bold text-charcoal text-sm outline-none focus:border-lavender"
-                                                                        placeholder="Envelope + Card..."
-                                                                    />
-                                                                </div>
-                                                                <div>
-                                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Price Per Card (₹)</label>
-                                                                    <input
-                                                                        type="number" required value={pkg.pricePerCard}
-                                                                        onChange={e => updatePackage(idx, 'pricePerCard', parseFloat(e.target.value) || 0)}
-                                                                        className="w-full px-4 py-2 bg-white border border-gray-100 rounded-xl font-black text-charcoal text-sm outline-none focus:border-lavender"
-                                                                    />
-                                                                </div>
-                                                            </div>
-
-                                                            {/* Inclusions Sub-section */}
-                                                            <div className="space-y-3 bg-white/50 p-4 rounded-2xl border border-gray-100/50">
-                                                                <div className="flex items-center justify-between mb-1">
-                                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block">Inclusions</label>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => {
-                                                                            const newInclusions = [...(pkg.inclusions || []), ''];
-                                                                            updatePackage(idx, 'inclusions', newInclusions);
-                                                                        }}
-                                                                        className="text-lavender font-black text-[8px] uppercase tracking-wider hover:underline flex items-center gap-1"
-                                                                    >
-                                                                        <Plus size={10} /> Add Inclusion
-                                                                    </button>
-                                                                </div>
-                                                                <div className="space-y-2">
-                                                                    {(pkg.inclusions || []).map((inc: string, incIdx: number) => (
-                                                                        <div key={incIdx} className="flex gap-2">
-                                                                            <input
-                                                                                type="text" required value={inc}
-                                                                                onChange={e => {
-                                                                                    const newInclusions = [...pkg.inclusions];
-                                                                                    newInclusions[incIdx] = e.target.value;
-                                                                                    updatePackage(idx, 'inclusions', newInclusions);
-                                                                                }}
-                                                                                className="flex-1 px-3 py-1.5 bg-white border border-gray-100 rounded-lg text-xs font-medium text-gray-600 outline-none focus:border-lavender"
-                                                                                placeholder="Premium 300GSM Paper..."
-                                                                            />
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() => {
-                                                                                    const newInclusions = pkg.inclusions.filter((_: any, i: number) => i !== incIdx);
-                                                                                    updatePackage(idx, 'inclusions', newInclusions);
-                                                                                }}
-                                                                                className="p-1.5 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                                                                            >
-                                                                                <X size={14} />
-                                                                            </button>
-                                                                        </div>
-                                                                    ))}
-                                                                    {(!pkg.inclusions || pkg.inclusions.length === 0) && (
-                                                                        <p className="text-[9px] text-gray-300 italic">No inclusions specified (Min 1 required)</p>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-
+                                                <div className="space-y-6">
+                                                    {(formData.packages as any[]).map((pkg: any, idx) => (
+                                                        <div key={idx} className="p-5 bg-gray-50 rounded-[2rem] border border-transparent hover:border-lavender/10 relative group transition-all space-y-5">
                                                             <button
                                                                 type="button"
                                                                 onClick={() => removePackage(idx)}
@@ -663,14 +652,145 @@ export default function DesignsPage() {
                                                             >
                                                                 <Trash2 size={14} />
                                                             </button>
+
+                                                            {/* Package Title */}
+                                                            <div>
+                                                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Package Title</label>
+                                                                <input
+                                                                    type="text" required value={pkg.title}
+                                                                    onChange={e => updatePackage(idx, 'title', e.target.value)}
+                                                                    className="w-full px-4 py-2 bg-white border border-gray-100 rounded-xl font-bold text-charcoal text-sm outline-none focus:border-lavender"
+                                                                    placeholder="Glass Invitation Premium..."
+                                                                />
+                                                            </div>
+
+                                                            {/* Inclusions */}
+                                                            <div className="space-y-2 bg-white/60 p-4 rounded-2xl border border-gray-100/50">
+                                                                <div className="flex items-center justify-between mb-1">
+                                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">What's Included</label>
+                                                                    <button type="button" onClick={() => {
+                                                                        const newInclusions = [...(pkg.inclusions || []), ''];
+                                                                        updatePackage(idx, 'inclusions', newInclusions);
+                                                                    }} className="text-lavender font-black text-[8px] uppercase tracking-wider hover:underline flex items-center gap-1">
+                                                                        <Plus size={10} /> Add
+                                                                    </button>
+                                                                </div>
+                                                                {(pkg.inclusions || []).map((inc: string, incIdx: number) => (
+                                                                    <div key={incIdx} className="flex gap-2">
+                                                                        <input
+                                                                            type="text" required value={inc}
+                                                                            onChange={e => {
+                                                                                const newInc = [...pkg.inclusions];
+                                                                                newInc[incIdx] = e.target.value;
+                                                                                updatePackage(idx, 'inclusions', newInc);
+                                                                            }}
+                                                                            className="flex-1 px-3 py-1.5 bg-white border border-gray-100 rounded-lg text-xs font-medium text-gray-600 outline-none focus:border-lavender"
+                                                                            placeholder="Portrait Premium Envelope..."
+                                                                        />
+                                                                        <button type="button" onClick={() => {
+                                                                            const newInc = pkg.inclusions.filter((_: any, i: number) => i !== incIdx);
+                                                                            updatePackage(idx, 'inclusions', newInc);
+                                                                        }} className="p-1.5 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                                                            <X size={14} />
+                                                                        </button>
+                                                                    </div>
+                                                                ))}
+                                                                {(!pkg.inclusions || pkg.inclusions.length === 0) && (
+                                                                    <p className="text-[9px] text-gray-300 italic">No inclusions yet</p>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Price Tiers */}
+                                                            <div className="space-y-2">
+                                                                <div className="flex items-center justify-between">
+                                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Price Tiers</label>
+                                                                    <button type="button" onClick={() => addTier(idx)} className="text-lavender font-black text-[8px] uppercase tracking-wider hover:underline flex items-center gap-1">
+                                                                        <Plus size={10} /> Add Tier
+                                                                    </button>
+                                                                </div>
+                                                                <div className="space-y-2">
+                                                                    {(pkg.priceTiers || []).map((tier: any, tIdx: number) => (
+                                                                        <div key={tIdx} className="flex items-center gap-2 bg-white p-2 rounded-xl border border-gray-100">
+                                                                            <div className="flex items-center gap-1 flex-1">
+                                                                                <input
+                                                                                    type="number" placeholder="Min" value={tier.minQty}
+                                                                                    onChange={e => updateTier(idx, tIdx, 'minQty', parseInt(e.target.value) || 0)}
+                                                                                    className="w-20 px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-bold text-charcoal outline-none focus:border-lavender"
+                                                                                />
+                                                                                <span className="text-gray-300 text-xs">–</span>
+                                                                                <input
+                                                                                    type="number" placeholder="Max (empty=∞)" value={tier.maxQty ?? ''}
+                                                                                    onChange={e => updateTier(idx, tIdx, 'maxQty', e.target.value === '' ? null : (parseInt(e.target.value) || null))}
+                                                                                    className="w-24 px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-bold text-charcoal outline-none focus:border-lavender"
+                                                                                />
+                                                                                <span className="text-gray-300 text-[10px] whitespace-nowrap">cards →</span>
+                                                                                <span className="text-gray-400 text-xs">₹</span>
+                                                                                <input
+                                                                                    type="number" placeholder="Price" value={tier.pricePerCard}
+                                                                                    onChange={e => updateTier(idx, tIdx, 'pricePerCard', parseFloat(e.target.value) || 0)}
+                                                                                    className="w-20 px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-black text-charcoal outline-none focus:border-lavender"
+                                                                                />
+                                                                                <span className="text-gray-400 text-[10px]">/card</span>
+                                                                            </div>
+                                                                            <button type="button" onClick={() => removeTier(idx, tIdx)} className="p-1 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0">
+                                                                                <X size={12} />
+                                                                            </button>
+                                                                        </div>
+                                                                    ))}
+                                                                    {(!pkg.priceTiers || pkg.priceTiers.length === 0) && (
+                                                                        <p className="text-[9px] text-gray-300 italic">No tiers. Add at least one tier.</p>
+                                                                    )}
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     ))}
                                                 </div>
                                             )}
+                                        </section>
 
-                                            <p className="text-[10px] text-gray-400 font-medium italic">
-                                                * Pricing is based on price per card. Total will be calculated dynamically for the customer.
-                                            </p>
+                                        {/* Add-ons section */}
+                                        <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
+                                            <div className="flex items-center justify-between">
+                                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                                    <Plus size={14} /> Optional Add-ons
+                                                </h3>
+                                                <button type="button" onClick={addAddOn} className="text-lavender font-black text-[10px] uppercase tracking-widest hover:underline flex items-center gap-1">
+                                                    <Plus size={14} /> Add
+                                                </button>
+                                            </div>
+
+                                            {(formData.addOns as any[]).length === 0 ? (
+                                                <p className="text-[10px] text-gray-400 italic">No add-ons (e.g., Feather, Colour upgrade)</p>
+                                            ) : (
+                                                <div className="space-y-3">
+                                                    {(formData.addOns as any[]).map((addOn: any, idx: number) => (
+                                                        <div key={idx} className="flex items-center gap-2 bg-gray-50 p-3 rounded-2xl border border-gray-100 group relative">
+                                                            <input
+                                                                type="text" placeholder="Label (e.g. Feather Add-on)" value={addOn.label}
+                                                                onChange={e => updateAddOn(idx, 'label', e.target.value)}
+                                                                className="flex-1 px-3 py-2 bg-white border border-gray-100 rounded-xl text-xs font-bold text-charcoal outline-none focus:border-lavender"
+                                                            />
+                                                            <div className="flex items-center gap-1 shrink-0">
+                                                                <span className="text-gray-400 text-xs">₹</span>
+                                                                <input
+                                                                    type="number" placeholder="0" value={addOn.pricePerCard}
+                                                                    onChange={e => updateAddOn(idx, 'pricePerCard', parseFloat(e.target.value) || 0)}
+                                                                    className="w-20 px-2 py-2 bg-white border border-gray-100 rounded-xl text-xs font-black text-charcoal outline-none focus:border-lavender"
+                                                                />
+                                                                <span className="text-gray-400 text-[10px]">/card</span>
+                                                            </div>
+                                                            <input
+                                                                type="text" placeholder="Note (optional)" value={addOn.note}
+                                                                onChange={e => updateAddOn(idx, 'note', e.target.value)}
+                                                                className="w-28 px-2 py-2 bg-white border border-gray-100 rounded-xl text-xs font-medium text-gray-500 outline-none focus:border-lavender"
+                                                            />
+                                                            <button type="button" onClick={() => removeAddOn(idx)} className="p-1.5 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                                                                <X size={14} />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </section>
 
                                         <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
