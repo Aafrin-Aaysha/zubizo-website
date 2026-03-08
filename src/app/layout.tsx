@@ -54,7 +54,7 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [settings?.logoUrl || '/logo.png'],
     },
     icons: {
-      icon: "/logo-transparent.png",
+      icon: "/logo.png",
     },
   };
 }
