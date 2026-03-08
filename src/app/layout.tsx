@@ -30,13 +30,13 @@ export async function generateMetadata(): Promise<Metadata> {
       template: '%s | Zubizo',
       default: 'Zubizo – Premium Invitation & Handcrafted Stationery',
     },
-    description: settings?.homeTagline || "Modern Art & Craft invitation designs for weddings, festivals, and special events. Premium quality stationaries by Zubizo.",
-    keywords: ["invitations", "wedding cards", "nikah invitations", "stationery", "handcrafted cards", "zubizo"],
+    description: settings?.homeTagline || "Premier handcrafted invitations & luxury stationery for weddings, nikah, and special events. Elegant designs customized for your story by Zubizo Art.",
+    keywords: ["zubizo", "zubizo art", "handcrafted invitations", "wedding cards india", "nikah invitations", "luxury stationery", "custom invitations", "invitation studio"],
     openGraph: {
-      title: 'Zubizo – Premium Invitation & Handcrafted Stationery',
+      title: 'Zubizo Art – Premium Invitation & Handcrafted Stationery',
       description: 'Handcrafted with love for your special occasion.',
-      url: 'https://zubizo.com',
-      siteName: 'Zubizo',
+      url: 'https://www.zubizoart.com',
+      siteName: 'Zubizo Art',
       images: [
         {
           url: settings?.logoUrl || '/logo.png',
