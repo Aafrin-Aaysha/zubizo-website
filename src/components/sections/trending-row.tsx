@@ -103,7 +103,7 @@ export const TrendingRow = ({ data, styling, title, subtitle }: any) => {
                         <ChevronRight size={20} />
                     </button>
                     <a
-                        href={data?.instagramUrl || "https://instagram.com/zubizo._art"}
+                        href="https://www.instagram.com/zubizo._art?igsh=MWtjcjN3Y2JjbW9pag=="
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-12 h-12 rounded-full bg-charcoal text-white flex items-center justify-center hover:bg-lavender transition-all shadow-lg"

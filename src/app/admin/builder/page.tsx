@@ -621,35 +621,6 @@ const StoryEditor = ({ data, onChange }: { data: any, onChange: (newData: any) =
     );
 };
 
-// Specialized Editor for Trending / Instagram
-const TrendingEditor = ({ data, onChange }: { data: any, onChange: (newData: any) => void }) => {
-    return (
-        <div className="space-y-4">
-            <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Social Settings</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Instagram URL</label>
-                    <input
-                        type="text"
-                        value={data?.instagramUrl || ''}
-                        onChange={(e) => onChange({ ...data, instagramUrl: e.target.value })}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none"
-                        placeholder="https://instagram.com/..."
-                    />
-                </div>
-                <div>
-                    <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Autoplay Speed (seconds)</label>
-                    <input
-                        type="number"
-                        value={data?.autoplaySpeed || 25}
-                        onChange={(e) => onChange({ ...data, autoplaySpeed: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none"
-                    />
-                </div>
-            </div>
-        </div>
-    );
-};
 
 // Specialized Editor for Artisan Process
 const ArtisanProcessEditor = ({ data, onChange }: { data: any, onChange: (newData: any) => void }) => {
@@ -1066,12 +1037,6 @@ function EditPanel({ section, onClose, onSave }: any) {
                                 )}
                                 {formData?.sectionType === 'testimonials' && (
                                     <TestimonialEditor
-                                        data={formData.content}
-                                        onChange={(newContent) => setFormData({ ...formData, content: newContent })}
-                                    />
-                                )}
-                                {formData?.sectionType === 'trending' && (
-                                    <TrendingEditor
                                         data={formData.content}
                                         onChange={(newContent) => setFormData({ ...formData, content: newContent })}
                                     />
