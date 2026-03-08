@@ -491,19 +491,25 @@ export default function DesignsPage() {
                 </div>
             )}
 
-            {/* Design Form Modal */}
+            {/* Design Form Modal — Refactored to Centered Modal for better UX */}
             <AnimatePresence>
                 {isModalOpen && (
-                    <>
+                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6 overflow-hidden">
                         <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            onClick={closeModal} className="fixed inset-0 bg-charcoal/40 backdrop-blur-md z-[100]"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={closeModal}
+                            className="absolute inset-0 bg-charcoal/40 backdrop-blur-md"
                         />
                         <motion.div
-                            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
-                            className="fixed top-0 right-0 h-full w-full max-w-4xl bg-gray-50 z-[110] shadow-2xl flex flex-col"
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="relative w-full max-w-5xl bg-gray-50 max-h-[90vh] shadow-2xl rounded-[2.5rem] flex flex-col overflow-hidden"
                         >
-                            <div className="p-8 bg-white border-b border-gray-100 flex items-center justify-between">
+                            <div className="p-8 bg-white border-b border-gray-100 flex items-center justify-between shrink-0">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-2xl bg-lavender/10 text-lavender flex items-center justify-center">
                                         <PackageIcon size={24} />
@@ -516,8 +522,8 @@ export default function DesignsPage() {
                                 <button onClick={closeModal} className="w-10 h-10 hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors"><X size={20} /></button>
                             </div>
 
-                            <form id="design-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-10 pb-32">
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                            <form id="design-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-10">
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
                                     {/* Column 1: Core Details */}
                                     <div className="space-y-8">
                                         <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
@@ -707,32 +713,45 @@ export default function DesignsPage() {
                                                                         <Plus size={10} /> Add Tier
                                                                     </button>
                                                                 </div>
-                                                                <div className="space-y-2">
+                                                                <div className="space-y-3">
                                                                     {(pkg.priceTiers || []).map((tier: any, tIdx: number) => (
-                                                                        <div key={tIdx} className="flex items-center gap-2 bg-white p-2 rounded-xl border border-gray-100">
-                                                                            <div className="flex flex-wrap items-center gap-1.5 flex-1">
-                                                                                <input
-                                                                                    type="number" placeholder="Min" value={tier.minQty}
-                                                                                    onChange={e => updateTier(idx, tIdx, 'minQty', Math.max(1, parseInt(e.target.value) || 1))}
-                                                                                    className="w-[70px] px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-bold text-charcoal outline-none focus:border-lavender"
-                                                                                />
-                                                                                <span className="text-gray-300 text-xs">–</span>
-                                                                                <input
-                                                                                    type="number" placeholder="Max" value={tier.maxQty ?? ''}
-                                                                                    onChange={e => updateTier(idx, tIdx, 'maxQty', e.target.value === '' ? null : (parseInt(e.target.value) || null))}
-                                                                                    className="w-[70px] px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-bold text-charcoal outline-none focus:border-lavender"
-                                                                                />
-                                                                                <span className="text-gray-300 text-[10px] whitespace-nowrap">cards →</span>
-                                                                                <span className="text-gray-400 text-xs">₹</span>
-                                                                                <input
-                                                                                    type="number" placeholder="Price" value={tier.pricePerCard}
-                                                                                    onChange={e => updateTier(idx, tIdx, 'pricePerCard', parseFloat(e.target.value) || 0)}
-                                                                                    className="w-[80px] px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-black text-charcoal outline-none focus:border-lavender"
-                                                                                />
-                                                                                <span className="text-gray-400 text-[10px] whitespace-nowrap">/card</span>
+                                                                        <div key={tIdx} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white p-4 rounded-2xl border border-gray-100 relative group/tier">
+                                                                            <div className="grid grid-cols-2 sm:flex sm:items-center gap-3 flex-1 w-full">
+                                                                                <div className="space-y-1">
+                                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Min Qty</label>
+                                                                                    <input
+                                                                                        type="number" placeholder="Min" value={tier.minQty}
+                                                                                        onChange={e => updateTier(idx, tIdx, 'minQty', Math.max(1, parseInt(e.target.value) || 1))}
+                                                                                        className="w-full sm:w-[80px] px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
+                                                                                    />
+                                                                                </div>
+                                                                                <div className="space-y-1">
+                                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Max Qty</label>
+                                                                                    <input
+                                                                                        type="number" placeholder="Max" value={tier.maxQty ?? ''}
+                                                                                        onChange={e => updateTier(idx, tIdx, 'maxQty', e.target.value === '' ? null : (parseInt(e.target.value) || null))}
+                                                                                        className="w-full sm:w-[80px] px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
+                                                                                    />
+                                                                                </div>
+                                                                                <div className="hidden sm:block text-gray-300 text-[10px] mt-4">cards →</div>
+                                                                                <div className="col-span-2 sm:col-auto space-y-1 flex-1">
+                                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Price / Card</label>
+                                                                                    <div className="relative">
+                                                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">₹</span>
+                                                                                        <input
+                                                                                            type="number" placeholder="0.00" value={tier.pricePerCard}
+                                                                                            onChange={e => updateTier(idx, tIdx, 'pricePerCard', parseFloat(e.target.value) || 0)}
+                                                                                            className="w-full px-8 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-black text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
+                                                                                        />
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
-                                                                            <button type="button" onClick={() => removeTier(idx, tIdx)} className="p-1 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0">
-                                                                                <X size={12} />
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => removeTier(idx, tIdx)}
+                                                                                className="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto p-2 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shrink-0"
+                                                                            >
+                                                                                <Trash2 size={14} />
                                                                             </button>
                                                                         </div>
                                                                     ))}
@@ -763,28 +782,42 @@ export default function DesignsPage() {
                                             ) : (
                                                 <div className="space-y-3">
                                                     {(formData.addOns as any[]).map((addOn: any, idx: number) => (
-                                                        <div key={idx} className="flex items-center gap-2 bg-gray-50 p-3 rounded-2xl border border-gray-100 group relative">
-                                                            <input
-                                                                type="text" placeholder="Label (e.g. Feather Add-on)" value={addOn.label}
-                                                                onChange={e => updateAddOn(idx, 'label', e.target.value)}
-                                                                className="flex-1 px-3 py-2 bg-white border border-gray-100 rounded-xl text-xs font-bold text-charcoal outline-none focus:border-lavender"
-                                                            />
-                                                            <div className="flex items-center gap-1 shrink-0">
-                                                                <span className="text-gray-400 text-xs">₹</span>
-                                                                <input
-                                                                    type="number" placeholder="0" value={addOn.pricePerCard}
-                                                                    onChange={e => updateAddOn(idx, 'pricePerCard', parseFloat(e.target.value) || 0)}
-                                                                    className="w-20 px-2 py-2 bg-white border border-gray-100 rounded-xl text-xs font-black text-charcoal outline-none focus:border-lavender"
-                                                                />
-                                                                <span className="text-gray-400 text-[10px]">/card</span>
+                                                        <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-gray-50 p-4 rounded-2xl border border-gray-100 relative group/addon">
+                                                            <div className="grid grid-cols-1 sm:grid-cols-[1.5fr_1fr_1fr] gap-3 flex-1 w-full">
+                                                                <div className="space-y-1">
+                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Add-on Label</label>
+                                                                    <input
+                                                                        type="text" placeholder="Label (e.g. Feather Add-on)" value={addOn.label}
+                                                                        onChange={e => updateAddOn(idx, 'label', e.target.value)}
+                                                                        className="w-full px-4 py-2 bg-white border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:border-lavender transition-all"
+                                                                    />
+                                                                </div>
+                                                                <div className="space-y-1">
+                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Price / Card</label>
+                                                                    <div className="relative">
+                                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">₹</span>
+                                                                        <input
+                                                                            type="number" placeholder="0" value={addOn.pricePerCard}
+                                                                            onChange={e => updateAddOn(idx, 'pricePerCard', parseFloat(e.target.value) || 0)}
+                                                                            className="w-full px-8 py-2 bg-white border border-transparent rounded-xl text-xs font-black text-charcoal outline-none focus:border-lavender transition-all"
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="space-y-1">
+                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Internal Note</label>
+                                                                    <input
+                                                                        type="text" placeholder="Note (optional)" value={addOn.note}
+                                                                        onChange={e => updateAddOn(idx, 'note', e.target.value)}
+                                                                        className="w-full px-4 py-2 bg-white border border-transparent rounded-xl text-xs font-medium text-gray-500 outline-none focus:border-lavender transition-all"
+                                                                    />
+                                                                </div>
                                                             </div>
-                                                            <input
-                                                                type="text" placeholder="Note (optional)" value={addOn.note}
-                                                                onChange={e => updateAddOn(idx, 'note', e.target.value)}
-                                                                className="w-28 px-2 py-2 bg-white border border-gray-100 rounded-xl text-xs font-medium text-gray-500 outline-none focus:border-lavender"
-                                                            />
-                                                            <button type="button" onClick={() => removeAddOn(idx)} className="p-1.5 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                                                                <X size={14} />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeAddOn(idx)}
+                                                                className="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto p-2 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shrink-0"
+                                                            >
+                                                                <Trash2 size={14} />
                                                             </button>
                                                         </div>
                                                     ))}
@@ -848,18 +881,18 @@ export default function DesignsPage() {
                                 </div>
                             </form>
 
-                            <div className="p-8 bg-white border-t border-gray-100 absolute bottom-0 right-0 w-full flex items-center justify-between">
-                                <div className="flex items-center gap-3">
+                            <div className="p-8 bg-white border-t border-gray-100 w-full flex items-center justify-between shrink-0">
+                                <div className="hidden sm:flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-green-50 text-green-500 flex items-center justify-center">
                                         <Check size={20} className="" />
                                     </div>
                                     <p className="text-xs font-bold text-gray-500">Auto-saved as draft in browser RAM</p>
                                 </div>
-                                <div className="flex gap-4">
+                                <div className="flex gap-4 w-full sm:w-auto">
                                     <button
                                         type="button"
                                         onClick={closeModal}
-                                        className="px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-gray-400 hover:text-charcoal transition-colors"
+                                        className="flex-1 sm:flex-none px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-gray-400 hover:text-charcoal transition-colors"
                                     >
                                         Discard
                                     </button>
@@ -867,14 +900,14 @@ export default function DesignsPage() {
                                         type="submit"
                                         form="design-form"
                                         disabled={isSubmitting}
-                                        className="px-10 py-4 bg-charcoal hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-charcoal/20 transition-all flex items-center justify-center gap-2"
+                                        className="flex-1 sm:flex-none px-10 py-4 bg-charcoal hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-charcoal/20 transition-all flex items-center justify-center gap-2"
                                     >
                                         {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : (editingDesign ? 'Update Design' : 'Publish Design')}
                                     </button>
                                 </div>
                             </div>
                         </motion.div>
-                    </>
+                    </div>
                 )}
             </AnimatePresence>
         </div>
