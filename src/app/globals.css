@@ -184,4 +184,28 @@ h4 {
   .shadow-luxury {
     box-shadow: 0 8px 25px -8px rgba(174, 127, 203, 0.1);
   }
+
+  /* Quill Rich Text Support */
+  .ql-align-center {
+    text-align: center !important;
+  }
+
+  .ql-align-right {
+    text-align: right !important;
+  }
+
+  .ql-align-justify {
+    text-align: justify !important;
+  }
+
+  /* Support for lists and other basics if needed */
+  .prose ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem !important;
+  }
+
+  .prose ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem !important;
+  }
 }

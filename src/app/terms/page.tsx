@@ -38,16 +38,18 @@ export default function TermsPage() {
                     <div className="space-y-16">
                         <section className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-neutral-100">
                             <h2 className="text-2xl font-black text-charcoal mb-6 font-serif uppercase tracking-wider border-b border-lavender/10 pb-4">Terms of Service</h2>
-                            <div className="text-gray-600 leading-relaxed whitespace-pre-wrap font-medium">
-                                {settings?.termsContent || settings?.terms || "Loading terms..."}
-                            </div>
+                            <div
+                                className="text-gray-600 leading-relaxed text-sm md:text-base prose prose-neutral max-w-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h2]:text-xl [&_h3]:text-lg [&_a]:text-lavender [&_a]:underline"
+                                dangerouslySetInnerHTML={{ __html: settings?.termsContent || settings?.terms || "Loading terms..." }}
+                            />
                         </section>
 
                         <section className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-neutral-100">
                             <h2 className="text-2xl font-black text-charcoal mb-6 font-serif uppercase tracking-wider border-b border-lavender/10 pb-4">Privacy Policy</h2>
-                            <div className="text-gray-600 leading-relaxed whitespace-pre-wrap font-medium">
-                                {settings?.policyContent || "Our privacy policy ensures your data is protected and used only for order processing and communication."}
-                            </div>
+                            <div
+                                className="text-gray-600 leading-relaxed text-sm md:text-base prose prose-neutral max-w-none [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_h1]:text-2xl [&_h2]:text-xl [&_h3]:text-lg [&_a]:text-lavender [&_a]:underline"
+                                dangerouslySetInnerHTML={{ __html: settings?.policyContent || "Our privacy policy ensures your data is protected and used only for order processing and communication." }}
+                            />
                         </section>
                     </div>
                 </motion.div>
