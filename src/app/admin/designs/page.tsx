@@ -76,9 +76,8 @@ export default function DesignsPage() {
         }
     };
 
-    // Auto-generate slug when name or SKU changes
     useEffect(() => {
-        if (!editingDesign && formData.name && formData.sku) {
+        if (formData.name && formData.sku) {
             const generatedSlug = `${formData.name}-${formData.sku}`
                 .toLowerCase()
                 .replace(/[^\w ]+/g, '')
@@ -711,26 +710,26 @@ export default function DesignsPage() {
                                                                 <div className="space-y-2">
                                                                     {(pkg.priceTiers || []).map((tier: any, tIdx: number) => (
                                                                         <div key={tIdx} className="flex items-center gap-2 bg-white p-2 rounded-xl border border-gray-100">
-                                                                            <div className="flex items-center gap-1 flex-1">
+                                                                            <div className="flex flex-wrap items-center gap-1.5 flex-1">
                                                                                 <input
                                                                                     type="number" placeholder="Min" value={tier.minQty}
                                                                                     onChange={e => updateTier(idx, tIdx, 'minQty', Math.max(1, parseInt(e.target.value) || 1))}
-                                                                                    className="w-20 px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-bold text-charcoal outline-none focus:border-lavender"
+                                                                                    className="w-[70px] px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-bold text-charcoal outline-none focus:border-lavender"
                                                                                 />
                                                                                 <span className="text-gray-300 text-xs">–</span>
                                                                                 <input
-                                                                                    type="number" placeholder="Max (empty=∞)" value={tier.maxQty ?? ''}
+                                                                                    type="number" placeholder="Max" value={tier.maxQty ?? ''}
                                                                                     onChange={e => updateTier(idx, tIdx, 'maxQty', e.target.value === '' ? null : (parseInt(e.target.value) || null))}
-                                                                                    className="w-24 px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-bold text-charcoal outline-none focus:border-lavender"
+                                                                                    className="w-[70px] px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-bold text-charcoal outline-none focus:border-lavender"
                                                                                 />
                                                                                 <span className="text-gray-300 text-[10px] whitespace-nowrap">cards →</span>
                                                                                 <span className="text-gray-400 text-xs">₹</span>
                                                                                 <input
                                                                                     type="number" placeholder="Price" value={tier.pricePerCard}
                                                                                     onChange={e => updateTier(idx, tIdx, 'pricePerCard', parseFloat(e.target.value) || 0)}
-                                                                                    className="w-20 px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-black text-charcoal outline-none focus:border-lavender"
+                                                                                    className="w-[80px] px-2 py-1.5 border border-gray-100 rounded-lg text-xs font-black text-charcoal outline-none focus:border-lavender"
                                                                                 />
-                                                                                <span className="text-gray-400 text-[10px]">/card</span>
+                                                                                <span className="text-gray-400 text-[10px] whitespace-nowrap">/card</span>
                                                                             </div>
                                                                             <button type="button" onClick={() => removeTier(idx, tIdx)} className="p-1 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0">
                                                                                 <X size={12} />
