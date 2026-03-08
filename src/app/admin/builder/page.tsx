@@ -700,30 +700,6 @@ const ArtisanProcessEditor = ({ data, onChange }: { data: any, onChange: (newDat
     );
 };
 
-// Specialized Editor for Featured Carousel
-const FeaturedCarouselEditor = ({ data, onChange }: { data: any, onChange: (newData: any) => void }) => {
-    const designIds = data?.designIds || [];
-
-    return (
-        <div className="space-y-4">
-            <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wider">Selection Settings</h4>
-            <div>
-                <label className="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Specific Design IDs (comma separated)</label>
-                <input
-                    type="text"
-                    value={Array.isArray(designIds) ? designIds.join(', ') : ''}
-                    onChange={(e) => {
-                        const ids = e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
-                        onChange({ ...data, designIds: ids });
-                    }}
-                    className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm focus:border-[#ae7fcb] outline-none font-mono"
-                    placeholder="65e... , 65f..."
-                />
-                <p className="text-[10px] text-gray-400 mt-1 italic">Leave empty to show latest 4 featured designs.</p>
-            </div>
-        </div>
-    );
-};
 
 // Specialized Editor for Testimonials
 const TestimonialEditor = ({ data, onChange }: { data: any, onChange: (newData: any) => void }) => {
@@ -1043,12 +1019,6 @@ function EditPanel({ section, onClose, onSave }: any) {
                                 )}
                                 {formData?.sectionType === 'craftProcess' && (
                                     <ArtisanProcessEditor
-                                        data={formData.content}
-                                        onChange={(newContent) => setFormData({ ...formData, content: newContent })}
-                                    />
-                                )}
-                                {formData?.sectionType === 'featuredCollections' && (
-                                    <FeaturedCarouselEditor
                                         data={formData.content}
                                         onChange={(newContent) => setFormData({ ...formData, content: newContent })}
                                     />

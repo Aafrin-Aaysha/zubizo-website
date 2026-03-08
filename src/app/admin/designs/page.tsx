@@ -48,6 +48,7 @@ export default function DesignsPage() {
         packages: [] as { title: string; inclusions: string[]; priceTiers: { minQty: number; maxQty: number | null; pricePerCard: number }[] }[],
         addOns: [] as { label: string; pricePerCard: number; note: string }[],
         isTrending: false,
+        isFeatured: false,
         isActive: true,
         images: [] as string[],
         videoUrl: ''
@@ -271,6 +272,7 @@ export default function DesignsPage() {
                 })),
                 addOns: design.addOns || [],
                 isTrending: design.isTrending || false,
+                isFeatured: design.isFeatured || false,
                 isActive: design.isActive !== undefined ? design.isActive : true,
                 images: design.images || [],
                 videoUrl: design.videoUrl || ''
@@ -292,6 +294,7 @@ export default function DesignsPage() {
                 }],
                 addOns: [],
                 isTrending: false,
+                isFeatured: false,
                 isActive: true,
                 images: [],
                 videoUrl: ''
@@ -441,6 +444,11 @@ export default function DesignsPage() {
                                             {design.isTrending && (
                                                 <div className="w-7 h-7 bg-amber-50 rounded-full flex items-center justify-center text-amber-500" title="Trending">
                                                     🔥
+                                                </div>
+                                            )}
+                                            {design.isFeatured && (
+                                                <div className="w-7 h-7 bg-purple-50 rounded-full flex items-center justify-center text-lavender" title="Featured">
+                                                    ✨
                                                 </div>
                                             )}
                                             <div className={cn(
@@ -599,6 +607,17 @@ export default function DesignsPage() {
                                                     </div>
                                                     <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isTrending ? "bg-lavender" : "bg-gray-200")}>
                                                         <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isTrending ? "left-5" : "left-1")} />
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
+                                                    onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}>
+                                                    <div>
+                                                        <p className="font-bold text-charcoal text-sm">Mark as Featured</p>
+                                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Show in featured home page section</p>
+                                                    </div>
+                                                    <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isFeatured ? "bg-lavender" : "bg-gray-200")}>
+                                                        <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isFeatured ? "left-5" : "left-1")} />
                                                     </div>
                                                 </div>
 

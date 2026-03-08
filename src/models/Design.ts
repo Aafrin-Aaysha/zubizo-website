@@ -74,6 +74,10 @@ const DesignSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isFeatured: {
+        type: Boolean,
+        default: false
+    },
     videoUrl: {
         type: String,
         default: ""

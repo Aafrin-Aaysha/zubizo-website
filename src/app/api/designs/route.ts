@@ -35,6 +35,8 @@ export async function GET(req: NextRequest) {
         }
 
         if (isTrending === 'true') query.isTrending = true;
+        const isFeatured = searchParams.get('isFeatured');
+        if (isFeatured === 'true') query.isFeatured = true;
 
         // For public catalog, only show active designs
         const showInactive = searchParams.get('showInactive');

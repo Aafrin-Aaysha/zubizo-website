@@ -16,7 +16,7 @@ export const FeaturedCarousel = ({ styling, title, subtitle, description, data }
                 const designIds = data?.designIds || [];
                 const url = (Array.isArray(designIds) && designIds.length > 0)
                     ? `/api/designs?ids=${designIds.join(',')}`
-                    : '/api/designs?limit=4';
+                    : '/api/designs?isFeatured=true&limit=4';
 
                 const res = await fetch(url);
                 if (res.ok) {
