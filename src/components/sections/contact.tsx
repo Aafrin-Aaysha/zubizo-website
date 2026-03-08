@@ -175,12 +175,12 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                             <div>
                                 <p className="font-sans text-[12px] font-medium uppercase tracking-[0.08em] text-[#8A8A8A] mb-1">Instagram</p>
                                 <a
-                                    href={settings?.instagramUrl || `https://www.instagram.com/${DEFAULT_CONTACT.instagram.replace('@', '')}`}
+                                    href="https://www.instagram.com/zubizo._art?igsh=MWtjcjN3Y2JjbW9pag=="
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="font-sans text-[18px] font-medium text-[#1A1A1A]"
                                 >
-                                    {settings?.instagramUrl?.split('/').pop() || DEFAULT_CONTACT.instagram}
+                                    @zubizo._art
                                 </a>
                             </div>
                         </div>

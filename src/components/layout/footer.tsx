@@ -75,7 +75,7 @@ const Footer = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="https://instagram.com/zubizo._art" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-500 font-medium hover:text-lavender transition-all group">
+                                <a href="https://www.instagram.com/zubizo._art?igsh=MWtjcjN3Y2JjbW9pag==" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-gray-500 font-medium hover:text-lavender transition-all group">
                                     <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
                                         <Instagram size={14} strokeWidth={1.5} />
                                     </div>

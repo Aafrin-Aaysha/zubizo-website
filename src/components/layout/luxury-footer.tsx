@@ -89,7 +89,7 @@ const Footer = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="https://instagram.com/zubizo._art" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group transition-all">
+                                <a href="https://www.instagram.com/zubizo._art?igsh=MWtjcjN3Y2JjbW9pag==" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group transition-all">
                                     <div className="w-8 h-8 rounded-lg bg-lavender/5 flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
                                         <Instagram size={14} strokeWidth={1.5} />
                                     </div>
