@@ -25,6 +25,14 @@ import dynamic from 'next/dynamic';
 
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 import 'react-quill/dist/quill.snow.css';
+import ReactDOM from 'react-dom';
+
+// Fix for React 19 compatibility with react-quill
+if (typeof window !== 'undefined') {
+    (ReactDOM as any).findDOMNode = (instance: any) => {
+        return instance instanceof HTMLElement ? instance : null;
+    };
+}
 
 export default function SettingsPage() {
     const [settings, setSettings] = useState<any>({
