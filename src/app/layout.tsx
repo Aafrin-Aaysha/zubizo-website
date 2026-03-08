@@ -53,9 +53,6 @@ export async function generateMetadata(): Promise<Metadata> {
       description: 'Handcrafted stationery for your special moments.',
       images: [settings?.logoUrl || '/logo.png'],
     },
-    icons: {
-      icon: "/logo.png",
-    },
   };
 }
 
