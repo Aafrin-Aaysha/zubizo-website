@@ -761,7 +761,7 @@ export default function DesignsPage() {
                                                                                         <input
                                                                                             type="number" placeholder="0.00" value={tier.pricePerCard ?? ''}
                                                                                             onChange={e => updateTier(idx, tIdx, 'pricePerCard', e.target.value === '' ? '' : parseFloat(e.target.value))}
-                                                                                            className="w-full px-8 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-black text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
+                                                                                            className="w-full pl-7 pr-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-black text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
                                                                                         />
                                                                                     </div>
                                                                                 </div>
