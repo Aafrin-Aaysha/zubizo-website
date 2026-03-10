@@ -160,14 +160,24 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
 // ── Main ─────────────────────────────────────────────────────────────────────
 export function DesignDetailClient({ design }: { design: Design }) {
     const safePackages = useMemo(() => {
-        if (design.packages && design.packages.length > 0) return design.packages;
+        if (design.packages && design.packages.length > 0) {
+            // Normalize each package: if priceTiers is missing/empty but pricePerCard exists, create a default tier
+            return design.packages.map((pkg: Package) => ({
+                ...pkg,
+                priceTiers: (pkg.priceTiers && pkg.priceTiers.length > 0)
+                    ? pkg.priceTiers
+                    : pkg.pricePerCard
+                        ? [{ minQty: design.minQuantity || 50, maxQty: null, pricePerCard: pkg.pricePerCard! }]
+                        : [],
+            }));
+        }
         return [{
             _id: 'default',
             title: 'Standard',
             inclusions: ["Premium Material", "Custom Printing"],
             priceTiers: [{ minQty: design.minQuantity || 50, maxQty: null, pricePerCard: design.basePrice || 0 }],
         }];
-    }, [design.packages, design.basePrice]);
+    }, [design.packages, design.basePrice, design.minQuantity]);
 
     const [selectedPackage, setSelectedPackage] = useState<Package>(safePackages[0]);
     const [quantity, setQuantity] = useState<number | string>(design.minQuantity || 100);

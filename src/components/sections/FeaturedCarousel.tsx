@@ -18,7 +18,7 @@ export const FeaturedCarousel = ({ styling, title, subtitle, description, data }
                     ? `/api/designs?ids=${designIds.join(',')}`
                     : '/api/designs?isFeatured=true&limit=4';
 
-                const res = await fetch(url);
+                const res = await fetch(url, { cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
                     setDesigns(data);
