@@ -62,138 +62,141 @@ export const TrendingRow = ({ data, styling, title, subtitle }: any) => {
             className="overflow-hidden relative"
             style={{
                 backgroundColor: styling?.backgroundColor || 'transparent',
+                padding: 'var(--section-spacing) 0',
             }}
         >
-            <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-8">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center md:text-left mb-8 md:mb-0"
-                >
-                    <span
-                        className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
-                        style={{ color: styling?.accentColor }}
-                    >
-                        {subtitle || "SOCIAL SHOWCASE"}
-                    </span>
-                    <h2
-                        className="text-[36px] font-medium text-charcoal font-serif"
-                        style={{ color: styling?.textColor }}
-                    >
-                        {title || "Trending on Instagram"}
-                    </h2>
-                </motion.div>
-
-                {/* Navigation Arrows */}
-                <div className="flex gap-4">
-                    <button
-                        onClick={() => scroll('left')}
-                        className="w-12 h-12 rounded-full border border-charcoal/10 flex items-center justify-center text-charcoal hover:bg-lavender hover:text-white hover:border-lavender transition-all shadow-sm"
-                        aria-label="Previous"
-                    >
-                        <ChevronLeft size={20} />
-                    </button>
-                    <button
-                        onClick={() => scroll('right')}
-                        className="w-12 h-12 rounded-full border border-charcoal/10 flex items-center justify-center text-charcoal hover:bg-lavender hover:text-white hover:border-lavender transition-all shadow-sm"
-                        aria-label="Next"
-                    >
-                        <ChevronRight size={20} />
-                    </button>
-                    <a
-                        href="https://www.instagram.com/zubizo._art?igsh=MWtjcjN3Y2JjbW9pag=="
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-12 h-12 rounded-full bg-charcoal text-white flex items-center justify-center hover:bg-lavender transition-all shadow-lg"
-                        title="Follow us on Instagram"
-                        style={{ backgroundColor: styling?.textColor }}
-                    >
-                        <Instagram size={20} />
-                    </a>
-                </div>
-            </div>
-
-            {/* Infinite Scrolling Row with Manual Override */}
-            <div className="relative">
-                <div
-                    ref={containerRef}
-                    className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-10 px-8"
-                >
+            <div className="site-container">
+                <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-8">
                     <motion.div
-                        className="flex gap-8 whitespace-nowrap"
-                        animate={{
-                            x: [0, -1 * (designs.length * 350 + designs.length * 32)],
-                        }}
-                        transition={{
-                            x: {
-                                repeat: Infinity,
-                                repeatType: "loop",
-                                duration: data?.autoplaySpeed || 25, // Slower 25s loop
-                                ease: "linear",
-                            },
-                        }}
-                        whileHover={{ animationPlayState: "paused" }}
-                        style={{ width: "max-content" }}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center md:text-left mb-8 md:mb-0"
                     >
-                        {/* Display items twice for infinite effect */}
-                        {[...designs, ...designs].map((design, idx) => (
-                            <Link
-                                key={`${design._id}-${idx}`}
-                                href={`/catalog/${design.slug}`}
-                                className="group relative w-[320px] md:w-[350px] aspect-[3/4] floating-card overflow-hidden shrink-0 snap-center"
-                                style={{ borderRadius: styling?.borderRadius || '1rem' }}
-                            >
-                                <div className="absolute inset-0 transition-transform duration-1000 group-hover:scale-[1.03]">
-                                    {design.videoUrl ? (
-                                        <video
-                                            src={design.videoUrl}
-                                            autoPlay
-                                            loop
-                                            muted
-                                            playsInline
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <img
-                                            src={design.images?.[0] || "/placeholder.jpg"}
-                                            alt={design.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    )}
-                                </div>
-
-                                {/* Bottom Gradient Overlay (Strong impact for extreme readability) */}
-                                <div
-                                    className="absolute inset-0"
-                                    style={{
-                                        background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 20%, rgba(0,0,0,0.2) 40%, transparent 65%)"
-                                    }}
-                                />
-
-                                {/* Text Container */}
-                                <div className="absolute bottom-0 left-0 right-0 p-8 z-20">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/90 mb-2">
-                                        {design.sku}
-                                    </p>
-                                    <h3
-                                        className="design-title font-serif leading-tight mb-1 text-white font-semibold"
-                                    >
-                                        {design.name}
-                                    </h3>
-                                    <p className="font-medium text-white/90" style={{ fontSize: '13px' }}>
-                                        {design.categoryId?.name || "Wedding Collection"}
-                                    </p>
-                                </div>
-
-                                {design.videoUrl && (
-                                    <div className="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-60">
-                                        <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                                    </div>
-                                )}
-                            </Link>
-                        ))}
+                        <span
+                            className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
+                            style={{ color: styling?.accentColor }}
+                        >
+                            {subtitle || "SOCIAL SHOWCASE"}
+                        </span>
+                        <h2
+                            className="text-[36px] font-medium text-charcoal font-serif"
+                            style={{ color: styling?.textColor }}
+                        >
+                            {title || "Trending on Instagram"}
+                        </h2>
                     </motion.div>
+
+                    {/* Navigation Arrows */}
+                    <div className="flex gap-4">
+                        <button
+                            onClick={() => scroll('left')}
+                            className="w-12 h-12 rounded-full border border-charcoal/10 flex items-center justify-center text-charcoal hover:bg-lavender hover:text-white hover:border-lavender transition-all shadow-sm"
+                            aria-label="Previous"
+                        >
+                            <ChevronLeft size={20} />
+                        </button>
+                        <button
+                            onClick={() => scroll('right')}
+                            className="w-12 h-12 rounded-full border border-charcoal/10 flex items-center justify-center text-charcoal hover:bg-lavender hover:text-white hover:border-lavender transition-all shadow-sm"
+                            aria-label="Next"
+                        >
+                            <ChevronRight size={20} />
+                        </button>
+                        <a
+                            href="https://www.instagram.com/zubizo._art?igsh=MWtjcjN3Y2JjbW9pag=="
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-12 h-12 rounded-full bg-charcoal text-white flex items-center justify-center hover:bg-lavender transition-all shadow-lg"
+                            title="Follow us on Instagram"
+                            style={{ backgroundColor: styling?.textColor }}
+                        >
+                            <Instagram size={20} />
+                        </a>
+                    </div>
+                </div>
+
+                {/* Infinite Scrolling Row with Manual Override */}
+                <div className="relative">
+                    <div
+                        ref={containerRef}
+                        className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-10 px-8"
+                    >
+                        <motion.div
+                            className="flex gap-8 whitespace-nowrap"
+                            animate={{
+                                x: [0, -1 * (designs.length * 350 + designs.length * 32)],
+                            }}
+                            transition={{
+                                x: {
+                                    repeat: Infinity,
+                                    repeatType: "loop",
+                                    duration: data?.autoplaySpeed || 25, // Slower 25s loop
+                                    ease: "linear",
+                                },
+                            }}
+                            whileHover={{ animationPlayState: "paused" }}
+                            style={{ width: "max-content" }}
+                        >
+                            {/* Display items twice for infinite effect */}
+                            {[...designs, ...designs].map((design, idx) => (
+                                <Link
+                                    key={`${design._id}-${idx}`}
+                                    href={`/catalog/${design.slug}`}
+                                    className="group relative w-[320px] md:w-[350px] aspect-[3/4] floating-card overflow-hidden shrink-0 snap-center"
+                                    style={{ borderRadius: styling?.borderRadius || '1rem' }}
+                                >
+                                    <div className="absolute inset-0 transition-transform duration-1000 group-hover:scale-[1.03]">
+                                        {design.videoUrl ? (
+                                            <video
+                                                src={design.videoUrl}
+                                                autoPlay
+                                                loop
+                                                muted
+                                                playsInline
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <img
+                                                src={design.images?.[0] || "/placeholder.jpg"}
+                                                alt={design.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        )}
+                                    </div>
+
+                                    {/* Bottom Gradient Overlay (Strong impact for extreme readability) */}
+                                    <div
+                                        className="absolute inset-0"
+                                        style={{
+                                            background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 20%, rgba(0,0,0,0.2) 40%, transparent 65%)"
+                                        }}
+                                    />
+
+                                    {/* Text Container */}
+                                    <div className="absolute bottom-0 left-0 right-0 p-8 z-20">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/90 mb-2">
+                                            {design.sku}
+                                        </p>
+                                        <h3
+                                            className="design-title font-serif leading-tight mb-1 text-white font-semibold"
+                                        >
+                                            {design.name}
+                                        </h3>
+                                        <p className="font-medium text-white/90" style={{ fontSize: '13px' }}>
+                                            {design.categoryId?.name || "Wedding Collection"}
+                                        </p>
+                                    </div>
+
+                                    {design.videoUrl && (
+                                        <div className="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-60">
+                                            <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                                        </div>
+                                    )}
+                                </Link>
+                            ))}
+                        </motion.div>
+                    </div>
                 </div>
             </div>
         </section>
