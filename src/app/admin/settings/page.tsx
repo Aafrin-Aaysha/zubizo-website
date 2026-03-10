@@ -23,8 +23,8 @@ import {
 import toast from 'react-hot-toast';
 import dynamic from 'next/dynamic';
 
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
-import 'react-quill/dist/quill.snow.css';
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false });
+import 'react-quill-new/dist/quill.snow.css';
 import ReactDOM from 'react-dom';
 
 const modules = {
