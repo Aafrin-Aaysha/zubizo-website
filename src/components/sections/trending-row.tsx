@@ -175,15 +175,16 @@ export const TrendingRow = ({ data, styling, title, subtitle }: any) => {
 
                                     {/* Text Container */}
                                     <div className="absolute bottom-0 left-0 right-0 p-8 z-20">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/90 mb-2">
+                                        <p style={{ fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.3em', color: 'rgba(255,255,255,0.9)', marginBottom: '6px' }}>
                                             {design.sku}
                                         </p>
                                         <h3
-                                            className="design-title font-serif leading-tight mb-1 text-white font-semibold"
+                                            style={{ color: '#ffffff', fontFamily: 'var(--font-serif, serif)', lineHeight: 1.25, fontWeight: 600, marginBottom: '4px', textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}
+                                            className="design-title"
                                         >
                                             {design.name}
                                         </h3>
-                                        <p className="font-medium text-white/90" style={{ fontSize: '13px' }}>
+                                        <p style={{ fontSize: '13px', fontWeight: 500, color: 'rgba(255,255,255,0.85)', textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}>
                                             {design.categoryId?.name || "Wedding Collection"}
                                         </p>
                                     </div>
