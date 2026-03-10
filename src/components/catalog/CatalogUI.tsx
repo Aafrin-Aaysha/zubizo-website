@@ -57,7 +57,7 @@ export default function CatalogUI({ initialDesigns, categories }: CatalogUIProps
     const activeSortLabel = SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Featured';
 
     return (
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+        <div className="site-container py-10">
             {/* Sort + View controls & Category Pills Row */}
             <div className="flex flex-col gap-6 mb-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -153,10 +153,10 @@ export default function CatalogUI({ initialDesigns, categories }: CatalogUIProps
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         className={cn(
-                            "gap-6",
+                            "gap-6 grid",
                             viewMode === 'grid'
-                                ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-                                : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
                         )}
                     >
                         {initialDesigns.map((design, i) => (

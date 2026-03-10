@@ -45,15 +45,14 @@ export const ShopByPrice = ({ data, styling, title, subtitle, description }: any
     const slabs = data?.slabs || priceSlabs;
 
     return (
-        <section
+        <div
             id="shop-by-price"
-            className="py-10 md:py-12 relative"
+            className="relative"
             style={{
-                backgroundColor: styling?.backgroundColor || '#ffffff',
-                padding: styling?.padding || '40px 0'
+                backgroundColor: styling?.backgroundColor || 'transparent',
             }}
         >
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="w-full">
                 <div className="text-center mb-8">
                     <span
                         className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
@@ -117,6 +116,6 @@ export const ShopByPrice = ({ data, styling, title, subtitle, description }: any
                     ))}
                 </div>
             </div>
-        </section>
+        </div>
     );
 };

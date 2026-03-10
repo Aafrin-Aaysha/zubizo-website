@@ -45,15 +45,14 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
     const waLink = `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent("Hi Zubizo, I would like to enquire about your invitation designs.")}`;
 
     return (
-        <section
+        <div
             id="contact"
-            className="py-16 md:py-20 relative overflow-hidden"
+            className="relative overflow-hidden"
             style={{
-                backgroundColor: styling?.backgroundColor || '#fafafa',
-                padding: styling?.padding || '80px 0'
+                backgroundColor: styling?.backgroundColor || 'transparent',
             }}
         >
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="w-full">
                 {/* Section Header */}
                 <div className="text-center mb-12">
                     <motion.div
@@ -187,6 +186,6 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                     </motion.div>
                 </div>
             </div>
-        </section>
+        </div>
     );
 };

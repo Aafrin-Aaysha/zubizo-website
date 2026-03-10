@@ -35,11 +35,10 @@ export const FeaturedCarousel = ({ styling, title, subtitle, description, data }
     if (!isLoading && designs.length === 0) return null;
 
     return (
-        <section
-            className="py-10 md:py-12"
-            style={{ backgroundColor: styling?.backgroundColor }}
+        <div
+            style={{ backgroundColor: styling?.backgroundColor || 'transparent' }}
         >
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+            <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
                 <div>
                     <span className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block">
                         {subtitle || "CURATED COLLECTION"}
@@ -59,8 +58,8 @@ export const FeaturedCarousel = ({ styling, title, subtitle, description, data }
                 </Link>
             </div>
             {/* Responsive Grid Layout */}
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12 sm:gap-x-8 sm:gap-y-16">
+            <div className="w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-12 sm:gap-x-8 sm:gap-y-16">
                     {isLoading ? (
                         [...Array(4)].map((_, i) => (
                             <div key={i} className="flex flex-col gap-4">
@@ -114,6 +113,6 @@ export const FeaturedCarousel = ({ styling, title, subtitle, description, data }
                     )}
                 </div>
             </div>
-        </section>
+        </div>
     );
 };

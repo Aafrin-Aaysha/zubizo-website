@@ -47,15 +47,13 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
     );
 
     return (
-        <section
+        <div
             id="about"
-            className="py-10 md:py-12"
             style={{
-                backgroundColor: styling?.backgroundColor || 'var(--color-pearl-white)',
-                padding: styling?.padding || '40px 0'
+                backgroundColor: styling?.backgroundColor || 'transparent',
             }}
         >
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="w-full">
                 {/* Section Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -123,6 +121,6 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
                     </motion.div>
                 </div>
             </div>
-        </section>
+        </div>
     );
 };

@@ -54,15 +54,13 @@ export const LuxuryHero = ({ data, styling }: any) => {
     };
 
     return (
-        <section
+        <div
             className="relative w-full overflow-hidden"
             style={{
-                backgroundColor: styling?.backgroundColor || '#faf9fb', // Pearl white tone
-                paddingTop: '160px',
-                paddingBottom: '40px',
+                backgroundColor: styling?.backgroundColor || 'transparent',
             }}
         >
-            <div className="w-full max-w-[1300px] mx-auto px-6 sm:px-8 lg:px-12">
+            <div className="w-full">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
                     {/* Left: Editorial Text Content */}
@@ -169,6 +167,6 @@ export const LuxuryHero = ({ data, styling }: any) => {
 
                 </div>
             </div>
-        </section>
+        </div>
     );
 };

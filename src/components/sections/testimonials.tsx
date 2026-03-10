@@ -42,15 +42,14 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
     };
 
     return (
-        <section
+        <div
             id="testimonials"
-            className="py-10 md:py-12 relative overflow-hidden"
+            className="relative overflow-hidden"
             style={{
-                backgroundColor: styling?.backgroundColor || 'var(--color-pearl-white)',
-                padding: styling?.padding || '40px 0'
+                backgroundColor: styling?.backgroundColor || 'transparent',
             }}
         >
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="w-full">
                 {/* Section Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -165,6 +164,6 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
                     `}} />
                 </div>
             </div>
-        </section>
+        </div>
     );
 };

@@ -59,18 +59,17 @@ export const TrendingRow = ({ data, styling, title, subtitle }: any) => {
     return (
         <section
             id="trending"
-            className="py-10 md:py-12 overflow-hidden relative"
+            className="overflow-hidden relative"
             style={{
-                backgroundColor: styling?.backgroundColor || 'var(--color-pearl-white)',
-                padding: styling?.padding || '40px 0'
+                backgroundColor: styling?.backgroundColor || 'transparent',
             }}
         >
-            <div className="mx-auto max-w-[1200px] px-8 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-8">
+            <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-center md:text-left mb-8 md:mb-0 px-4"
+                    className="text-center md:text-left mb-8 md:mb-0"
                 >
                     <span
                         className="font-sans text-[12px] font-semibold uppercase tracking-widest text-lavender mb-4 block"
@@ -178,8 +177,7 @@ export const TrendingRow = ({ data, styling, title, subtitle }: any) => {
                                         {design.sku}
                                     </p>
                                     <h3
-                                        className="font-serif leading-tight mb-1"
-                                        style={{ fontSize: '18px', fontWeight: 600, color: 'white' }}
+                                        className="design-title font-serif leading-tight mb-1 text-white font-semibold"
                                     >
                                         {design.name}
                                     </h3>

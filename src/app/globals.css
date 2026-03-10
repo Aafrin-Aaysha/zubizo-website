@@ -98,6 +98,27 @@
   --lavender: #ae7fcb;
   --charcoal: #2e2e2e;
   scroll-behavior: smooth;
+
+  /* Responsive Section Spacing */
+  --section-spacing: 80px;
+}
+
+@media (max-width: 1280px) {
+  :root {
+    --section-spacing: 72px;
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --section-spacing: 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --section-spacing: 48px;
+  }
 }
 
 body {
@@ -132,11 +153,45 @@ h2 {
 }
 
 h3 {
-  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
 }
 
 h4 {
-  font-size: clamp(1.1rem, 3vw, 1.5rem);
+  font-size: clamp(1rem, 3vw, 1.25rem);
+}
+
+/* Fluid Design Titles for Cards */
+.design-title {
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 1280px) {
+  .design-title {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .design-title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .design-title {
+    font-size: 15px;
+  }
+}
+
+/* Standardized Site Container */
+.site-container {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
 /* Card Titles */

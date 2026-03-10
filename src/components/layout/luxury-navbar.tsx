@@ -72,17 +72,17 @@ export const LuxuryNavbar = () => {
             }}
             className="fixed top-0 z-50 w-full transition-colors duration-500"
         >
-            <div className="mx-auto max-w-[1440px] px-8 md:px-12 lg:px-20">
-                <div className="flex h-24 items-center justify-between gap-12">
+            <div className="site-container">
+                <div className="flex h-24 items-center justify-between gap-6 lg:gap-12">
                     {/* Left: Logo */}
                     <div className="flex-shrink-0">
                         <Link href="/" className="group flex items-center gap-4">
-                            <LogoIcon size={40} className="text-lavender transition-transform group-hover:scale-110 duration-500" />
+                            <LogoIcon size={32} className="text-lavender transition-transform group-hover:scale-110 duration-500 lg:size-[40px]" />
                             <div className="flex flex-col leading-none">
-                                <span className="text-base font-black tracking-[0.2em] uppercase text-charcoal font-serif">
+                                <span className="text-[14px] lg:text-base font-black tracking-[0.2em] uppercase text-charcoal font-serif">
                                     ZUBIZO
                                 </span>
-                                <span className="text-[8px] font-black tracking-[0.4em] uppercase text-lavender/60">
+                                <span className="text-[7px] lg:text-[8px] font-black tracking-[0.4em] uppercase text-lavender/60">
                                     Invitation Studio
                                 </span>
                             </div>
@@ -90,12 +90,12 @@ export const LuxuryNavbar = () => {
                     </div>
 
                     {/* Center: Navigation Links */}
-                    <div className="hidden lg:flex items-center space-x-12">
+                    <div className="hidden xl:flex items-center space-x-10">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="font-sans text-sm font-medium uppercase tracking-[0.12em] text-charcoal/70 hover:text-lavender transition-all relative group py-2"
+                                className="font-sans text-[13px] font-medium uppercase tracking-[0.12em] text-charcoal/70 hover:text-lavender transition-all relative group py-2"
                             >
                                 {link.name}
                                 <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-lavender/60 rounded-full transition-all duration-300 group-hover:w-full" />
@@ -104,14 +104,14 @@ export const LuxuryNavbar = () => {
                     </div>
 
                     {/* Right: Search + Action */}
-                    <div className="hidden md:flex items-center gap-8 flex-1 max-w-md justify-end">
+                    <div className="hidden lg:flex items-center gap-4 flex-1 max-w-[320px] xl:max-w-md justify-end">
                         <div className="relative w-full">
                             <input
                                 type="text"
                                 placeholder="Find a design..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-charcoal/[0.03] border border-charcoal/5 focus:border-lavender/30 rounded-full py-3.5 px-12 text-sm font-medium text-charcoal placeholder:text-charcoal/40 transition-all outline-none"
+                                className="w-full bg-charcoal/[0.03] border border-charcoal/5 focus:border-lavender/30 rounded-full py-3 px-10 text-[13px] font-medium text-charcoal placeholder:text-charcoal/40 transition-all outline-none"
                             />
                             <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-charcoal/20 transition-colors" />
 
