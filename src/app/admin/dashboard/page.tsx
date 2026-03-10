@@ -160,9 +160,9 @@ export default function DashboardPage() {
                             <table className="w-full text-left">
                                 <thead className="bg-gray-50/50 text-gray-400 text-[9px] font-black uppercase tracking-[0.2em]">
                                     <tr>
-                                        <th className="px-8 py-5">Design Info</th>
-                                        <th className="px-8 py-5">Value / Detail</th>
-                                        <th className="px-8 py-5">Status</th>
+                                        <th className="px-8 py-5 min-w-[200px]">Design Info</th>
+                                        <th className="px-8 py-5 min-w-[150px]">Value / Detail</th>
+                                        <th className="px-8 py-5 min-w-[120px]">Status</th>
                                         <th className="px-8 py-5 text-right">Preview</th>
                                     </tr>
                                 </thead>

@@ -76,7 +76,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setIsSidebarOpen(false)}
-                        className="fixed inset-0 bg-black/40 z-[40]"
+                        className="fixed inset-0 bg-black/60 z-[90] backdrop-blur-sm"
                     />
                 )}
             </AnimatePresence>
@@ -90,7 +90,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                 className={cn(
-                    "fixed inset-y-0 left-0 z-[50] bg-white border-r border-lavender/10 text-charcoal overflow-hidden flex flex-col shadow-xl lg:shadow-none",
+                    "fixed inset-y-0 left-0 z-[100] bg-white border-r border-lavender/10 text-charcoal overflow-hidden flex flex-col shadow-2xl lg:shadow-none",
                     isMobile && !isSidebarOpen ? "pointer-events-none" : "pointer-events-auto"
                 )}
             >

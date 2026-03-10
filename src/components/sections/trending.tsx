@@ -96,20 +96,22 @@ const TrendingSection = () => {
                             <div key={i} className="aspect-[4/5] bg-gray-100 animate-pulse rounded-[2.5rem]" />
                         ))
                     ) : (
-                        designs.map((design) => (
-                            <DesignCard
-                                key={design._id}
-                                id={design.slug}
-                                variant="overlay"
-                                title={design.name}
-                                category={design.categoryId?.name || "Stationery"}
-                                description={design.description}
-                                imageUrl={design.images?.[0] || ""}
-                                price={getStartingPrice(design)}
-                                isTrending={design.isTrending}
-                                isNew={design.isNewCollection}
-                            />
-                        ))
+                        designs
+                            .filter((d, index, self) => self.findIndex(t => t._id === d._id) === index) // Safety check for duplicates
+                            .map((design) => (
+                                <DesignCard
+                                    key={design._id}
+                                    id={design.slug}
+                                    variant="overlay"
+                                    title={design.name}
+                                    category={design.categoryId?.name || "Stationery"}
+                                    description={design.description}
+                                    imageUrl={design.images?.[0] || ""}
+                                    price={getStartingPrice(design)}
+                                    isTrending={design.isTrending}
+                                    isNew={design.isNewCollection}
+                                />
+                            ))
                     )}
                 </div>
             </div>
