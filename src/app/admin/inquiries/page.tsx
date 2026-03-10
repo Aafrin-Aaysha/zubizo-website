@@ -163,7 +163,7 @@ export default function InquiriesPage() {
             </div>
 
             {/* List */}
-            <div className="grid grid-cols-1 gap-8">
+            <div className="grid grid-cols-1 gap-6 lg:gap-8">
                 {isLoading ? (
                     [...Array(3)].map((_, i) => <div key={i} className="h-48 bg-gray-50 animate-pulse rounded-[2.5rem]" />)
                 ) : paginatedInquiries.length === 0 ? (

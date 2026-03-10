@@ -8,6 +8,9 @@ import HomePageSection from "@/models/HomePageSection";
 import { bootstrapSections } from "@/lib/bootstrap-homepage";
 import { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 async function getSections() {
   await dbConnect();
   let sections = await HomePageSection.find({}).sort({ order: 1 });

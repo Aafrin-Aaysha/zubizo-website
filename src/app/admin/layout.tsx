@@ -16,6 +16,7 @@ import {
     X,
     ChevronRight
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { LogoIcon } from '@/components/ui/logo-icon';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -30,9 +31,29 @@ const sidebarItems = [
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default closed on mobile-first
+    const [isMobile, setIsMobile] = useState(false);
     const pathname = usePathname();
     const router = useRouter();
+
+    // Handle screen resize and initial state
+    React.useEffect(() => {
+        const checkMobile = () => {
+            const mobile = window.innerWidth < 1024;
+            setIsMobile(mobile);
+            setIsSidebarOpen(!mobile);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Close sidebar on route change for mobile
+    React.useEffect(() => {
+        if (isMobile) {
+            setIsSidebarOpen(false);
+        }
+    }, [pathname, isMobile]);
 
     const handleLogout = async () => {
         try {
@@ -49,13 +70,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="min-h-screen bg-gray-50 flex">
             {/* Sidebar Overlay for Mobile */}
             <AnimatePresence>
-                {!isSidebarOpen && (
+                {isMobile && isSidebarOpen && (
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        onClick={() => setIsSidebarOpen(true)}
-                        className="fixed inset-0 bg-black/20 z-20 lg:hidden"
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="fixed inset-0 bg-black/40 z-[40]"
                     />
                 )}
             </AnimatePresence>
@@ -63,8 +84,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Sidebar */}
             <motion.aside
                 initial={false}
-                animate={{ width: isSidebarOpen ? 280 : 80 }}
-                className="fixed inset-y-0 left-0 z-30 bg-white border-r border-lavender/10 text-charcoal overflow-hidden flex flex-col transition-all duration-300 ease-in-out"
+                animate={{
+                    width: isMobile ? (isSidebarOpen ? '280px' : '0px') : (isSidebarOpen ? '280px' : '80px'),
+                    x: isMobile && !isSidebarOpen ? '-100%' : '0%'
+                }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className={cn(
+                    "fixed inset-y-0 left-0 z-[50] bg-white border-r border-lavender/10 text-charcoal overflow-hidden flex flex-col shadow-xl lg:shadow-none",
+                    isMobile && !isSidebarOpen ? "pointer-events-none" : "pointer-events-auto"
+                )}
             >
                 {/* Sidebar Header */}
                 <div className="h-16 flex items-center px-6 border-b border-lavender/10">
@@ -130,15 +158,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </motion.aside>
 
             {/* Main Content */}
-            <div className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${isSidebarOpen ? 'pl-[280px]' : 'pl-[80px]'}`}>
+            <div className={cn(
+                "flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out",
+                isMobile ? "pl-0" : (isSidebarOpen ? "pl-[280px]" : "pl-[80px]")
+            )}>
                 {/* Header */}
-                <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 sticky top-0 z-10">
-                    <button
-                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                        className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors"
-                    >
-                        {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-                    </button>
+                <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-[30]">
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                            className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors"
+                        >
+                            {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                        </button>
+
+                        {isMobile && (
+                            <div className="flex items-center gap-2">
+                                <LogoIcon size={24} />
+                                <span className="font-bold text-lg text-charcoal/80">Zubizo</span>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="flex items-center gap-4">
                         <button className="p-2 text-gray-400 hover:text-gray-600 relative">
@@ -163,7 +203,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </header>
 
                 {/* Page Content */}
-                <main className="p-8">
+                <main className="p-4 lg:p-8 overflow-x-hidden">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
