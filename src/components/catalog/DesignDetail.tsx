@@ -282,8 +282,22 @@ Please share further details.`;
             <div className="lg:col-span-5 sticky top-28">
                 <div className="bg-white rounded-[2.5rem] p-8 shadow-luxury border border-lavender/10 space-y-8 floating-card">
 
-                    {/* Package Selection */}
-                    {safePackages.length > 1 && (
+                    {/* Package Display / Selection */}
+                    {safePackages.length === 1 ? (
+                        // Single package: show as a labeled badge
+                        <div>
+                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Package</h3>
+                            <div className="w-full p-4 rounded-[1.5rem] border border-lavender bg-lavender/5 flex items-center gap-3">
+                                <div className="w-5 h-5 rounded-full border-2 border-lavender bg-lavender flex items-center justify-center shrink-0">
+                                    <Check size={12} className="text-white" />
+                                </div>
+                                <span className="font-black text-sm tracking-tight text-charcoal">
+                                    {safePackages[0].title}
+                                </span>
+                            </div>
+                        </div>
+                    ) : safePackages.length > 1 ? (
+                        // Multiple packages: show selector
                         <div>
                             <h2 className="text-2xl font-black text-charcoal font-serif mb-6">Choose Package</h2>
                             <div className="grid grid-cols-1 gap-3">
@@ -313,7 +327,7 @@ Please share further details.`;
                                 ))}
                             </div>
                         </div>
-                    )}
+                    ) : null}
 
                     {/* Inclusions */}
                     {selectedPackage.inclusions && selectedPackage.inclusions.length > 0 && (
