@@ -111,10 +111,10 @@ export default function DashboardPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {isLoading ? (
                     [...Array(4)].map((_, i) => (
-                        <div key={i} className="h-32 bg-white border border-gray-50 rounded-[2rem] animate-pulse" />
+                        <div key={i} className="h-28 md:h-32 bg-white border border-gray-50 rounded-[1.5rem] md:rounded-[2rem] animate-pulse" />
                     ))
                 ) : (
                     stats.map((stat, index) => (
@@ -123,12 +123,12 @@ export default function DashboardPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
                             key={index}
-                            className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm"
+                            className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border border-gray-100 shadow-sm"
                         >
-                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
-                            <div className="flex items-baseline gap-2">
-                                <h3 className="text-3xl font-black text-charcoal">{stat.value}</h3>
-                                <span className="text-[10px] font-bold text-lavender uppercase">{stat.trend}</span>
+                            <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
+                            <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                                <h3 className="text-xl md:text-3xl font-black text-charcoal">{stat.value}</h3>
+                                <span className="text-[8px] md:text-[10px] font-bold text-lavender uppercase">{stat.trend}</span>
                             </div>
                         </motion.div>
                     ))
@@ -138,8 +138,8 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Recent Inquiries */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden min-h-[500px]">
-                        <div className="p-8 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden min-h-[500px]">
+                        <div className="p-5 md:p-8 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
                                 <h2 className="text-xl font-black text-charcoal">Recent Inquiries</h2>
                                 <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Live from WhatsApp</p>

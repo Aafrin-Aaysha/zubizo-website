@@ -753,8 +753,8 @@ export default function DesignsPage() {
                                                                                         className="w-full sm:w-[100px] px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
                                                                                     />
                                                                                 </div>
-                                                                                <div className="hidden sm:block text-gray-300 text-[10px] mt-4">cards →</div>
-                                                                                <div className="col-span-2 sm:col-auto space-y-1 flex-1">
+                                                                                <div className="hidden sm:block text-gray-300 text-[10px] mt-4">→</div>
+                                                                                <div className="col-span-2 sm:col-auto space-y-1 flex-1 min-w-[100px]">
                                                                                     <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Price / Card</label>
                                                                                     <div className="relative">
                                                                                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">₹</span>
