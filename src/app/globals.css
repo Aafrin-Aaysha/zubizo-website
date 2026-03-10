@@ -13,6 +13,10 @@
   --color-soft-white: #faf9fb;
   --color-charcoal: #2e2e2e;
 
+  --font-serif: var(--font-cormorant);
+  --font-sans: 'Satoshi', sans-serif;
+  --font-script: var(--font-parisienne);
+
   --animate-fade-in: fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-fade-up: fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   --animate-soft-slide-in: soft-slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -96,6 +100,45 @@
   scroll-behavior: smooth;
 }
 
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Satoshi', sans-serif;
+  font-size: 15px;
+  /* Base body size */
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-cormorant), serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--charcoal);
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 56px;
+}
+
+h2 {
+  font-size: 36px;
+}
+
+h3 {
+  font-size: 22px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
 /* Card Titles */
 
 @layer utilities {
@@ -142,7 +185,7 @@
     box-shadow: 0 8px 25px -8px rgba(174, 127, 203, 0.1);
   }
 
-  /* Hide number input spinners */
+  /* Admin: Hide number input spinners */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
