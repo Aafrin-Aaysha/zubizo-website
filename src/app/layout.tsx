@@ -4,6 +4,8 @@ import "./globals.css";
 
 export const viewport: Viewport = {
   themeColor: "#b19cd9",
+  width: 'device-width',
+  initialScale: 1,
 };
 
 const cormorantGaramond = Cormorant_Garamond({

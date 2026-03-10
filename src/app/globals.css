@@ -104,8 +104,8 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: 'Satoshi', sans-serif;
-  font-size: 15px;
-  /* Base body size */
+  font-size: 16px;
+  /* Base body size increased to 16px */
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -124,19 +124,19 @@ h6 {
 }
 
 h1 {
-  font-size: 56px;
+  font-size: clamp(2.5rem, 8vw, 4rem);
 }
 
 h2 {
-  font-size: 36px;
+  font-size: clamp(2rem, 6vw, 3rem);
 }
 
 h3 {
-  font-size: 22px;
+  font-size: clamp(1.5rem, 4vw, 2rem);
 }
 
 h4 {
-  font-size: 18px;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
 }
 
 /* Card Titles */
