@@ -316,17 +316,19 @@ Please share further details.`;
                     )}
 
                     {/* Inclusions */}
-                    <div className="space-y-3">
-                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">What's Included</h3>
-                        <div className="space-y-2">
-                            {selectedPackage.inclusions?.map((inc, i) => (
-                                <div key={i} className="flex items-start gap-2.5 text-sm text-charcoal/80 font-medium">
-                                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-lavender shrink-0" />
-                                    {inc}
-                                </div>
-                            ))}
+                    {selectedPackage.inclusions && selectedPackage.inclusions.length > 0 && (
+                        <div className="space-y-3">
+                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest">What's Included</h3>
+                            <div className="space-y-2">
+                                {selectedPackage.inclusions.map((inc, i) => (
+                                    <div key={i} className="flex items-start gap-2.5 text-sm text-charcoal/80 font-medium">
+                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-lavender shrink-0" />
+                                        {inc}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Price Tiers */}
                     {selectedPackage.priceTiers && selectedPackage.priceTiers.length > 0 && (
