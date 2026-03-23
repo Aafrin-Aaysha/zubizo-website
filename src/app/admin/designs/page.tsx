@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus,
@@ -18,7 +19,8 @@ import {
     Info,
     Settings,
     Package as PackageIcon,
-    AlertCircle
+    AlertCircle,
+    Zap
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn, getStartingPrice } from '@/lib/utils';
@@ -315,13 +317,22 @@ export default function DesignsPage() {
                     <h1 className="text-3xl font-black text-gray-900 tracking-tight">Design Management</h1>
                     <p className="text-gray-500 mt-1 font-medium">Manage your invitation catalogue and package pricing.</p>
                 </div>
-                <button
-                    onClick={() => openModal()}
-                    className="bg-lavender hover:bg-[#9a6ab5] text-white px-8 py-3.5 rounded-2xl font-black shadow-xl shadow-lavender/20 transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
-                >
-                    <Plus size={20} />
-                    New Design
-                </button>
+                <div className="flex items-center gap-3">
+                    <Link
+                        href="/admin/bulk-import"
+                        className="bg-white border border-gray-200 hover:border-lavender text-charcoal px-6 py-3.5 rounded-2xl font-black shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+                    >
+                        <Zap size={18} />
+                        Bulk Import
+                    </Link>
+                    <button
+                        onClick={() => openModal()}
+                        className="bg-lavender hover:bg-[#9a6ab5] text-white px-8 py-3.5 rounded-2xl font-black shadow-xl shadow-lavender/20 transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+                    >
+                        <Plus size={20} />
+                        New Design
+                    </button>
+                </div>
             </div>
 
             {/* Filter Bar */}

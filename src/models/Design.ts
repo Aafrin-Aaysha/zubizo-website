@@ -30,7 +30,6 @@ const DesignSchema = new mongoose.Schema({
     sku: {
         type: String,
         required: true,
-        unique: true,
         trim: true
     },
     name: {
@@ -41,7 +40,6 @@ const DesignSchema = new mongoose.Schema({
     slug: {
         type: String,
         required: true,
-        unique: true,
         lowercase: true
     },
     description: {
@@ -92,6 +90,11 @@ const DesignSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+// Unique indexes that only apply to non-deleted documents.
+// This allows re-using a SKU or slug after soft-deleting a design.
+DesignSchema.index({ sku: 1 }, { unique: true, partialFilterExpression: { isDeleted: false } });
+DesignSchema.index({ slug: 1 }, { unique: true, partialFilterExpression: { isDeleted: false } });
+
 // Slug auto-generation logic
 DesignSchema.pre("validate", async function (this: any) {
     if (!this.slug && this.name && this.sku) {
@@ -106,7 +109,7 @@ DesignSchema.pre("validate", async function (this: any) {
         // Use the constructor to access the model for uniqueness check
         const DesignModel = this.constructor as mongoose.Model<any>;
 
-        while (await DesignModel.exists({ slug, _id: { $ne: this._id } })) {
+        while (await DesignModel.exists({ slug, isDeleted: false, _id: { $ne: this._id } })) {
             slug = `${base}-${counter}`;
             counter++;
         }

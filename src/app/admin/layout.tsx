@@ -14,7 +14,8 @@ import {
     Bell,
     Menu,
     X,
-    ChevronRight
+    ChevronRight,
+    Zap
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LogoIcon } from '@/components/ui/logo-icon';
@@ -24,6 +25,7 @@ const sidebarItems = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Homepage Builder', href: '/admin/builder', icon: FolderTree },
     { name: 'Manage Designs', href: '/admin/designs', icon: ImageIcon },
+    { name: 'Bulk Import', href: '/admin/bulk-import', icon: Zap },
     { name: 'Categories', href: '/admin/categories', icon: FolderTree },
     { name: 'Inquiry Logs', href: '/admin/inquiries', icon: MessageSquare },
     { name: 'Website Settings', href: '/admin/settings', icon: Settings },
