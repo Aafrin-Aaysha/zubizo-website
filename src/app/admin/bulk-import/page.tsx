@@ -101,8 +101,11 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
             }
 
             // 2. Parse Name (If we just parsed code, the next non-empty line might be the name)
-            if (lookingForName && !design.name && !line.match(/^(?:Code|Package|Included|Min|100\s*Cards|✨|🌿|📩|\(Including)/i)) {
-                design.name = line.replace(/^\*+|\*+$/g, '').trim(); // Remove bold asterisks
+            if (lookingForName && !design.name && !line.match(/^(?:Code|Package|Included|Min|100\s*Cards|✨|🌿|📩|\(Including|Category|Description|Theme)/i)) {
+                let cleanName = line.replace(/^\*+|\*+$/g, '').trim();
+                const fallbackMatch = cleanName.match(/^(?:Name|Design Name|Invitation Name)\s*[:：]\s*(.+)/i);
+                if (fallbackMatch) cleanName = fallbackMatch[1].trim();
+                design.name = cleanName;
                 lookingForName = false;
                 continue;
             }
@@ -121,7 +124,6 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
             }
 
             // 4. Parse Package title / Start of new section
-            // Look for "INVITATIONS INCLUDE", "Package:", or emojis marking new sections
             const pkgMatch = line.match(/^(?:Package|📩\s*INVITATIONS INCLUDE)\s*[:：]?\s*(.+)?/i);
             if (pkgMatch) {
                 if (currentPackage) {
@@ -137,19 +139,16 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
             }
 
             // 5. Detect major board types as new packages if no explicit package title exists
-            // E.g. "🌿 MAT FINISHING BOARD" or "✨ PREMIUM BOARDS"
             const boardMatch = line.match(/^(?:🌿|✨)?\s*(MAT FINISHING|PREMIUM BOARDS|ACRYLIC|GLASS|VELLUM).*?-\s*(.*)/i) || 
                                line.match(/^(?:🌿|✨)\s*(.+)/i) ||
                                line.match(/^(MAT FINISHING|PREMIUM BOARDS).*?(?:\d+ GSM)/i);
             if (boardMatch) {
                 if (currentPackage) {
-                    // If the current package has no price tiers yet, it means this is just an inclusion
                     if (currentPackage.priceTiers.length === 0) {
                         currentPackage.inclusions.push(line.replace(/^[🌿✨]\s*/, '').trim());
                         parsingPriceTiers = false;
                         continue;
                     }
-                    // Otherwise, start a new package
                     design.packages.push(currentPackage);
                 }
                 
@@ -159,11 +158,33 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
                     priceTiers: []
                 };
                 
-                // If it's the premium board section, naming the package correctly helps
-                if (line.toLowerCase().includes('premium')) {
-                    currentPackage.title = 'Premium Package';
-                } else if (line.toLowerCase().includes('mat finishing')) {
-                    currentPackage.title = 'Budget Friendly Package';
+                // Intelligently name or prefix the package based on the board type
+                const boardStr = line.toLowerCase();
+                let suffix = '';
+                if (boardStr.includes('premium') || boardStr.includes('linen')) {
+                    suffix = ' (Premium/Linen)';
+                } else if (boardStr.includes('mat finishing') || boardStr.includes('matt')) {
+                    suffix = ' (Matte Board)';
+                } else if (boardStr.includes('acrylic')) {
+                    suffix = ' (Acrylic)';
+                } else if (boardStr.includes('glass')) {
+                    suffix = ' (Glass)';
+                }
+
+                if (suffix) {
+                    if (currentPackage.title && currentPackage.title !== 'Standard Package') {
+                        // Append to existing custom title
+                        // Make sure we don't duplicate it
+                        if (!currentPackage.title.includes(suffix.replace(/[()]/g, ''))) {
+                             currentPackage.title += suffix;
+                        }
+                    } else {
+                        // Replace generic title
+                        const base = boardStr.includes('premium') ? 'Premium Package' :
+                                     boardStr.includes('matt') ? 'Budget Friendly Package' :
+                                     boardStr.includes('acrylic') ? 'Luxury Package' : 'Standard Package';
+                        currentPackage.title = base + suffix;
+                    }
                 }
 
                 parsingPriceTiers = false;
@@ -181,16 +202,14 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
                 continue;
             }
 
-            // Handle implicit inclusions (lines that aren't prices, right after package start)
-            if (currentPackage && !parsingPriceTiers && line.length > 3 && !line.match(/^\d/) && !line.match(/^(?:Code|Name|Category|Description|Package|Min)/i)) {
+            // Handle implicit inclusions
+            if (currentPackage && !parsingPriceTiers && line.length > 3 && !line.match(/^\d/) && !line.match(/^(?:Code|Name|Category|Description|Theme|Package|Min)/i)) {
                  currentPackage.inclusions.push(line.trim());
                  continue;
             }
 
             // 7. Parse price tiers
-            // Format 1: "100 Cards – ₹26/ card" or "50-100: 27"
             const singleQtyMatch = line.match(/^(\d+)\s*(?:Cards?|Pcs|Pieces)?\s*[-–—:]+\s*(?:₹?\s*)?(?:Rs\.?)?\s*(\d+(?:\.\d+)?)\s*(?:\/?\s*card)?/i);
-            // Format 2: "200–400 ➝ ₹24/ card" or "400-599: 23"
             const rangeQtyMatch = line.match(/^(\d+)\s*[-–—to]+\s*(\d+)\s*(?:Cards?|Pcs)?\s*(?:➝|→|[-–—>:]+)\s*(?:₹?\s*)?(?:Rs\.?)?\s*(\d+(?:\.\d+)?)\s*(?:\/?\s*card)?/i);
 
             if (rangeQtyMatch) {
@@ -205,19 +224,13 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
             } else if (singleQtyMatch) {
                 if (!currentPackage) currentPackage = { title: 'Standard Package', inclusions: [], priceTiers: [] };
                 const qty = parseInt(singleQtyMatch[1]);
-                
-                // If the previous tier has no maxQty, set it to (this qty - 1) or similar if logical, 
-                // but actually for Zubizo, exact tiers are better. 
-                // Let's set maxQty to null for the first tier if it's "100 Cards", usually meaning "up to 100" or exactly 100.
-                // We'll approximate:
                 const prevTier = currentPackage.priceTiers[currentPackage.priceTiers.length - 1];
                 if (prevTier && !prevTier.maxQty && qty > prevTier.minQty) {
                     prevTier.maxQty = qty - 1;
                 }
-                
                 currentPackage.priceTiers.push({
                     minQty: qty,
-                    maxQty: null, // Open ended until next tier updates it, if applicable
+                    maxQty: null,
                     pricePerCard: parseFloat(singleQtyMatch[2])
                 });
                 parsingPriceTiers = true;
@@ -226,8 +239,16 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
 
             // If we are looking for the name and find regular text, use it as part of description if name is already set
             if (design.name && !currentPackage && !parsingPriceTiers && line.length > 5) {
-                if (!design.description) design.description = line;
-                else design.description += '\n' + line;
+                // Ignore 'Category' explicitly
+                const catMatch = line.match(/^(?:Category|Type)\s*[:：]\s*(.+)/i);
+                if (catMatch) continue;
+
+                let cleanDesc = line;
+                const descMatch = cleanDesc.match(/^(?:Description|About|Details|Theme)\s*[:：]\s*(.+)/i);
+                if (descMatch) cleanDesc = descMatch[1].trim();
+
+                if (!design.description) design.description = cleanDesc;
+                else design.description += '\n' + cleanDesc;
             }
         }
 

@@ -82,8 +82,11 @@ function parseDesignText(text, defaultCategoryId) {
                 lookingForName = true;
                 continue;
             }
-            if (lookingForName && !design.name && !line.match(/^(?:Code|Package|Included|Min|100\s*Cards|✨|🌿|📩|\(Including)/i)) {
-                design.name = line.replace(/^\*+|\*+$/g, '').trim();
+            if (lookingForName && !design.name && !line.match(/^(?:Code|Package|Included|Min|100\s*Cards|✨|🌿|📩|\(Including|Category|Description|Theme)/i)) {
+                let cleanName = line.replace(/^\*+|\*+$/g, '').trim();
+                const fallbackMatch = cleanName.match(/^(?:Name|Design Name|Invitation Name)\s*[:：]\s*(.+)/i);
+                if (fallbackMatch) cleanName = fallbackMatch[1].trim();
+                design.name = cleanName;
                 lookingForName = false;
                 continue;
             }
@@ -114,8 +117,24 @@ function parseDesignText(text, defaultCategoryId) {
                     design.packages.push(currentPackage);
                 }
                 currentPackage = { title: 'Standard Package', inclusions: [line.replace(/^[🌿✨]\s*/, '').trim()], priceTiers: [] };
-                if (line.toLowerCase().includes('premium')) currentPackage.title = 'Premium Package';
-                else if (line.toLowerCase().includes('mat finishing')) currentPackage.title = 'Budget Friendly Package';
+                
+                const boardStr = line.toLowerCase();
+                let suffix = '';
+                if (boardStr.includes('premium') || boardStr.includes('linen')) suffix = ' (Premium/Linen)';
+                else if (boardStr.includes('mat finishing') || boardStr.includes('matt')) suffix = ' (Matte Board)';
+                else if (boardStr.includes('acrylic')) suffix = ' (Acrylic)';
+                else if (boardStr.includes('glass')) suffix = ' (Glass)';
+
+                if (suffix) {
+                    if (currentPackage.title && currentPackage.title !== 'Standard Package') {
+                        if (!currentPackage.title.includes(suffix.replace(/[()]/g, ''))) currentPackage.title += suffix;
+                    } else {
+                        const base = boardStr.includes('premium') ? 'Premium Package' :
+                                     boardStr.includes('matt') ? 'Budget Friendly Package' :
+                                     boardStr.includes('acrylic') ? 'Luxury Package' : 'Standard Package';
+                        currentPackage.title = base + suffix;
+                    }
+                }
                 parsingPriceTiers = false;
                 continue;
             }
@@ -126,7 +145,7 @@ function parseDesignText(text, defaultCategoryId) {
                 parsingPriceTiers = false;
                 continue;
             }
-            if (currentPackage && !parsingPriceTiers && line.length > 3 && !line.match(/^\d/) && !line.match(/^(?:Code|Name|Category|Description|Package|Min)/i)) {
+            if (currentPackage && !parsingPriceTiers && line.length > 3 && !line.match(/^\d/) && !line.match(/^(?:Code|Name|Category|Description|Theme|Package|Min)/i)) {
                  currentPackage.inclusions.push(line.trim());
                  continue;
             }
@@ -147,8 +166,14 @@ function parseDesignText(text, defaultCategoryId) {
                 continue;
             }
             if (design.name && !currentPackage && !parsingPriceTiers && line.length > 5) {
-                if (!design.description) design.description = line;
-                else design.description += '\n' + line;
+                const catMatch = line.match(/^(?:Category|Type)\s*[:：]\s*(.+)/i);
+                if (catMatch) continue;
+                let cleanDesc = line;
+                const descMatch = cleanDesc.match(/^(?:Description|About|Details|Theme)\s*[:：]\s*(.+)/i);
+                if (descMatch) cleanDesc = descMatch[1].trim();
+                
+                if (!design.description) design.description = cleanDesc;
+                else design.description += '\n' + cleanDesc;
             }
         }
         if (currentPackage) design.packages.push(currentPackage);
