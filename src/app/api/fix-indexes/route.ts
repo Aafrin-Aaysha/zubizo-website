@@ -6,16 +6,30 @@ export async function GET() {
     try {
         await dbConnect();
         
-        // This will drop any indexes in MongoDB that do not exist in the Mongoose schema,
-        // and build any newly defined indexes.
-        // Crucially, it will drop the old strict `sku_1` index and replace it with
-        // the new partial index that allows soft deletion!
-        const result = await Design.syncIndexes({ background: false });
+        const results = [];
+        
+        try {
+            await Design.collection.dropIndex('sku_1');
+            results.push('Dropped old sku_1 index');
+        } catch (e: any) {
+            results.push('sku_1 index issue: ' + e.message);
+        }
+
+        try {
+            await Design.collection.dropIndex('slug_1');
+            results.push('Dropped old slug_1 index');
+        } catch (e: any) {
+            results.push('slug_1 index issue: ' + e.message);
+        }
+
+        // Now rebuild them with the correct partial filter expression
+        const syncResult = await Design.syncIndexes({ background: false });
         
         return NextResponse.json({
             success: true,
-            message: "Database indexes synchronized successfully. The soft-delete SKU issue is fixed!",
-            result
+            message: "Database indexes forcefully dropped and rebuilt successfully. The soft-delete SKU issue is fixed!",
+            results,
+            syncResult
         });
     } catch (error: any) {
         console.error("Failed to sync indexes:", error);
