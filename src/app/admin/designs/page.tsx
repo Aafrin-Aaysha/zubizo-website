@@ -53,7 +53,8 @@ export default function DesignsPage() {
         isFeatured: false,
         isActive: true,
         images: [] as string[],
-        videoUrl: ''
+        videoUrl: '',
+        demoUrl: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -277,7 +278,8 @@ export default function DesignsPage() {
                 isFeatured: design.isFeatured || false,
                 isActive: design.isActive !== undefined ? design.isActive : true,
                 images: design.images || [],
-                videoUrl: design.videoUrl || ''
+                videoUrl: design.videoUrl || '',
+                demoUrl: design.demoUrl || ''
             });
         } else {
             setEditingDesign(null);
@@ -299,7 +301,8 @@ export default function DesignsPage() {
                 isFeatured: false,
                 isActive: true,
                 images: [],
-                videoUrl: ''
+                videoUrl: '',
+                demoUrl: ''
             });
         }
         setIsModalOpen(true);
@@ -579,6 +582,15 @@ export default function DesignsPage() {
                                                         readOnly
                                                     />
                                                 </div>
+                                                <div className="col-span-2">
+                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-1.5 block">Demo Link (for E-Websites)</label>
+                                                    <input
+                                                        type="text" value={formData.demoUrl}
+                                                        onChange={e => setFormData({ ...formData, demoUrl: e.target.value })}
+                                                        className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal"
+                                                        placeholder="https://demo.zubizo.com/invitation-name"
+                                                    />
+                                                </div>
                                             </div>
 
                                             <div>
@@ -649,6 +661,7 @@ export default function DesignsPage() {
                                                     <input
                                                         type="number" required value={formData.minQuantity ?? ''}
                                                         onChange={e => setFormData({ ...formData, minQuantity: e.target.value === '' ? '' : parseInt(e.target.value) })}
+                                                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                         className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-black text-charcoal"
                                                     />
                                                 </div>
@@ -753,6 +766,7 @@ export default function DesignsPage() {
                                                                                     <input
                                                                                         type="number" placeholder="Min" value={tier.minQty ?? ''}
                                                                                         onChange={e => updateTier(idx, tIdx, 'minQty', e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                                                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                         className="w-full sm:w-[100px] px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
                                                                                     />
                                                                                 </div>
@@ -761,6 +775,7 @@ export default function DesignsPage() {
                                                                                     <input
                                                                                         type="number" placeholder="Max" value={tier.maxQty ?? ''}
                                                                                         onChange={e => updateTier(idx, tIdx, 'maxQty', e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                                                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                         className="w-full sm:w-[100px] px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
                                                                                     />
                                                                                 </div>
@@ -772,6 +787,7 @@ export default function DesignsPage() {
                                                                                         <input
                                                                                             type="number" placeholder="0.00" value={tier.pricePerCard ?? ''}
                                                                                             onChange={e => updateTier(idx, tIdx, 'pricePerCard', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                                                                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                             className="w-full pl-7 pr-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-black text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
                                                                                         />
                                                                                     </div>

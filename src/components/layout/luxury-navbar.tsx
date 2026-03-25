@@ -36,7 +36,7 @@ export const LuxuryNavbar = () => {
     const navLinks = [
         { name: "Home", href: "/" },
         { name: "Catalogue", href: "/catalog" },
-        { name: "E-Invites", href: "/e-invites" },
+        { name: "Digital Invites", href: "/digital-invites" },
         { name: "Our Story", href: "/#about" },
         { name: "Policies", href: "/policies" },
         { name: "Contact", href: "/#contact" },

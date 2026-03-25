@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ExternalLink } from 'lucide-react';
 import { getStartingPrice } from '@/lib/utils';
 
 export default function DesignCard({ design }: { design: any }) {
@@ -43,17 +43,33 @@ export default function DesignCard({ design }: { design: any }) {
 
                 {/* Price Preview */}
                 <div className="mt-auto pt-4 border-t border-neutral-100 flex items-center justify-between">
-                    <div>
-                        <span className="text-xs text-neutral-400 block mb-0.5">Starting from</span>
-                        <span className="text-xl font-bold text-neutral-900">₹{startingPrice}</span>
+                    <div className="flex items-center gap-2">
+                        <div>
+                            <span className="text-xs text-neutral-400 block mb-0.5">Starting from</span>
+                            <span className="text-xl font-bold text-neutral-900">₹{startingPrice}</span>
+                        </div>
                     </div>
 
-                    <Link
-                        href={`/catalog/${design.slug}`}
-                        className="w-10 h-10 rounded-lg border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-lavender hover:border-lavender transition-all group/btn"
-                    >
-                        <ArrowRight size={18} className="group-hover/btn:translate-x-0.5 transition-transform" />
-                    </Link>
+                    <div className="flex items-center gap-2">
+                        {design.demoUrl && (
+                            <a
+                                href={design.demoUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="h-10 px-4 rounded-lg bg-lavender/10 text-lavender flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:bg-lavender hover:text-white transition-all border border-lavender/20"
+                            >
+                                <ExternalLink size={12} />
+                                Live Demo
+                            </a>
+                        )}
+                        <Link
+                            href={`/catalog/${design.slug}`}
+                            className="w-10 h-10 rounded-lg border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-lavender hover:border-lavender transition-all group/btn"
+                        >
+                            <ArrowRight size={18} className="group-hover/btn:translate-x-0.5 transition-transform" />
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>

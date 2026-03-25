@@ -80,6 +80,10 @@ const DesignSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    demoUrl: {
+        type: String,
+        default: ""
+    },
     isActive: {
         type: Boolean,
         default: true

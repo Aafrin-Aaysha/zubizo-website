@@ -51,6 +51,7 @@ interface ParsedDesign {
     isActive: boolean;
     isTrending: boolean;
     isFeatured: boolean;
+    demoUrl: string;
     // UI state
     _status: 'pending' | 'uploading' | 'importing' | 'success' | 'error';
     _error?: string;
@@ -80,6 +81,7 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
             isActive: true,
             isTrending: false,
             isFeatured: false,
+            demoUrl: '',
             _status: 'pending',
             _collapsed: false,
             _localFiles: [],
@@ -115,6 +117,12 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
             if (nameMatch && !design.name) {
                 design.name = nameMatch[1].trim();
                 lookingForName = false;
+                continue;
+            }
+            // Demo Link
+            const demoMatch = line.match(/^(?:Demo|Live Demo|Website|Link)\s*[:：]?\s*(.+)/i);
+            if (demoMatch) {
+                design.demoUrl = demoMatch[1].trim();
                 continue;
             }
 
@@ -529,6 +537,7 @@ export default function BulkImportPage() {
                     isActive: design.isActive,
                     isTrending: design.isTrending,
                     isFeatured: design.isFeatured,
+                    demoUrl: design.demoUrl,
                 };
 
                 const res = await fetch('/api/designs', {
@@ -850,8 +859,19 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                                         <input
                                                             type="number" value={design.minQuantity}
                                                             onChange={e => updateDesign(dIdx, { minQuantity: parseInt(e.target.value) || 50 })}
+                                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                             disabled={design._status === 'success'}
                                                             className="w-full px-4 py-2.5 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-lavender outline-none transition-all font-black text-charcoal text-sm disabled:opacity-50"
+                                                        />
+                                                    </div>
+                                                    <div className="md:col-span-2">
+                                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Demo Link</label>
+                                                        <input
+                                                            type="text" value={design.demoUrl}
+                                                            onChange={e => updateDesign(dIdx, { demoUrl: e.target.value })}
+                                                            disabled={design._status === 'success'}
+                                                            className="w-full px-4 py-2.5 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal text-sm disabled:opacity-50"
+                                                            placeholder="https://..."
                                                         />
                                                     </div>
                                                 </div>
@@ -946,6 +966,7 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                                                             <input
                                                                                 type="number" value={tier.minQty ?? ''} placeholder="Min"
                                                                                 onChange={e => updateTier(dIdx, pIdx, tIdx, 'minQty', e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                 disabled={design._status === 'success'}
                                                                                 className="w-20 px-2 py-1.5 bg-gray-50 rounded-lg text-xs font-bold text-center outline-none focus:bg-white focus:ring-1 focus:ring-lavender disabled:opacity-50"
                                                                             />
@@ -953,6 +974,7 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                                                             <input
                                                                                 type="number" value={tier.maxQty ?? ''} placeholder="Max"
                                                                                 onChange={e => updateTier(dIdx, pIdx, tIdx, 'maxQty', e.target.value === '' ? null : parseInt(e.target.value))}
+                                                                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                 disabled={design._status === 'success'}
                                                                                 className="w-20 px-2 py-1.5 bg-gray-50 rounded-lg text-xs font-bold text-center outline-none focus:bg-white focus:ring-1 focus:ring-lavender disabled:opacity-50"
                                                                             />
@@ -960,6 +982,7 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                                                             <input
                                                                                 type="number" value={tier.pricePerCard ?? ''} placeholder="Price"
                                                                                 onChange={e => updateTier(dIdx, pIdx, tIdx, 'pricePerCard', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                                                                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                 disabled={design._status === 'success'}
                                                                                 className="w-20 px-2 py-1.5 bg-gray-50 rounded-lg text-xs font-black text-center outline-none focus:bg-white focus:ring-1 focus:ring-lavender disabled:opacity-50"
                                                                             />

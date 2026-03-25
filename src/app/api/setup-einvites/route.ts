@@ -6,32 +6,38 @@ export async function GET() {
     try {
         await dbConnect();
         
-        let eInviteCategory = await Category.findOne({ name: "E-Invites", isDeleted: false });
+        let inviteCat = await Category.findOne({ name: "Digital E-Invite", isDeleted: false });
+        let websiteCat = await Category.findOne({ name: "Premium E-Website", isDeleted: false });
         
-        if (!eInviteCategory) {
-            const maxCat = await Category.findOne().sort({ displayOrder: -1 });
-            const nextOrder = maxCat ? (maxCat as any).displayOrder + 1 : 1;
-            
-            eInviteCategory = await Category.create({
-                name: "E-Invites",
-                slug: "e-invites",
-                description: "Premium Digital PDF Invitations",
-                displayOrder: nextOrder,
+        const maxCat = await Category.findOne().sort({ displayOrder: -1 });
+        let nextOrder = maxCat ? (maxCat as any).displayOrder + 1 : 1;
+        
+        if (!inviteCat) {
+            inviteCat = await Category.create({
+                name: "Digital E-Invite",
+                slug: "digital-e-invite",
+                description: "High-resolution digital invitations in JPEG/PNG/PDF formats.",
+                displayOrder: nextOrder++,
                 isActive: true,
                 isDeleted: false
             });
-            
-            return NextResponse.json({
-                success: true,
-                message: "Created E-Invites category successfully!",
-                category: eInviteCategory
+        }
+
+        if (!websiteCat) {
+            websiteCat = await Category.create({
+                name: "Premium E-Website",
+                slug: "premium-e-website",
+                description: "Interactive, mobile-friendly digital invitation websites.",
+                displayOrder: nextOrder++,
+                isActive: true,
+                isDeleted: false
             });
         }
         
         return NextResponse.json({
             success: true,
-            message: "E-Invites category already exists.",
-            category: eInviteCategory
+            message: "Digital Invite categories setup complete!",
+            categories: { inviteCat, websiteCat }
         });
         
     } catch (error: any) {
