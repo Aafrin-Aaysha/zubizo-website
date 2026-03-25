@@ -51,7 +51,12 @@ export default async function DigitalInvitesPage({
     }
 
     if (activeSubCat !== "all") {
-        query.categoryId = activeSubCat;
+        const matchedCat = categories.find(c => c.name === activeSubCat);
+        if (matchedCat) {
+            query.categoryId = matchedCat._id;
+        } else if (/^[a-f\d]{24}$/i.test(activeSubCat)) {
+            query.categoryId = activeSubCat;
+        }
     }
 
     const designs = await Design.find(query)
