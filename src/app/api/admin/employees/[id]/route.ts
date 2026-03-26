@@ -4,12 +4,12 @@ import Employee from '@/models/Employee';
 import { getAdminFromRequest, unauthorizedResponse } from '@/lib/api-auth';
 import { hashPassword } from '@/lib/auth';
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const admin = await getAdminFromRequest(req);
         if (!admin) return unauthorizedResponse('Admin access required');
 
-        const { id } = params;
+        const { id } = await params;
         const body = await req.json();
         const { name, empId, password, isActive } = body;
 
@@ -36,12 +36,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const admin = await getAdminFromRequest(req);
         if (!admin) return unauthorizedResponse('Admin access required');
 
-        const { id } = params;
+        const { id } = await params;
         await dbConnect();
         
         const employee = await Employee.findByIdAndDelete(id);
