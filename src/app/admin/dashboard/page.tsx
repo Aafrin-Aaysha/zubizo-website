@@ -123,12 +123,24 @@ export default function DashboardPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
                             key={index}
-                            className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border border-gray-100 shadow-sm"
+                            className={cn(
+                                "bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border shadow-sm",
+                                stat.label === 'Design Overdue' && stat.value > 0 ? "border-red-100 bg-red-50/10 shadow-red-500/5" : "border-gray-100"
+                            )}
                         >
-                            <p className="text-[8px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">{stat.label}</p>
+                            <p className={cn(
+                                "text-[8px] md:text-[10px] font-black uppercase tracking-widest mb-1",
+                                stat.label === 'Design Overdue' && stat.value > 0 ? "text-red-500" : "text-gray-400"
+                            )}>{stat.label}</p>
                             <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-                                <h3 className="text-xl md:text-3xl font-black text-charcoal">{stat.value}</h3>
-                                <span className="text-[8px] md:text-[10px] font-bold text-lavender uppercase">{stat.trend}</span>
+                                <h3 className={cn(
+                                    "text-xl md:text-3xl font-black",
+                                    stat.label === 'Design Overdue' && stat.value > 0 ? "text-red-600" : "text-charcoal"
+                                )}>{stat.value}</h3>
+                                <span className={cn(
+                                    "text-[8px] md:text-[10px] font-bold uppercase",
+                                    stat.label === 'Design Overdue' && stat.value > 0 ? "text-red-500" : "text-lavender"
+                                )}>{stat.trend}</span>
                             </div>
                         </motion.div>
                     ))
@@ -161,9 +173,9 @@ export default function DashboardPage() {
                                 <thead className="bg-gray-50/50 text-gray-400 text-[9px] font-black uppercase tracking-[0.2em]">
                                     <tr>
                                         <th className="px-8 py-5 min-w-[200px]">Design Info</th>
-                                        <th className="px-8 py-5 min-w-[150px]">Value / Detail</th>
+                                        <th className="px-8 py-5 min-w-[150px]">Value / Assignment</th>
                                         <th className="px-8 py-5 min-w-[120px]">Status</th>
-                                        <th className="px-8 py-5 text-right">Preview</th>
+                                        <th className="px-8 py-5 text-right">Production</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
@@ -200,8 +212,8 @@ export default function DashboardPage() {
                                                 <td className="px-8 py-5">
                                                     <div className="flex flex-col gap-0.5">
                                                         <p className="text-sm font-black text-charcoal">₹{inquiry.estimatedTotal || 0}</p>
-                                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
-                                                            {inquiry.quantity || 100} units • {inquiry.selectedPackage || 'Std'}
+                                                        <p className="text-[9px] font-bold text-lavender uppercase tracking-widest">
+                                                            {inquiry.assignedTo?.name ? `Design: ${inquiry.assignedTo.name}` : 'Awaiting Assignment'}
                                                         </p>
                                                     </div>
                                                 </td>
@@ -209,8 +221,9 @@ export default function DashboardPage() {
                                                     <div className={cn(
                                                         "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest inline-block border",
                                                         inquiry.status === 'New' ? "bg-blue-50 text-blue-600 border-blue-100" :
-                                                            inquiry.status === 'Contacted' ? "bg-amber-50 text-amber-600 border-amber-100" :
-                                                                "bg-green-50 text-green-600 border-green-100"
+                                                        ['Designing', 'Printing'].includes(inquiry.status) ? "bg-lavender/10 text-lavender border-lavender/20" :
+                                                        inquiry.status === 'Confirmed' ? "bg-green-50 text-green-600 border-green-100" :
+                                                        "bg-gray-100 text-gray-500 border-gray-100"
                                                     )}>
                                                         {inquiry.status}
                                                     </div>

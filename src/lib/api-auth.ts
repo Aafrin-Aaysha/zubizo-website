@@ -7,13 +7,22 @@ import { verifyToken } from './auth';
  */
 export async function getAdminFromRequest(req: NextRequest) {
     const token = req.cookies.get('admin-token')?.value;
-
-    if (!token) {
+    if (!token) return null;
+    try {
+        const decoded = verifyToken(token) as any;
+        if (decoded?.role !== 'admin' && decoded?.role !== 'super-admin') return null;
+        return decoded;
+    } catch (error) {
         return null;
     }
+}
 
+export async function getEmployeeFromRequest(req: NextRequest) {
+    const token = req.cookies.get('employee-token')?.value;
+    if (!token) return null;
     try {
-        const decoded = verifyToken(token);
+        const decoded = verifyToken(token) as any;
+        if (decoded?.role !== 'employee') return null;
         return decoded;
     } catch (error) {
         return null;
@@ -23,8 +32,8 @@ export async function getAdminFromRequest(req: NextRequest) {
 /**
  * Standard unauthorized response
  */
-export function unauthorizedResponse() {
-    return new Response(JSON.stringify({ message: 'Unauthorized. Admin access required.' }), {
+export function unauthorizedResponse(message: string = 'Unauthorized. Access required.') {
+    return new Response(JSON.stringify({ message }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
     });

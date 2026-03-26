@@ -8,22 +8,30 @@ export async function GET() {
     try {
         await dbConnect();
 
-        const [totalDesigns, totalCategories, recentInquiriesCount, allInquiries] = await Promise.all([
+        const now = new Date();
+        const fortyEightHoursAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
+        const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+
+        const [totalDesigns, totalCategories, overdueDesign, upcomingDeadlines, allInquiries] = await Promise.all([
             Design.countDocuments({ isDeleted: false }),
             Category.countDocuments({ isActive: true }),
-            Inquiry.countDocuments({ createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } }),
-            Inquiry.find().sort({ createdAt: -1 }).limit(8).populate('designId'),
+            Inquiry.countDocuments({ 
+                status: 'Designing', 
+                'timeline.designStartedAt': { $lt: fortyEightHoursAgo } 
+            }),
+            Inquiry.countDocuments({ 
+                status: { $nin: ['Delivered', 'Completed'] },
+                deliveryDeadline: { $lte: twoDaysFromNow, $gt: now } 
+            }),
+            Inquiry.find().sort({ createdAt: -1 }).limit(10).populate('designId').populate('assignedTo', 'name'),
         ]);
-
-        // Calculate a more realistic conversion or growth metric
-        const activeDesigns = await Design.countDocuments({ isDeleted: false, isActive: true });
 
         return NextResponse.json({
             stats: [
-                { label: 'Total Catalog', value: totalDesigns, trend: `+${activeDesigns} Live`, color: '#ae7fcb' },
-                { label: 'Collections', value: totalCategories, trend: 'Organized', color: '#10b981' },
-                { label: 'Weekly Inquiries', value: recentInquiriesCount, trend: 'Active', color: '#f59e0b' },
-                { label: 'Platform Status', value: 'Healthy', trend: 'Secure', color: '#3b82f6' },
+                { label: 'Total Catalog', value: totalDesigns, trend: 'Premium', color: '#ae7fcb' },
+                { label: 'Active Pipeline', value: allInquiries.length, trend: 'Live', color: '#10b981' },
+                { label: 'Design Overdue', value: overdueDesign, trend: '>48h Limit', color: '#ef4444' },
+                { label: 'Upcoming Delivery', value: upcomingDeadlines, trend: '<2d Alert', color: '#f59e0b' },
             ],
             recentInquiries: allInquiries,
         }, { status: 200 });

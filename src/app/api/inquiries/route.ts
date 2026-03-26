@@ -2,16 +2,29 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Inquiry from '@/models/Inquiry';
 import Design from '@/models/Design'; // Register Design model for population
-import { getAdminFromRequest, unauthorizedResponse } from '@/lib/api-auth';
+import { getAdminFromRequest, getEmployeeFromRequest, unauthorizedResponse } from '@/lib/api-auth';
 
 export async function GET(req: NextRequest) {
     try {
         const admin = await getAdminFromRequest(req);
-        if (!admin) return unauthorizedResponse();
+        const employee = await getEmployeeFromRequest(req);
+        
+        if (!admin && !employee) return unauthorizedResponse();
 
         await dbConnect();
-        const inquiries = await Inquiry.find()
+        
+        let query: any = {};
+        if (employee) {
+            query.assignedTo = employee.id;
+        } else if (admin) {
+            const { searchParams } = new URL(req.url);
+            const adminId = searchParams.get('adminId');
+            if (adminId) query.assignedAdmin = adminId;
+        }
+
+        const inquiries = await Inquiry.find(query)
             .populate('designId')
+            .populate('assignedTo', 'name empId')
             .sort({ createdAt: -1 });
         return NextResponse.json(inquiries);
     } catch (error) {
@@ -59,17 +72,46 @@ export async function POST(req: Request) {
 export async function PUT(req: NextRequest) {
     try {
         const admin = await getAdminFromRequest(req);
-        if (!admin) return unauthorizedResponse();
+        const employee = await getEmployeeFromRequest(req);
+        
+        if (!admin && !employee) return unauthorizedResponse();
 
-        const { id, status } = await req.json();
+        const body = await req.json();
+        const { id, ...updates } = body;
+
         await dbConnect();
-        const updatedInquiry = await Inquiry.findByIdAndUpdate(id, { status }, { new: true });
-        if (!updatedInquiry) {
-            return NextResponse.json({ message: 'Inquiry not found' }, { status: 404 });
+        
+        const inquiry = await Inquiry.findById(id);
+        if (!inquiry) return NextResponse.json({ message: 'Inquiry not found' }, { status: 404 });
+
+        // Authorization: Employee can only update assigned inquiries
+        if (employee && inquiry.assignedTo?.toString() !== employee.id) {
+            return unauthorizedResponse('Not assigned to this order');
         }
+
+        // Handle specific business logic for transitions
+        if (updates.status) {
+            const now = new Date();
+            if (updates.status === 'Confirmed' && inquiry.status !== 'Confirmed') {
+                updates['timeline.confirmedAt'] = now;
+            } else if (updates.status === 'Designing' && !inquiry.timeline?.designStartedAt) {
+                updates['timeline.designStartedAt'] = now;
+            } else if (updates.status === 'Design Confirmed' && !inquiry.timeline?.designConfirmedAt) {
+                updates['timeline.designConfirmedAt'] = now;
+            } else if (updates.status === 'Printing' && !inquiry.timeline?.printingStartedAt) {
+                updates['timeline.printingStartedAt'] = now;
+            } else if (updates.status === 'Delivered' && !inquiry.timeline?.deliveredAt) {
+                updates['timeline.deliveredAt'] = now;
+            }
+        }
+
+        const updatedInquiry = await Inquiry.findByIdAndUpdate(id, { $set: updates }, { new: true })
+            .populate('designId')
+            .populate('assignedTo', 'name empId');
+
         return NextResponse.json(updatedInquiry);
     } catch (error) {
-        console.error("Dashboard Stats Error:", error);
-        return NextResponse.json({ message: 'Error fetching stats' }, { status: 500 });
+        console.error("PUT /api/inquiries error:", error);
+        return NextResponse.json({ message: 'Error updating inquiry' }, { status: 500 });
     }
 }

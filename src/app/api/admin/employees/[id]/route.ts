@@ -1,0 +1,57 @@
+import { NextRequest, NextResponse } from 'next/server';
+import dbConnect from '@/lib/db';
+import Employee from '@/models/Employee';
+import { getAdminFromRequest, unauthorizedResponse } from '@/lib/api-auth';
+import { hashPassword } from '@/lib/auth';
+
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        const admin = await getAdminFromRequest(req);
+        if (!admin) return unauthorizedResponse('Admin access required');
+
+        const { id } = params;
+        const body = await req.json();
+        const { name, empId, password, isActive } = body;
+
+        await dbConnect();
+        
+        const updateData: any = {};
+        if (name) updateData.name = name;
+        if (empId) updateData.empId = empId;
+        if (isActive !== undefined) updateData.isActive = isActive;
+        
+        if (password) {
+            updateData.password = await hashPassword(password);
+        }
+
+        const employee = await Employee.findByIdAndUpdate(id, updateData, { new: true }).select('-password');
+        
+        if (!employee) {
+            return NextResponse.json({ message: 'Employee not found' }, { status: 404 });
+        }
+
+        return NextResponse.json(employee);
+    } catch (error: any) {
+        return NextResponse.json({ message: error.message || 'Error updating employee' }, { status: 500 });
+    }
+}
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        const admin = await getAdminFromRequest(req);
+        if (!admin) return unauthorizedResponse('Admin access required');
+
+        const { id } = params;
+        await dbConnect();
+        
+        const employee = await Employee.findByIdAndDelete(id);
+        
+        if (!employee) {
+            return NextResponse.json({ message: 'Employee not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: 'Employee deleted successfully' });
+    } catch (error) {
+        return NextResponse.json({ message: 'Error deleting employee' }, { status: 500 });
+    }
+}
