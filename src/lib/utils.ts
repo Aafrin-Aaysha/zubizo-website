@@ -19,24 +19,34 @@ export function getWhatsAppNumber() {
 }
 
 export function getStartingPrice(design: any) {
+    // 1. Fallback if no packages exist
     if (!design.packages || design.packages.length === 0) {
         return design.basePrice || 0;
     }
 
-    let minPrice = Infinity;
+    // 2. Determine target quantity (default to 100 if both minQuantity and package tiers are missing)
+    const minQty = design.minQuantity || 50;
+    const basicPkg = design.packages[0];
 
-    design.packages.forEach((pkg: any) => {
-        if (pkg.priceTiers && pkg.priceTiers.length > 0) {
-            pkg.priceTiers.forEach((tier: any) => {
-                if (tier.pricePerCard < minPrice) {
-                    minPrice = tier.pricePerCard;
-                }
-            });
-        } else if (pkg.pricePerCard > 0 && pkg.pricePerCard < minPrice) {
-            // Fallback to legacy field if tiers are missing but legacy price exists
-            minPrice = pkg.pricePerCard;
+    // 3. Find relevant price in basic package
+    if (basicPkg.priceTiers && basicPkg.priceTiers.length > 0) {
+        // Find the tier that matches minQty
+        const matchingTier = basicPkg.priceTiers.find((t: any) =>
+            minQty >= t.minQty && (t.maxQty == null || minQty <= t.maxQty)
+        );
+
+        if (matchingTier) {
+            return matchingTier.pricePerCard;
         }
-    });
 
-    return minPrice === Infinity ? (design.basePrice || 0) : minPrice;
+        // Fallback: If no tier matches minQty exactly, use the tier with the smallest minQty
+        const startingTier = basicPkg.priceTiers.reduce((prev: any, curr: any) =>
+            curr.minQty < prev.minQty ? curr : prev
+            , basicPkg.priceTiers[0]);
+
+        return startingTier.pricePerCard;
+    }
+
+    // 4. Final fallbacks
+    return basicPkg.pricePerCard || design.basePrice || 0;
 }
