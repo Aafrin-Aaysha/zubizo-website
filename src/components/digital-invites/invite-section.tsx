@@ -1,0 +1,87 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { Check } from "lucide-react";
+import InviteCard from "./invite-card";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+
+interface Feature {
+  icon: any;
+  label: string;
+}
+
+interface InviteSectionProps {
+  id: string;
+  title: string;
+  subtitle?: string;
+  features: string[];
+  designs: any[];
+  categoryName: string;
+  categoryPath: string;
+  showVideoIcon?: boolean;
+}
+
+export const InviteSection = ({ 
+  id, 
+  title, 
+  subtitle,
+  features, 
+  designs, 
+  categoryName,
+  categoryPath,
+  showVideoIcon 
+}: InviteSectionProps) => {
+  return (
+    <section id={id} className="py-24 bg-white border-b border-charcoal/5">
+      <div className="site-container">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 px-4">
+          <div className="max-w-2xl">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl md:text-5xl font-serif text-charcoal mb-4 italic italic-lavender">{title}</h2>
+              <div className="flex flex-wrap gap-x-6 gap-y-3 mt-6">
+                {features.map((feature, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full bg-lavender/10 flex items-center justify-center text-lavender">
+                      <Check size={12} strokeWidth={3} />
+                    </div>
+                    <span className="text-[11px] font-black uppercase tracking-widest text-charcoal/50">{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+          
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <Link 
+              href={categoryPath}
+              className="group flex items-center gap-3 px-8 py-4 bg-white text-charcoal border border-charcoal/10 rounded-full font-bold text-xs uppercase tracking-widest hover:border-lavender/30 transition-all shadow-sm active:scale-95"
+            >
+              View More {categoryName}
+            </Link>
+          </motion.div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4">
+          {designs.slice(0, 8).map((design, idx) => (
+            <InviteCard 
+                key={design._id} 
+                design={design} 
+                showVideoIcon={showVideoIcon}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
