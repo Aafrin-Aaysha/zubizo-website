@@ -1,147 +1,243 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Check, ArrowRight } from "lucide-react";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Check, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-const pricingPlans = [
-  {
-    name: "Image Invite",
-    price: "499",
-    description: "Perfect for quick and elegant announcements.",
-    features: [
-      "HD PNG / JPEG / PDF",
-      "WhatsApp & Social Ready",
-      "24 Hour Delivery",
-      "Premium Artisanal Design",
-      "Personalized Content"
-    ],
-    cta: "Choose Image Invite",
-    href: "/digital-invites/image",
-    isRecommended: false
-  },
-  {
-    name: "Website Invite",
-    price: "3999",
-    description: "The complete interactive wedding experience.",
-    features: [
-      "Full Custom Website",
-      "Interactive RSVP System",
-      "Google Maps Integration",
-      "Love Story & Gallery",
-      "99.9% Uptime Hosting",
-      "Mobile First Design",
-      "Message Wall for Guests"
-    ],
-    cta: "Create My Website",
-    href: "/digital-invites/website",
-    isRecommended: false
-  },
-  {
-    name: "Video Invite",
-    price: "999",
-    description: "Cinematic reveal with custom animation.",
-    features: [
-      "Full HD MP4 Format",
-      "Custom Background Music",
-      "Instagram Reel Ready",
-      "Premium Logo Animation",
-      "Custom Couple Names"
-    ],
-    cta: "Choose Video Invite",
-    href: "/digital-invites/video",
-    isRecommended: false
-  }
-];
+const pricingData = {
+  invites: [
+    {
+      name: "Image Invite",
+      price: "499",
+      description: "Perfect for quick and elegant announcements.",
+      features: [
+        "HD PNG / JPEG / PDF",
+        "WhatsApp & Social Ready",
+        "24 Hour Delivery",
+        "Premium Artisanal Design",
+        "Personalized Content"
+      ],
+      cta: "Choose Image Invite",
+      href: "/digital-invites/image",
+      isRecommended: false
+    },
+    {
+      name: "Video Invite",
+      price: "1499",
+      description: "Cinematic reveal with custom animation.",
+      features: [
+        "Full HD MP4 Format",
+        "Custom Background Music",
+        "Instagram Reel Ready",
+        "Premium Logo Animation",
+        "Custom Couple Names"
+      ],
+      cta: "Choose Video Invite",
+      href: "/digital-invites/video",
+      isRecommended: false
+    }
+  ],
+  websites: [
+    {
+      name: "Starter",
+      price: "2999",
+      description: "Essential digital invitation with guest management.",
+      features: [
+        "Basic Website Invite",
+        "Interactive RSVP System",
+        "Google Maps Integration",
+        "3 Months Hosting",
+        "Mobile First Design"
+      ],
+      cta: "Create Starter",
+      href: "/digital-invites/website",
+      isRecommended: false
+    },
+    {
+      name: "Value",
+      price: "3999",
+      description: "The complete interactive wedding experience.",
+      features: [
+        "Story Timeline & Music",
+        "Interactive Photo Gallery",
+        "Pre-wedding Slideshow",
+        "Message Wall for Guests",
+        "6 Months Hosting",
+        "Email RSVP Alerts"
+      ],
+      cta: "Create Value",
+      href: "/digital-invites/website",
+      isRecommended: true
+    },
+    {
+      name: "Premium",
+      price: "4999",
+      description: "Enhanced engagement for your grand celebration.",
+      features: [
+        "Blessing Wall & Interaction",
+        "Engagement Story & Video",
+        "Accommodation & Schedule",
+        "Guest Wish-list Integration",
+        "12 Months Hosting",
+        "Priority Support"
+      ],
+      cta: "Create Premium",
+      href: "/digital-invites/website",
+      isRecommended: false
+    },
+    {
+      name: "Ultimate",
+      price: "6999",
+      description: "Cutting-edge features for a distinct reveal.",
+      features: [
+        "All Premium Features",
+        "AI Assistant for RSVP",
+        "Live Guest Uploads/Gallery",
+        "QR Code Guest Entry",
+        "Permanent Link Hosting",
+        "Dedicated Manager"
+      ],
+      cta: "Create Ultimate",
+      href: "/digital-invites/website",
+      isRecommended: false
+    }
+  ]
+};
 
 export const PricingSection = () => {
-  return (
-    <section id="pricing" className="py-24 bg-white">
-      <div className="site-container">
-        <div className="text-center mb-20 px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-serif text-charcoal mb-4">Timeless Value</h2>
-            <p className="text-charcoal/50 font-medium max-w-xl mx-auto">
-              Luxury experiences designed to fit every celebration.
-            </p>
-          </motion.div>
-        </div>
+    const [activeCategory, setActiveCategory] = useState<'invites' | 'websites'>('websites');
+    const plans = pricingData[activeCategory];
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
-          {pricingPlans.map((plan, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: idx * 0.1, ease: "easeOut" }}
-              viewport={{ once: true }}
-              className={cn(
-                "relative group flex flex-col h-full p-8 md:p-12 rounded-[50px] transition-all duration-500",
-                "bg-pearl-white border border-charcoal/5 text-charcoal"
-              )}
-            >
-              <div className="mb-10">
-                <h3 className={cn(
-                  "text-2xl font-serif mb-2",
-                  "text-charcoal"
-                )}>
-                  {plan.name}
-                </h3>
-                <p className={cn(
-                  "text-xs font-medium",
-                  "text-charcoal/50"
-                )}>
-                  {plan.description}
-                </p>
-              </div>
+    return (
+        <section id="pricing" className="py-32 bg-white">
+            <div className="site-container">
+                <div className="text-center mb-16 px-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6 }}
+                        viewport={{ once: true }}
+                    >
+                        <h2 className="text-4xl md:text-5xl font-serif text-charcoal mb-4">Timeless Value</h2>
+                        <p className="text-charcoal/50 font-medium max-w-xl mx-auto mb-12">
+                            Luxury digital experiences designed to fit every celebration.
+                        </p>
 
-              <div className="flex items-baseline gap-1 mb-10">
-                <span className={cn(
-                  "text-sm font-bold",
-                  "text-lavender"
-                )}>₹</span>
-                <span className="text-5xl font-black tracking-tight">{plan.price}</span>
-              </div>
+                        {/* Tab Switcher */}
+                        <div className="inline-flex p-1.5 bg-gray-50 rounded-2xl border border-charcoal/5 mb-8">
+                            <button
+                                onClick={() => setActiveCategory('invites')}
+                                className={cn(
+                                    "px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300",
+                                    activeCategory === 'invites' ? "bg-white text-lavender shadow-sm ring-1 ring-charcoal/5" : "text-charcoal/40 hover:text-charcoal"
+                                )}
+                            >
+                                E-Invites
+                            </button>
+                            <button
+                                onClick={() => setActiveCategory('websites')}
+                                className={cn(
+                                    "px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300",
+                                    activeCategory === 'websites' ? "bg-white text-lavender shadow-sm ring-1 ring-charcoal/5" : "text-charcoal/40 hover:text-charcoal"
+                                )}
+                            >
+                                E-Websites
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
 
-              <div className="flex-grow space-y-4 mb-12">
-                {plan.features.map((feature, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <div className={cn(
-                      "w-5 h-5 rounded-full flex items-center justify-center shrink-0",
-                      "bg-lavender/10 text-lavender"
-                    )}>
-                      <Check size={12} strokeWidth={3} />
-                    </div>
-                    <span className={cn(
-                      "text-xs font-medium",
-                      "text-charcoal/70"
-                    )}>
-                      {feature}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={activeCategory}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                        className={cn(
+                            "grid gap-8 px-4",
+                            activeCategory === 'invites' ? "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+                        )}
+                    >
+                        {plans.map((plan, idx) => (
+                            <motion.div
+                                key={plan.name}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: idx * 0.1 }}
+                                viewport={{ once: true }}
+                                className={cn(
+                                    "relative group flex flex-col h-full p-8 rounded-[40px] transition-all duration-500",
+                                    plan.isRecommended 
+                                        ? "bg-charcoal text-white ring-2 ring-lavender shadow-2xl shadow-charcoal/20 scale-105 z-10" 
+                                        : "bg-pearl-white border border-charcoal/5 text-charcoal hover:border-lavender/30"
+                                )}
+                            >
+                                {plan.isRecommended && (
+                                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-lavender text-white text-[9px] font-black tracking-[0.2em] rounded-full uppercase shadow-lg flex items-center gap-1.5">
+                                        <Sparkles size={10} className="fill-white" />
+                                        Most Popular
+                                    </div>
+                                )}
 
-              <Link 
-                href={plan.href}
-                className={cn(
-                  "flex items-center justify-center gap-2 w-full py-5 rounded-full font-bold text-xs uppercase tracking-[0.15em] transition-all duration-300 active:scale-95",
-                  "bg-white text-charcoal border border-charcoal/10 hover:border-lavender/40 shadow-sm"
-                )}
-              >
-                {plan.cta}
-                <ArrowRight size={14} />
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+                                <div className="mb-10">
+                                    <h3 className={cn(
+                                        "text-xl font-serif mb-2",
+                                        plan.isRecommended ? "text-white" : "text-charcoal"
+                                    )}>
+                                        {plan.name}
+                                    </h3>
+                                    <p className={cn(
+                                        "text-[10px] font-medium leading-relaxed",
+                                        plan.isRecommended ? "text-white/60" : "text-charcoal/50"
+                                    )}>
+                                        {plan.description}
+                                    </p>
+                                </div>
+
+                                <div className="flex items-baseline gap-1 mb-10">
+                                    <span className="text-sm font-black text-lavender">₹</span>
+                                    <span className="text-4xl font-black tracking-tighter italic">{plan.price}</span>
+                                </div>
+
+                                <div className="flex-grow space-y-4 mb-10">
+                                    {plan.features.map((feature, i) => (
+                                        <div key={i} className="flex items-start gap-3">
+                                            <div className={cn(
+                                                "w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5",
+                                                plan.isRecommended ? "bg-white/10 text-lavender" : "bg-lavender/10 text-lavender"
+                                            )}>
+                                                <Check size={10} strokeWidth={3} />
+                                            </div>
+                                            <span className={cn(
+                                                "text-[10px] font-bold leading-tight",
+                                                plan.isRecommended ? "text-white/80" : "text-charcoal/70"
+                                            )}>
+                                                {feature}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <Link 
+                                    href={plan.href}
+                                    className={cn(
+                                        "flex items-center justify-center gap-2 w-full py-4 rounded-full font-black text-[10px] uppercase tracking-[0.15em] transition-all duration-300 active:scale-95",
+                                        plan.isRecommended 
+                                            ? "bg-lavender text-white hover:bg-[#9a6ab5] shadow-xl shadow-lavender/20" 
+                                            : "bg-white text-charcoal border border-charcoal/10 hover:border-lavender/40 shadow-sm"
+                                    )}
+                                >
+                                    {plan.cta}
+                                    <ArrowRight size={14} />
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </AnimatePresence>
+            </div>
+        </section>
+    );
 };
