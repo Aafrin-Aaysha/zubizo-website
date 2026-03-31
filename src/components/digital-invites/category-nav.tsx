@@ -37,7 +37,7 @@ const categoryCards = [
     accent: "bg-champagne-cream",
     textColor: "text-soft-gold",
     isPremium: true,
-    label: "BEST SELLING"
+    label: null
   }
 ];
 

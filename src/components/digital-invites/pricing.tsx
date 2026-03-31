@@ -36,7 +36,7 @@ const pricingPlans = [
     ],
     cta: "Create My Website",
     href: "/digital-invites/website",
-    isRecommended: true
+    isRecommended: false
   },
   {
     name: "Video Invite",
@@ -83,27 +83,19 @@ export const PricingSection = () => {
               viewport={{ once: true }}
               className={cn(
                 "relative group flex flex-col h-full p-8 md:p-12 rounded-[50px] transition-all duration-500",
-                plan.isRecommended 
-                  ? "bg-charcoal text-white ring-2 ring-lavender/50 shadow-2xl shadow-charcoal/30 scale-105 z-10" 
-                  : "bg-pearl-white border border-charcoal/5 text-charcoal"
+                "bg-pearl-white border border-charcoal/5 text-charcoal"
               )}
             >
-              {plan.isRecommended && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-lavender text-white text-[9px] font-black tracking-[0.2em] rounded-full uppercase shadow-lg">
-                  Most Popular
-                </div>
-              )}
-
               <div className="mb-10">
                 <h3 className={cn(
                   "text-2xl font-serif mb-2",
-                  plan.isRecommended ? "text-white" : "text-charcoal"
+                  "text-charcoal"
                 )}>
                   {plan.name}
                 </h3>
                 <p className={cn(
                   "text-xs font-medium",
-                  plan.isRecommended ? "text-white/60" : "text-charcoal/50"
+                  "text-charcoal/50"
                 )}>
                   {plan.description}
                 </p>
@@ -112,7 +104,7 @@ export const PricingSection = () => {
               <div className="flex items-baseline gap-1 mb-10">
                 <span className={cn(
                   "text-sm font-bold",
-                  plan.isRecommended ? "text-lavender" : "text-lavender"
+                  "text-lavender"
                 )}>₹</span>
                 <span className="text-5xl font-black tracking-tight">{plan.price}</span>
               </div>
@@ -122,13 +114,13 @@ export const PricingSection = () => {
                   <div key={i} className="flex items-center gap-3">
                     <div className={cn(
                       "w-5 h-5 rounded-full flex items-center justify-center shrink-0",
-                      plan.isRecommended ? "bg-white/10 text-lavender" : "bg-lavender/10 text-lavender"
+                      "bg-lavender/10 text-lavender"
                     )}>
                       <Check size={12} strokeWidth={3} />
                     </div>
                     <span className={cn(
                       "text-xs font-medium",
-                      plan.isRecommended ? "text-white/80" : "text-charcoal/70"
+                      "text-charcoal/70"
                     )}>
                       {feature}
                     </span>
@@ -140,9 +132,7 @@ export const PricingSection = () => {
                 href={plan.href}
                 className={cn(
                   "flex items-center justify-center gap-2 w-full py-5 rounded-full font-bold text-xs uppercase tracking-[0.15em] transition-all duration-300 active:scale-95",
-                  plan.isRecommended 
-                    ? "bg-lavender text-white hover:bg-lavender/90 shadow-xl shadow-lavender/20" 
-                    : "bg-white text-charcoal border border-charcoal/10 hover:border-lavender/40 shadow-sm"
+                  "bg-white text-charcoal border border-charcoal/10 hover:border-lavender/40 shadow-sm"
                 )}
               >
                 {plan.cta}
