@@ -20,6 +20,14 @@ export async function GET() {
                 email: 'contact@zubizo.com',
                 whatsappNumber: '7639390868',
                 heroSlides: [],
+                defaultMaterials: [
+                    { name: 'Wax', cost: 2 },
+                    { name: 'Card', cost: 7 },
+                    { name: 'Rope', cost: 5 },
+                    { name: 'Envelope', cost: 10 },
+                    { name: 'Sticker', cost: 2 },
+                    { name: 'Acrylic Design', cost: 7 }
+                ]
             });
         }
 
@@ -43,6 +51,7 @@ export async function PUT(req: NextRequest) {
             address, phone, email, whatsappNumber,
             logoUrl, faviconUrl, aboutImageUrl,
             heroSlides, instagramUrl, facebookUrl, businessHours, homeTagline,
+            defaultMaterials,
         } = body;
 
         await dbConnect();
@@ -54,6 +63,7 @@ export async function PUT(req: NextRequest) {
                 address, phone, email, whatsappNumber,
                 logoUrl, faviconUrl, aboutImageUrl,
                 heroSlides, instagramUrl, facebookUrl, businessHours, homeTagline,
+                defaultMaterials,
             },
             { upsert: true, new: true }
         );

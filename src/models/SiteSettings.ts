@@ -37,6 +37,11 @@ const SiteSettingsSchema = new mongoose.Schema({
     businessHours: String,
     // Home page tagline / headline
     homeTagline: String,
+    // Global Material Costs
+    defaultMaterials: [{
+        name: String,
+        cost: Number
+    }]
 }, { timestamps: true });
 
 export default mongoose.models.SiteSettings || mongoose.model('SiteSettings', SiteSettingsSchema);

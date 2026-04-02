@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import {
     Search,
     MessageSquare,
@@ -12,6 +13,7 @@ import {
     Clock,
     XCircle,
     Download,
+    FileText,
     ExternalLink,
     ChevronDown,
     ChevronLeft,
@@ -246,7 +248,15 @@ export default function InquiriesPage() {
                                                     <button key={s} onClick={() => updateInquiry(inquiry._id, { status: s })} className={cn("flex-1 py-2 rounded-lg text-[9px] font-black transition-all", inquiry.status === s ? "bg-lavender text-white" : "bg-white text-gray-400 border border-gray-100")}>{s}</button>
                                                 ))
                                             ) : (
-                                                <button onClick={() => updateInquiry(inquiry._id, { status: 'Completed' })} className="w-full py-2 bg-charcoal text-white rounded-lg text-[9px] font-black uppercase tracking-widest">Complete Order</button>
+                                                <div className="flex flex-col gap-2 w-full">
+                                                    <Link 
+                                                        href={`/admin/inquiries/${inquiry._id}`}
+                                                        className="w-full py-2 bg-lavender/10 text-lavender rounded-lg text-[9px] font-black uppercase tracking-widest text-center border border-lavender/10 hover:bg-lavender hover:text-white transition-all flex items-center justify-center gap-2"
+                                                    >
+                                                        Details & Billing <FileText size={12} />
+                                                    </Link>
+                                                    <button onClick={() => updateInquiry(inquiry._id, { status: 'Completed' })} className="w-full py-2 bg-charcoal text-white rounded-lg text-[9px] font-black uppercase tracking-widest">Complete Order</button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
