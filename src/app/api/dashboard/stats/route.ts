@@ -3,6 +3,7 @@ import dbConnect from '@/lib/db';
 import Design from '@/models/Design';
 import Category from '@/models/Category';
 import Inquiry from '@/models/Inquiry';
+import Admin from '@/models/Admin';
 import { getAdminFromRequest, unauthorizedResponse } from '@/lib/api-auth';
 
 export async function GET(req: NextRequest) {
