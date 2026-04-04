@@ -20,13 +20,15 @@ export default function AdminAccountPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
+    const [adminRole, setAdminRole] = useState('admin');
 
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         currentPassword: '',
         newPassword: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        showGlobalData: false
     });
 
     useEffect(() => {
@@ -38,10 +40,12 @@ export default function AdminAccountPage() {
             const res = await fetch('/api/admin/account');
             const data = await res.json();
             if (res.ok) {
+                setAdminRole(data.role || 'admin');
                 setFormData(prev => ({
                     ...prev,
                     name: data.name || '',
-                    email: data.email || ''
+                    email: data.email || '',
+                    showGlobalData: data.showGlobalData || false
                 }));
             }
         } catch (error) {
@@ -68,7 +72,8 @@ export default function AdminAccountPage() {
                     name: formData.name,
                     email: formData.email,
                     currentPassword: formData.currentPassword,
-                    newPassword: formData.newPassword
+                    newPassword: formData.newPassword,
+                    showGlobalData: formData.showGlobalData
                 }),
             });
 
@@ -213,6 +218,32 @@ export default function AdminAccountPage() {
                                 </div>
                             </div>
                         </section>
+
+                        {/* Global View Settings - Only for Super Admin */}
+                        {adminRole === 'super-admin' && (
+                            <section className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-6">
+                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                    <ShieldCheck size={14} /> System Permissions
+                                </h3>
+                                
+                                <div className="flex items-center justify-between">
+                                    <div className="space-y-1">
+                                        <h4 className="font-bold text-charcoal">Global System View</h4>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                            Enable to view all inquiries, orders, and inventory across all admin accounts.
+                                        </p>
+                                    </div>
+                                    
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData(prev => ({ ...prev, showGlobalData: !prev.showGlobalData }))}
+                                        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${formData.showGlobalData ? 'bg-charcoal' : 'bg-gray-200'}`}
+                                    >
+                                        <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${formData.showGlobalData ? 'translate-x-6' : 'translate-x-1'}`} />
+                                    </button>
+                                </div>
+                            </section>
+                        )}
 
                         <div className="flex items-center justify-between p-6 bg-lavender/5 rounded-[2rem] border border-lavender/10">
                             <div className="flex items-center gap-3">

@@ -17,7 +17,11 @@ export async function GET(req: NextRequest) {
         const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
 
         // Core filter for all stats
-        let query: any = { assignedAdmin: admin.id };
+        const adminDoc = await Admin.findById(admin.id);
+        let query: any = {};
+        if (!adminDoc || !adminDoc.showGlobalData) {
+            query.assignedAdmin = admin.id;
+        }
 
         const [totalDesigns, totalCategories, overdueDesign, upcomingDeadlines, allInquiries] = await Promise.all([
             Design.countDocuments({ isDeleted: false }), // Designs are global

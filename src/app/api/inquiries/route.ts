@@ -18,9 +18,10 @@ export async function GET(req: NextRequest) {
         if (employee) {
             query.assignedTo = employee.id;
         } else if (admin) {
-            // Check if Super Admin wants to see all (if implemented later)
-            // For now, strict isolation as requested.
-            query.assignedAdmin = admin.id;
+            const adminDoc = await Admin.findById(admin.id);
+            if (!adminDoc || (!adminDoc.showGlobalData)) {
+                query.assignedAdmin = admin.id;
+            }
         }
 
         const inquiries = await Inquiry.find(query)
