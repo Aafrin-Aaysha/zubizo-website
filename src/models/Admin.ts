@@ -21,6 +21,11 @@ const AdminSchema = new mongoose.Schema({
         enum: ['admin', 'super-admin'],
         default: 'admin',
     },
+    // For Super Admins to toggle between private and global views
+    showGlobalData: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true });
 
 export default mongoose.models.Admin || mongoose.model('Admin', AdminSchema);

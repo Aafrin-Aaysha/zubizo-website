@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
         if (!admin) return unauthorizedResponse('Admin access required');
 
         await dbConnect();
-        const employees = await Employee.find({}).select('-password').sort({ createdAt: -1 });
+        const employees = await Employee.find({ adminId: admin.id }).select('-password').sort({ createdAt: -1 });
         return NextResponse.json(employees);
     } catch (error) {
         return NextResponse.json({ message: 'Error fetching employees' }, { status: 500 });
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
         await dbConnect();
         
-        // Check if empId exists
+        // Check if empId exists globally
         const exists = await Employee.findOne({ empId });
         if (exists) {
             return NextResponse.json({ message: 'Employee ID already exists' }, { status: 400 });
@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
 
         const hashedPassword = await hashPassword(password);
         const employee = await Employee.create({
+            adminId: admin.id,
             empId,
             name,
             password: hashedPassword,

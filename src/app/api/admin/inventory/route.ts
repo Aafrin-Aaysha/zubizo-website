@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
         if (!admin) return unauthorizedResponse();
 
         await dbConnect();
-        const materials = await Material.find({}).sort({ name: 1 });
+        const materials = await Material.find({ adminId: admin.id }).sort({ name: 1 });
         return NextResponse.json(materials);
     } catch (error) {
         return NextResponse.json({ message: 'Error fetching inventory' }, { status: 500 });
@@ -28,13 +28,14 @@ export async function POST(req: NextRequest) {
 
         await dbConnect();
         
-        // Ensure name is unique
-        const existing = await Material.findOne({ name });
+        // Ensure name is unique PER ADMIN
+        const existing = await Material.findOne({ adminId: admin.id, name });
         if (existing) {
-            return NextResponse.json({ message: 'Material with this name already exists' }, { status: 400 });
+            return NextResponse.json({ message: 'Material with this name already exists in your inventory' }, { status: 400 });
         }
 
         const material = await Material.create({
+            adminId: admin.id,
             name,
             currentStock: currentStock || 0,
             unit: unit || 'pcs',

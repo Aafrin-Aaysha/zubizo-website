@@ -1,10 +1,14 @@
 import mongoose from 'mongoose';
 
 const MaterialSchema = new mongoose.Schema({
+    adminId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin',
+        required: true
+    },
     name: {
         type: String,
         required: true,
-        unique: true,
         trim: true
     },
     currentStock: {
@@ -36,5 +40,9 @@ const MaterialSchema = new mongoose.Schema({
         default: true
     }
 }, { timestamps: true });
+
+// Ensure material names are unique per admin, allowing different admins 
+// to have their own stock of the same material (e.g., "Wax Seal").
+MaterialSchema.index({ adminId: 1, name: 1 }, { unique: true });
 
 export default mongoose.models.Material || mongoose.model('Material', MaterialSchema);

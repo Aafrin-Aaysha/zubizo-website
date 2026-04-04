@@ -45,7 +45,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: 'Invalid token' }, { status: 401 });
         }
 
-        const { name, email, currentPassword, newPassword } = await req.json();
+        const { name, email, currentPassword, newPassword, showGlobalData } = await req.json();
 
         await dbConnect();
         const admin = await Admin.findById(decoded.id);
@@ -57,6 +57,11 @@ export async function POST(req: Request) {
         // Handle Profile Update
         if (name) admin.name = name;
         if (email) admin.email = email;
+        
+        // Handle Global View Toggle (Super Admin Only)
+        if (showGlobalData !== undefined && admin.role === 'super-admin') {
+            admin.showGlobalData = showGlobalData;
+        }
 
         // Handle Password Change
         if (currentPassword && newPassword) {

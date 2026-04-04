@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 
 const EmployeeSchema = new mongoose.Schema({
+    adminId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin',
+        required: true
+    },
     empId: {
         type: String,
         required: [true, 'Please provide an Employee ID'],

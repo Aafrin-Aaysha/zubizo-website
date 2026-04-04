@@ -17,10 +17,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         const material = await Material.findById(id);
         if (!material) return NextResponse.json({ message: 'Material not found' }, { status: 404 });
 
-        // Check if name change causes duplicate
+        // Access Control: Ensure the material belongs to the logged-in admin
+        if (material.adminId?.toString() !== admin.id) {
+            return unauthorizedResponse('You do not have permission to update this material');
+        }
+
+        // Check if name change causes duplicate PER ADMIN
         if (name && name !== material.name) {
-            const existing = await Material.findOne({ name, _id: { $ne: id } });
-            if (existing) return NextResponse.json({ message: 'Material with this name already exists' }, { status: 400 });
+            const existing = await Material.findOne({ adminId: admin.id, name, _id: { $ne: id } });
+            if (existing) return NextResponse.json({ message: 'Material with this name already exists in your inventory' }, { status: 400 });
         }
 
         const updates: any = {};
@@ -53,10 +58,15 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
         await dbConnect();
 
-        // Soft delete (or full delete depending on preference)
-        const deletedMaterial = await Material.findByIdAndDelete(id);
-        if (!deletedMaterial) return NextResponse.json({ message: 'Material not found' }, { status: 404 });
+        const material = await Material.findById(id);
+        if (!material) return NextResponse.json({ message: 'Material not found' }, { status: 404 });
 
+        // Access Control: Ensure the material belongs to the logged-in admin
+        if (material.adminId?.toString() !== admin.id) {
+            return unauthorizedResponse('You do not have permission to delete this material');
+        }
+
+        await Material.findByIdAndDelete(id);
         return NextResponse.json({ message: 'Material deleted successfully' });
     } catch (error) {
         return NextResponse.json({ message: 'Error deleting material' }, { status: 500 });

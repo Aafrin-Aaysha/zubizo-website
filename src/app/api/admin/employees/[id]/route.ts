@@ -15,6 +15,16 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
         await dbConnect();
         
+        const employee = await Employee.findById(id);
+        if (!employee) {
+            return NextResponse.json({ message: 'Employee not found' }, { status: 404 });
+        }
+
+        // Access Control: Ensure the designer belongs to the logged-in admin
+        if (employee.adminId?.toString() !== admin.id) {
+            return unauthorizedResponse('You do not have permission to update this designer');
+        }
+
         const updateData: any = {};
         if (name) updateData.name = name;
         if (empId) updateData.empId = empId;
@@ -24,13 +34,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             updateData.password = await hashPassword(password);
         }
 
-        const employee = await Employee.findByIdAndUpdate(id, updateData, { new: true }).select('-password');
+        const updatedEmployee = await Employee.findByIdAndUpdate(id, updateData, { new: true }).select('-password');
         
-        if (!employee) {
-            return NextResponse.json({ message: 'Employee not found' }, { status: 404 });
-        }
-
-        return NextResponse.json(employee);
+        return NextResponse.json(updatedEmployee);
     } catch (error: any) {
         return NextResponse.json({ message: error.message || 'Error updating employee' }, { status: 500 });
     }
@@ -44,12 +50,18 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         const { id } = await params;
         await dbConnect();
         
-        const employee = await Employee.findByIdAndDelete(id);
-        
+        const employee = await Employee.findById(id);
         if (!employee) {
             return NextResponse.json({ message: 'Employee not found' }, { status: 404 });
         }
 
+        // Access Control: Ensure the designer belongs to the logged-in admin
+        if (employee.adminId?.toString() !== admin.id) {
+            return unauthorizedResponse('You do not have permission to delete this designer');
+        }
+
+        await Employee.findByIdAndDelete(id);
+        
         return NextResponse.json({ message: 'Employee deleted successfully' });
     } catch (error) {
         return NextResponse.json({ message: 'Error deleting employee' }, { status: 500 });

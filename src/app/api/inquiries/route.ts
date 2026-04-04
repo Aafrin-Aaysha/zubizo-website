@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Inquiry from '@/models/Inquiry';
-import Design from '@/models/Design'; // Register Design model for population
+import Design from '@/models/Design'; 
+import Admin from '@/models/Admin';
 import { getAdminFromRequest, getEmployeeFromRequest, unauthorizedResponse } from '@/lib/api-auth';
 
 export async function GET(req: NextRequest) {
@@ -17,9 +18,9 @@ export async function GET(req: NextRequest) {
         if (employee) {
             query.assignedTo = employee.id;
         } else if (admin) {
-            const { searchParams } = new URL(req.url);
-            const adminId = searchParams.get('adminId');
-            if (adminId) query.assignedAdmin = adminId;
+            // Check if Super Admin wants to see all (if implemented later)
+            // For now, strict isolation as requested.
+            query.assignedAdmin = admin.id;
         }
 
         const inquiries = await Inquiry.find(query)
@@ -43,7 +44,10 @@ export async function POST(req: Request) {
             selectedPackage,
             quantity,
             estimatedTotal,
-            source
+            source,
+            customerName,
+            email,
+            phone
         } = body;
 
         if (!designName) {
@@ -51,6 +55,18 @@ export async function POST(req: Request) {
         }
 
         await dbConnect();
+
+        // 1. Fetch available admins for assignment
+        const admins = await Admin.find({ role: { $in: ['admin', 'super-admin'] } });
+        let assignedAdminId = null;
+
+        if (admins.length > 0) {
+            // 2. Random 50/50 assignment logic as requested
+            const randomIndex = Math.floor(Math.random() * admins.length);
+            assignedAdminId = admins[randomIndex]._id;
+            console.log(`Assigned inquiry to admin: ${admins[randomIndex].name}`);
+        }
+
         const inquiry = await Inquiry.create({
             designId: designId || null,
             designName,
@@ -59,7 +75,11 @@ export async function POST(req: Request) {
             quantity: quantity || 0,
             estimatedTotal: estimatedTotal || 0,
             source: source || 'detail',
+            customerName: customerName || '',
+            email: email || '',
+            phone: phone || '',
             status: 'New',
+            assignedAdmin: assignedAdminId,
         });
 
         return NextResponse.json(inquiry, { status: 201 });
