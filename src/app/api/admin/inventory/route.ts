@@ -12,9 +12,12 @@ export async function GET(req: NextRequest) {
         if (!admin) return unauthorizedResponse();
 
         await dbConnect();
+        
         let query: any = { adminId: admin.id };
-        if (admin.role === 'super-admin' && admin.showGlobalData) {
-            query = {}; 
+        
+        // Super admins always see ALL materials (they have filter UI on the frontend)
+        if (admin.role === 'super-admin') {
+            query = {};
         }
 
         const materials = await Material.find(query).sort({ adminName: 1, name: 1 });
