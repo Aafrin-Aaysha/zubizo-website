@@ -110,10 +110,19 @@ export default function InventoryPage() {
         e.preventDefault();
         setIsActionLoading(true);
         try {
+            // Sanitize numeric fields to prevent NaN
+            const payload = {
+                ...formData,
+                usageValue: Number(formData.usageValue) || 1,
+                currentStock: Number(formData.currentStock) || 0,
+                defaultPrice: Number(formData.defaultPrice) || 0,
+                lowStockThreshold: Number(formData.lowStockThreshold) || 10
+            };
+
             const res = await fetch('/api/admin/inventory', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                body: JSON.stringify(payload)
             });
             if (res.ok) {
                 toast.success('Material added successfully');
@@ -476,11 +485,11 @@ export default function InventoryPage() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-700 ml-1">Initial Stock</label>
+                                        <label className="text-[11px] font-bold text-gray-700 ml-1">Initial Stock</label>
                                         <input 
                                             type="number" 
                                             value={formData.currentStock}
-                                            onChange={(e) => setFormData({...formData, currentStock: parseInt(e.target.value)})}
+                                            onChange={(e) => setFormData({...formData, currentStock: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
                                             className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>
@@ -504,8 +513,9 @@ export default function InventoryPage() {
                                         <label className="text-[11px] font-bold text-gray-700 ml-1">Default Price (₹)</label>
                                         <input 
                                             type="number" 
+                                            step="0.01"
                                             value={formData.defaultPrice}
-                                            onChange={(e) => setFormData({...formData, defaultPrice: parseFloat(e.target.value)})}
+                                            onChange={(e) => setFormData({...formData, defaultPrice: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
                                             className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>
@@ -515,7 +525,7 @@ export default function InventoryPage() {
                                             type="number" 
                                             step="0.0001"
                                             value={formData.usageValue}
-                                            onChange={(e) => setFormData({...formData, usageValue: parseFloat(e.target.value)})}
+                                            onChange={(e) => setFormData({...formData, usageValue: e.target.value === '' ? 1 : parseFloat(e.target.value)})}
                                             className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>
@@ -524,7 +534,7 @@ export default function InventoryPage() {
                                         <input 
                                             type="number" 
                                             value={formData.lowStockThreshold}
-                                            onChange={(e) => setFormData({...formData, lowStockThreshold: parseInt(e.target.value)})}
+                                            onChange={(e) => setFormData({...formData, lowStockThreshold: e.target.value === '' ? 10 : parseInt(e.target.value)})}
                                             className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>

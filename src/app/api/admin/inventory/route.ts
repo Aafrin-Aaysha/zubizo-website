@@ -38,26 +38,35 @@ export async function POST(req: NextRequest) {
         if (admin.role === 'super-admin' && applyToAll) {
             const allAdmins = await Admin.find({ role: { $in: ['admin', 'super-admin'] }});
             const createdMaterials = [];
+            const sanitizedName = name.trim();
 
             for (const targetAdmin of allAdmins) {
-                const existing = await Material.findOne({ adminId: targetAdmin._id, name });
-                if (!existing) {
-                    const material = await Material.create({
-                        adminId: targetAdmin._id,
-                        adminName: targetAdmin.name,
-                        name,
-                        category: category || 'Core Materials',
-                        usageType: usageType || 'manual',
-                        usageValue: usageValue || 1,
-                        currentStock: targetAdmin._id.toString() === admin.id ? (currentStock || 0) : 0, // only give stock to the creator by default
-                        unit: unit || 'pcs',
-                        defaultPrice: defaultPrice || 0,
-                        lowStockThreshold: lowStockThreshold || 10
-                    });
-                    createdMaterials.push(material);
+                try {
+                    const existing = await Material.findOne({ adminId: targetAdmin._id, name: sanitizedName });
+                    if (!existing) {
+                        const material = await Material.create({
+                            adminId: targetAdmin._id,
+                            adminName: targetAdmin.name,
+                            name: sanitizedName,
+                            category: (category || 'Core Materials').trim(),
+                            usageType: usageType || 'manual',
+                            usageValue: Number(usageValue) || 1,
+                            currentStock: targetAdmin._id.toString() === admin.id ? (Number(currentStock) || 0) : 0,
+                            unit: (unit || 'pcs').trim(),
+                            defaultPrice: Number(defaultPrice) || 0,
+                            lowStockThreshold: Number(lowStockThreshold) || 10
+                        });
+                        createdMaterials.push(material);
+                    }
+                } catch (err) {
+                    console.error(`Failed to create material for admin ${targetAdmin.name}:`, err);
+                    // Continue to next admin instead of failing the whole request
                 }
             }
-            return NextResponse.json(createdMaterials[0] || { message: 'All already exist' }, { status: 201 });
+            return NextResponse.json(
+                createdMaterials.length > 0 ? createdMaterials[0] : { message: 'Processed successfully' }, 
+                { status: 201 }
+            );
         }
 
         // Target admin is the current admin unless super admin specifies otherwise
