@@ -10,7 +10,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         if (!admin) return unauthorizedResponse();
 
         const body = await req.json();
-        const { name, category, usageType, usageValue, currentStock, unit, defaultPrice, lowStockThreshold, isActive, restockAmount } = body;
+        const { name, category, usageType, usageValue, currentStock, unit, defaultPrice, lowStockThreshold, isActive, restockAmount, syncToAll } = body;
 
         await dbConnect();
 
@@ -47,6 +47,26 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         }
 
         const updatedMaterial = await Material.findByIdAndUpdate(id, { $set: updates }, { new: true });
+
+        // Global Update Logic for Super Admins
+        if (admin.role === 'super-admin' && syncToAll && updatedMaterial) {
+            // Find all materials with the same original name across all admins, except this one
+            const originalName = material.name;
+            const globalUpdates: any = {};
+            if (name !== undefined) globalUpdates.name = name;
+            if (category !== undefined) globalUpdates.category = category;
+            if (usageType !== undefined) globalUpdates.usageType = usageType;
+            if (usageValue !== undefined) globalUpdates.usageValue = usageValue;
+            if (unit !== undefined) globalUpdates.unit = unit;
+            if (defaultPrice !== undefined) globalUpdates.defaultPrice = defaultPrice;
+            if (lowStockThreshold !== undefined) globalUpdates.lowStockThreshold = lowStockThreshold;
+            if (isActive !== undefined) globalUpdates.isActive = isActive;
+
+            if (Object.keys(globalUpdates).length > 0) {
+                await Material.updateMany({ name: originalName, _id: { $ne: id } }, { $set: globalUpdates });
+            }
+        }
+
         return NextResponse.json(updatedMaterial);
     } catch (error) {
         return NextResponse.json({ message: 'Error updating inventory' }, { status: 500 });

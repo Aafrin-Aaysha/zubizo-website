@@ -42,6 +42,10 @@ export default function InventoryPage() {
     const [isRestockModalOpen, setIsRestockModalOpen] = useState(false);
     const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
     const [isActionLoading, setIsActionLoading] = useState(false);
+    const [adminData, setAdminData] = useState<{role: string, id: string} | null>(null);
+    const [allAdmins, setAllAdmins] = useState<any[]>([]);
+    const [adminFilter, setAdminFilter] = useState('all');
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Form states
     const [formData, setFormData] = useState({
@@ -52,13 +56,42 @@ export default function InventoryPage() {
         currentStock: 0,
         unit: 'pcs',
         defaultPrice: 0,
-        lowStockThreshold: 10
+        lowStockThreshold: 10,
+        applyToAll: false
     });
+    const [editFormData, setEditFormData] = useState<any>(null);
+    const [syncToAll, setSyncToAll] = useState(false);
     const [restockAmount, setRestockAmount] = useState(0);
 
     useEffect(() => {
+        fetchAdminData();
         fetchMaterials();
     }, []);
+
+    const fetchAdminData = async () => {
+        try {
+            const res = await fetch('/api/admin/account');
+            const data = await res.json();
+            if (res.ok) {
+                setAdminData(data);
+                if (data.role === 'super-admin') {
+                    fetchAdmins();
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching admin data:', error);
+        }
+    };
+
+    const fetchAdmins = async () => {
+        try {
+            const res = await fetch('/api/admin/employees'); // This usually returns employees, but maybe admins too? 
+            // Better to have a dedicated endpoint for admins, but let's see.
+            // Actually, the multi-admin logic uses Admin model.
+            // Let's assume there is an endpoint or we can get them from materials if needed.
+            // For now, I'll just filter what's in 'materials' to get unique admin names.
+        } catch (error) {}
+    };
 
     const fetchMaterials = async () => {
         setIsLoading(true);
@@ -85,7 +118,7 @@ export default function InventoryPage() {
             if (res.ok) {
                 toast.success('Material added successfully');
                 setIsAddModalOpen(false);
-                setFormData({ name: '', category: 'Core Materials', usageType: 'manual', usageValue: 1, currentStock: 0, unit: 'pcs', defaultPrice: 0, lowStockThreshold: 10 });
+                setFormData({ name: '', category: 'Core Materials', usageType: 'manual', usageValue: 1, currentStock: 0, unit: 'pcs', defaultPrice: 0, lowStockThreshold: 10, applyToAll: false });
                 fetchMaterials();
             } else {
                 const err = await res.json();
@@ -134,11 +167,39 @@ export default function InventoryPage() {
         }
     };
 
-    const filteredMaterials = materials.filter(m => 
-        m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        (m.adminName && m.adminName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (m.category && m.category.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    const handleUpdateMaterial = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editFormData || !selectedMaterial) return;
+        setIsActionLoading(true);
+        try {
+            const res = await fetch(`/api/admin/inventory/${selectedMaterial._id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...editFormData, syncToAll })
+            });
+            if (res.ok) {
+                toast.success('Material updated successfully');
+                setIsEditModalOpen(false);
+                fetchMaterials();
+            }
+        } catch (error) {
+            toast.error('Failed to update material');
+        } finally {
+            setIsActionLoading(false);
+        }
+    };
+
+    const filteredMaterials = materials.filter(m => {
+        const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            (m.adminName && m.adminName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            (m.category && m.category.toLowerCase().includes(searchQuery.toLowerCase()));
+        
+        const matchesAdmin = adminFilter === 'all' || m.adminName === adminFilter;
+        
+        return matchesSearch && matchesAdmin;
+    });
+
+    const uniqueAdmins = Array.from(new Set(materials.map(m => m.adminName).filter(Boolean))) as string[];
 
     const lowStockCount = materials.filter(m => m.currentStock <= m.lowStockThreshold && m.usageType !== 'manual').length;
     const totalValue = materials.reduce((acc, m) => acc + (m.currentStock * m.defaultPrice), 0);
@@ -150,13 +211,27 @@ export default function InventoryPage() {
                     <h1 className="text-3xl font-bold text-gray-900">Inventory Management</h1>
                     <p className="text-gray-500 mt-1">Track material stock levels and manage procurement costs.</p>
                 </div>
-                <button 
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="flex items-center gap-2 px-6 py-3 bg-[#1a1c23] hover:bg-black text-white font-bold rounded-2xl transition-all shadow-lg active:scale-95"
-                >
-                    <Plus size={20} />
-                    Add New Material
-                </button>
+                <div className="flex items-center gap-3">
+                    {adminData?.role === 'super-admin' && (
+                        <select 
+                            value={adminFilter}
+                            onChange={(e) => setAdminFilter(e.target.value)}
+                            className="px-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-charcoal outline-none focus:ring-2 focus:ring-purple-100"
+                        >
+                            <option value="all">All Admins</option>
+                            {uniqueAdmins.map(name => (
+                                <option key={name} value={name}>{name}</option>
+                            ))}
+                        </select>
+                    )}
+                    <button 
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="flex items-center gap-2 px-6 py-3 bg-[#1a1c23] hover:bg-black text-white font-bold rounded-2xl transition-all shadow-lg active:scale-95"
+                    >
+                        <Plus size={20} />
+                        Add New Material
+                    </button>
+                </div>
             </div>
 
             {/* Summary Cards */}
@@ -297,6 +372,20 @@ export default function InventoryPage() {
                                                         <ArrowUpRight size={18} />
                                                     </button>
                                                     <button 
+                                                        onClick={() => { 
+                                                            setSelectedMaterial(material); 
+                                                            setEditFormData({
+                                                                name: material.name,
+                                                                category: material.category,
+                                                                usageType: material.usageType,
+                                                                usageValue: material.usageValue,
+                                                                unit: material.unit,
+                                                                defaultPrice: material.defaultPrice,
+                                                                lowStockThreshold: material.lowStockThreshold
+                                                            });
+                                                            setSyncToAll(false);
+                                                            setIsEditModalOpen(true); 
+                                                        }}
                                                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                                         title="Edit"
                                                     >
@@ -440,6 +529,20 @@ export default function InventoryPage() {
                                         />
                                     </div>
                                 </div>
+                                {adminData?.role === 'super-admin' && (
+                                    <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-2xl border border-purple-100">
+                                        <input 
+                                            type="checkbox" 
+                                            id="applyToAll"
+                                            checked={formData.applyToAll}
+                                            onChange={(e) => setFormData({...formData, applyToAll: e.target.checked})}
+                                            className="w-5 h-5 rounded accent-purple-600"
+                                        />
+                                        <label htmlFor="applyToAll" className="text-sm font-bold text-purple-900">
+                                            Create for all Admins (Standardized List)
+                                        </label>
+                                    </div>
+                                )}
                                 <button 
                                     type="submit"
                                     disabled={isActionLoading}
@@ -494,6 +597,126 @@ export default function InventoryPage() {
                                 >
                                     {isActionLoading ? <Loader2 className="animate-spin" /> : <Plus size={22} />}
                                     Confirm Restocking
+                                </button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+                {isEditModalOpen && selectedMaterial && (
+                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsEditModalOpen(false)}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                        />
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-white rounded-[40px] w-full max-w-lg overflow-hidden shadow-2xl relative z-10 p-8"
+                        >
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-2xl font-bold text-gray-900 leading-tight">Edit Material</h2>
+                                <button onClick={() => setIsEditModalOpen(false)} className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition-colors">
+                                    <X size={24} />
+                                </button>
+                            </div>
+                            <form onSubmit={handleUpdateMaterial} className="space-y-6">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-bold text-gray-700 ml-1">Material Name</label>
+                                    <input 
+                                        type="text" 
+                                        required
+                                        value={editFormData.name}
+                                        onChange={(e) => setEditFormData({...editFormData, name: e.target.value})}
+                                        className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-400 transition-all font-medium"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-gray-700 ml-1">Category</label>
+                                        <select 
+                                            value={editFormData.category}
+                                            onChange={(e) => setEditFormData({...editFormData, category: e.target.value})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                        >
+                                            <option value="Core Materials">Core Materials</option>
+                                            <option value="Envelopes">Envelopes</option>
+                                            <option value="Chart Sheets">Chart Sheets</option>
+                                            <option value="Packaging">Packaging</option>
+                                            <option value="Add-ons">Add-ons</option>
+                                            <option value="Card Types">Card Types</option>
+                                            <option value="Vellum Paper">Vellum Paper</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-gray-700 ml-1">Usage Type</label>
+                                        <select 
+                                            value={editFormData.usageType}
+                                            onChange={(e) => setEditFormData({...editFormData, usageType: e.target.value})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                        >
+                                            <option value="manual">Manual</option>
+                                            <option value="per_card">Per Card</option>
+                                            <option value="ratio">Ratio</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-bold text-gray-700 ml-1">Default Price (₹)</label>
+                                        <input 
+                                            type="number" 
+                                            value={editFormData.defaultPrice}
+                                            onChange={(e) => setEditFormData({...editFormData, defaultPrice: parseFloat(e.target.value)})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-bold text-gray-700 ml-1">Logic Val</label>
+                                        <input 
+                                            type="number" 
+                                            step="0.0001"
+                                            value={editFormData.usageValue}
+                                            onChange={(e) => setEditFormData({...editFormData, usageValue: parseFloat(e.target.value)})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-bold text-gray-700 ml-1">Low Thrsh</label>
+                                        <input 
+                                            type="number" 
+                                            value={editFormData.lowStockThreshold}
+                                            onChange={(e) => setEditFormData({...editFormData, lowStockThreshold: parseInt(e.target.value)})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                        />
+                                    </div>
+                                </div>
+
+                                {adminData?.role === 'super-admin' && (
+                                    <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                                        <input 
+                                            type="checkbox" 
+                                            id="syncToAll"
+                                            checked={syncToAll}
+                                            onChange={(e) => setSyncToAll(e.target.checked)}
+                                            className="w-5 h-5 rounded accent-blue-600"
+                                        />
+                                        <label htmlFor="syncToAll" className="text-sm font-bold text-blue-900">
+                                            Sync this Pricing/Logic to ALL Admins
+                                        </label>
+                                    </div>
+                                )}
+
+                                <button 
+                                    type="submit"
+                                    disabled={isActionLoading}
+                                    className="w-full py-5 bg-[#1a1c23] hover:bg-black text-white rounded-[32px] font-bold text-lg shadow-xl shadow-purple-900/10 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                >
+                                    {isActionLoading ? <Loader2 className="animate-spin" /> : <Save size={20} />}
+                                    Update Material
                                 </button>
                             </form>
                         </motion.div>
