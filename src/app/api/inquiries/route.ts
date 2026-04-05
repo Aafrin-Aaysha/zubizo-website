@@ -4,6 +4,7 @@ import Inquiry from '@/models/Inquiry';
 import Design from '@/models/Design'; 
 import Admin from '@/models/Admin';
 import { getAdminFromRequest, getEmployeeFromRequest, unauthorizedResponse } from '@/lib/api-auth';
+import { applyDeduction, reverseDeduction } from '@/lib/inventoryEngine';
 
 export async function GET(req: NextRequest) {
     try {
@@ -124,6 +125,26 @@ export async function PUT(req: NextRequest) {
             } else if (updates.status === 'Delivered' && !inquiry.timeline?.deliveredAt) {
                 updates['timeline.deliveredAt'] = now;
             }
+        }
+
+        // --- INVENTORY DEDUCTION ENGINE ---
+        if (updates.hasOwnProperty('isInvoiced')) {
+            const wasInvoiced = inquiry.isInvoiced || false;
+            const willBeInvoiced = updates.isInvoiced;
+
+            if (!wasInvoiced && willBeInvoiced && !inquiry.isInventoryDeducted) {
+                // Generate Invoice -> Deduct stock
+                await applyDeduction(updates.costing?.materials || inquiry.costing?.materials, inquiry.assignedAdmin?.toString());
+                updates.isInventoryDeducted = true;
+            } else if (wasInvoiced && !willBeInvoiced && inquiry.isInventoryDeducted) {
+                // Untoggling Invoice -> Reverse deduction to stock
+                await reverseDeduction(inquiry.costing?.materials, inquiry.assignedAdmin?.toString());
+                updates.isInventoryDeducted = false;
+            }
+        } else if (inquiry.isInvoiced && inquiry.isInventoryDeducted && updates.costing) {
+            // Editing Order After Invoice: Reverse old, Apply new
+            await reverseDeduction(inquiry.costing.materials, inquiry.assignedAdmin?.toString());
+            await applyDeduction(updates.costing.materials, inquiry.assignedAdmin?.toString());
         }
 
         const updatedInquiry = await Inquiry.findByIdAndUpdate(id, { $set: updates }, { new: true })

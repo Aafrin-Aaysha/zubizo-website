@@ -21,10 +21,14 @@ import toast from 'react-hot-toast';
 
 interface Material {
     _id: string;
+    adminName?: string;
     name: string;
+    category: string;
+    usageType: string;
+    usageValue: number;
     currentStock: number;
     unit: string;
-    costPerUnit: number;
+    defaultPrice: number;
     lowStockThreshold: number;
     lastRestockedAt: string;
     isActive: boolean;
@@ -42,9 +46,12 @@ export default function InventoryPage() {
     // Form states
     const [formData, setFormData] = useState({
         name: '',
+        category: 'Core Materials',
+        usageType: 'manual',
+        usageValue: 1,
         currentStock: 0,
         unit: 'pcs',
-        costPerUnit: 0,
+        defaultPrice: 0,
         lowStockThreshold: 10
     });
     const [restockAmount, setRestockAmount] = useState(0);
@@ -78,7 +85,7 @@ export default function InventoryPage() {
             if (res.ok) {
                 toast.success('Material added successfully');
                 setIsAddModalOpen(false);
-                setFormData({ name: '', currentStock: 0, unit: 'pcs', costPerUnit: 0, lowStockThreshold: 10 });
+                setFormData({ name: '', category: 'Core Materials', usageType: 'manual', usageValue: 1, currentStock: 0, unit: 'pcs', defaultPrice: 0, lowStockThreshold: 10 });
                 fetchMaterials();
             } else {
                 const err = await res.json();
@@ -128,11 +135,13 @@ export default function InventoryPage() {
     };
 
     const filteredMaterials = materials.filter(m => 
-        m.name.toLowerCase().includes(searchQuery.toLowerCase())
+        m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (m.adminName && m.adminName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (m.category && m.category.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
-    const lowStockCount = materials.filter(m => m.currentStock <= m.lowStockThreshold).length;
-    const totalValue = materials.reduce((acc, m) => acc + (m.currentStock * m.costPerUnit), 0);
+    const lowStockCount = materials.filter(m => m.currentStock <= m.lowStockThreshold && m.usageType !== 'manual').length;
+    const totalValue = materials.reduce((acc, m) => acc + (m.currentStock * m.defaultPrice), 0);
 
     return (
         <div className="space-y-8">
@@ -225,10 +234,10 @@ export default function InventoryPage() {
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-gray-50/50">
-                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Material Name</th>
+                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Item Details</th>
                                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">In Stock</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Cost/Unit</th>
-                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Threshold</th>
+                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Logic</th>
+                                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Dflt Price</th>
                                 <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
                             </tr>
                         </thead>
@@ -257,21 +266,27 @@ export default function InventoryPage() {
                                             animate={{ opacity: 1 }}
                                             className="hover:bg-gray-50/50 transition-colors group"
                                         >
-                                            <td className="px-6 py-4 font-bold text-gray-900">{material.name}</td>
+                                            <td className="px-6 py-4">
+                                                <div className="font-bold text-gray-900">{material.name}</div>
+                                                <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{material.category} {material.adminName ? `• ${material.adminName}` : ''}</div>
+                                            </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
-                                                    <span className={`font-bold ${isLowStock ? 'text-amber-600' : 'text-gray-900'}`}>
+                                                    <span className={`font-bold ${isLowStock && material.usageType !== 'manual' ? 'text-amber-600' : 'text-gray-900'}`}>
                                                         {material.currentStock} {material.unit}
                                                     </span>
-                                                    {isLowStock && (
+                                                    {isLowStock && material.usageType !== 'manual' && (
                                                         <span className="text-[10px] text-amber-500 font-bold uppercase tracking-tight flex items-center gap-1">
-                                                            <AlertTriangle size={10} /> Low Stock
+                                                            <AlertTriangle size={10} /> Low Stock (Thr: {material.lowStockThreshold})
                                                         </span>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 font-medium text-gray-600 italic">₹{material.costPerUnit}</td>
-                                            <td className="px-6 py-4 font-medium text-gray-400">{material.lowStockThreshold}</td>
+                                            <td className="px-6 py-4">
+                                                <div className="font-bold text-lavender">{material.usageType}</div>
+                                                <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Val: {material.usageValue}</div>
+                                            </td>
+                                            <td className="px-6 py-4 font-medium text-gray-600 italic">₹{material.defaultPrice}</td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button 
@@ -336,9 +351,39 @@ export default function InventoryPage() {
                                         required
                                         value={formData.name}
                                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                        className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-3xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-400 transition-all font-medium"
+                                        className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-400 transition-all font-medium"
                                         placeholder="e.g., Wax Seal, Satin Ribbon"
                                     />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-gray-700 ml-1">Category</label>
+                                        <select 
+                                            value={formData.category}
+                                            onChange={(e) => setFormData({...formData, category: e.target.value})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                        >
+                                            <option value="Core Materials">Core Materials</option>
+                                            <option value="Envelopes">Envelopes</option>
+                                            <option value="Chart Sheets">Chart Sheets</option>
+                                            <option value="Packaging">Packaging</option>
+                                            <option value="Add-ons">Add-ons</option>
+                                            <option value="Card Types">Card Types</option>
+                                            <option value="Vellum Paper">Vellum Paper</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-gray-700 ml-1">Usage Type</label>
+                                        <select 
+                                            value={formData.usageType}
+                                            onChange={(e) => setFormData({...formData, usageType: e.target.value})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                        >
+                                            <option value="manual">Manual</option>
+                                            <option value="per_card">Per Card</option>
+                                            <option value="ratio">Ratio</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
@@ -347,7 +392,7 @@ export default function InventoryPage() {
                                             type="number" 
                                             value={formData.currentStock}
                                             onChange={(e) => setFormData({...formData, currentStock: parseInt(e.target.value)})}
-                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-3xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -355,32 +400,43 @@ export default function InventoryPage() {
                                         <select 
                                             value={formData.unit}
                                             onChange={(e) => setFormData({...formData, unit: e.target.value})}
-                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-3xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         >
                                             <option value="pcs">Pieces (pcs)</option>
                                             <option value="kg">Kilograms (kg)</option>
                                             <option value="sheets">Sheets</option>
                                             <option value="meters">Meters</option>
+                                            <option value="rolls">Rolls</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-3 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-700 ml-1">Cost Per Unit (₹)</label>
+                                        <label className="text-[11px] font-bold text-gray-700 ml-1">Default Price (₹)</label>
                                         <input 
                                             type="number" 
-                                            value={formData.costPerUnit}
-                                            onChange={(e) => setFormData({...formData, costPerUnit: parseFloat(e.target.value)})}
-                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-3xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                            value={formData.defaultPrice}
+                                            onChange={(e) => setFormData({...formData, defaultPrice: parseFloat(e.target.value)})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-bold text-gray-700 ml-1">Low Stock Threshold</label>
+                                        <label className="text-[11px] font-bold text-gray-700 ml-1">Logic Val (e.g. 0.066)</label>
+                                        <input 
+                                            type="number" 
+                                            step="0.0001"
+                                            value={formData.usageValue}
+                                            onChange={(e) => setFormData({...formData, usageValue: parseFloat(e.target.value)})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[11px] font-bold text-gray-700 ml-1">Low Thrsh</label>
                                         <input 
                                             type="number" 
                                             value={formData.lowStockThreshold}
                                             onChange={(e) => setFormData({...formData, lowStockThreshold: parseInt(e.target.value)})}
-                                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-3xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>
                                 </div>

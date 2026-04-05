@@ -39,8 +39,10 @@ export default function OrderDetailPage() {
     const router = useRouter();
     const [order, setOrder] = useState<any>(null);
     const [settings, setSettings] = useState<any>(null);
+    const [inventory, setInventory] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isInvoiced, setIsInvoiced] = useState(false);
 
     // Calculator State
     const [materials, setMaterials] = useState<any[]>([]);
@@ -57,26 +59,25 @@ export default function OrderDetailPage() {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const [orderRes, settingsRes] = await Promise.all([
+            const [orderRes, settingsRes, activeInventoryRes] = await Promise.all([
                 fetch(`/api/inquiries/${id}`),
-                fetch('/api/settings')
+                fetch('/api/settings'),
+                fetch('/api/admin/inventory')
             ]);
             const orderData = await orderRes.json();
             const settingsData = await settingsRes.json();
+            const invData = await activeInventoryRes.json();
 
             setOrder(orderData);
             setSettings(settingsData);
+            setInventory(invData || []);
+            setIsInvoiced(orderData.isInvoiced || false);
 
             // Initialize materials
             if (orderData.costing?.materials?.length > 0) {
                 setMaterials(orderData.costing.materials);
             } else {
-                // Pre-fill from settings
-                const defaultMaterials = (settingsData.defaultMaterials || []).map((m: any) => ({
-                    ...m,
-                    checked: m.name === 'Wax' || m.name === 'Card' // Example defaults
-                }));
-                setMaterials(defaultMaterials);
+                setMaterials([]);
             }
 
             setPrintingCost(orderData.costing?.printingCost || 0);
@@ -95,19 +96,43 @@ export default function OrderDetailPage() {
     const sellingPrice = order?.estimatedTotal || 0;
 
     const materialCostPerCard = useMemo(() => {
-        return materials
-            .filter(m => m.checked)
-            .reduce((sum, m) => sum + (Number(m.cost) || 0), 0);
-    }, [materials]);
+        const qty = quantity || 1;
+        const total = materials.reduce((sum, m) => sum + ((Number(m.quantityUsed) || 0) * (Number(m.costPerUnit) || 0)), 0);
+        return total / qty;
+    }, [materials, quantity]);
 
-    const totalMaterialCost = materialCostPerCard * quantity;
+    const totalMaterialCost = materials.reduce((sum, m) => sum + ((Number(m.quantityUsed) || 0) * (Number(m.costPerUnit) || 0)), 0);
     const totalCost = totalMaterialCost + Number(printingCost);
     const profit = sellingPrice - totalCost;
 
     const totalBill = sellingPrice + Number(designingCharge) + Number(shippingCharge);
 
     const handleAddMaterial = () => {
-        setMaterials([...materials, { name: 'New Material', cost: 0, checked: true }]);
+        setMaterials([...materials, { name: 'Custom Material', quantityUsed: 1, costPerUnit: 0, usageType: 'manual', materialId: null }]);
+    };
+
+    const handleSelectInventoryItem = (index: number, materialId: string) => {
+        if (!materialId) return;
+        const selected = inventory.find(m => m._id === materialId);
+        if (!selected) return;
+
+        let qUsed = 1;
+        if (selected.usageType === 'per_card') {
+            qUsed = quantity;
+        } else if (selected.usageType === 'ratio') {
+            qUsed = Math.ceil(quantity * selected.usageValue);
+        }
+
+        const newMaterials = [...materials];
+        newMaterials[index] = { 
+            ...newMaterials[index], 
+            materialId: selected._id,
+            name: selected.name,
+            usageType: selected.usageType,
+            costPerUnit: selected.defaultPrice,
+            quantityUsed: qUsed
+        };
+        setMaterials(newMaterials);
     };
 
     const handleUpdateMaterial = (index: number, updates: any) => {
@@ -120,32 +145,44 @@ export default function OrderDetailPage() {
         setMaterials(materials.filter((_, i) => i !== index));
     };
 
-    const saveDetails = async () => {
+    const saveDetails = async (markInvoiced = false) => {
         setIsSaving(true);
         try {
+            const finalMaterials = materials.map(m => ({
+                ...m,
+                totalCost: (Number(m.quantityUsed) || 0) * (Number(m.costPerUnit) || 0)
+            }));
+            
+            const payload: any = {
+                id,
+                costing: {
+                    materials: finalMaterials,
+                    printingCost,
+                    totalMaterialCost,
+                    totalCost,
+                    profit
+                },
+                billing: {
+                    designingCharge,
+                    shippingCharge,
+                    totalBill,
+                    invoiceDate: new Date()
+                }
+            };
+
+            if (markInvoiced) {
+                payload.isInvoiced = true;
+            }
+
             const res = await fetch('/api/inquiries', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id,
-                    costing: {
-                        materials,
-                        printingCost,
-                        totalMaterialCost,
-                        totalCost,
-                        profit
-                    },
-                    billing: {
-                        designingCharge,
-                        shippingCharge,
-                        totalBill,
-                        invoiceDate: new Date()
-                    }
-                }),
+                body: JSON.stringify(payload),
             });
 
             if (res.ok) {
                 toast.success('Calculations saved');
+                if (markInvoiced) setIsInvoiced(true);
             } else {
                 toast.error('Failed to save');
             }
@@ -156,7 +193,10 @@ export default function OrderDetailPage() {
         }
     };
 
-    const generatePDF = () => {
+    const generatePDF = async () => {
+        // Save and mark invoiced first to deduct inventory
+        await saveDetails(true);
+
         const doc = new jsPDF();
         
         // Header
@@ -246,11 +286,16 @@ export default function OrderDetailPage() {
                     </button>
                     <div>
                         <h1 className="text-3xl font-black text-charcoal tracking-tight">Financial Overview</h1>
-                        <p className="text-gray-500 mt-1 font-medium italic">Order: {order.sku} — {order.customerName}</p>
-                    </div>
+                    <p className="text-gray-500 mt-1 font-medium italic">Order: {order.sku} — {order.customerName}</p>
+                    {isInvoiced && (
+                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold flex items-center gap-1 mt-2">
+                            <CheckCircle2 size={12} /> INVOICED & DEDUCTED
+                        </span>
+                    )}
+                </div>
                 </div>
                 <div className="flex gap-4">
-                    <button onClick={saveDetails} disabled={isSaving} className="bg-white border border-gray-200 text-charcoal px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-sm hover:border-lavender/50 transition-all flex items-center gap-2">
+                    <button onClick={() => saveDetails(false)} disabled={isSaving} className="bg-white border border-gray-200 text-charcoal px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-sm hover:border-lavender/50 transition-all flex items-center gap-2">
                         {isSaving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
                         Save Data
                     </button>
@@ -276,33 +321,54 @@ export default function OrderDetailPage() {
                         </div>
                         
                         <div className="p-10 space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 gap-4">
                                 {materials.map((m, idx) => (
-                                    <div key={idx} className="flex items-center gap-4 p-4 bg-gray-50 rounded-[1.5rem] border border-transparent focus-within:border-lavender/20 transition-all group">
-                                        <input 
-                                            type="checkbox" 
-                                            checked={m.checked} 
-                                            onChange={(e) => handleUpdateMaterial(idx, { checked: e.target.checked })}
-                                            className="w-5 h-5 rounded accent-lavender pointer-events-auto"
-                                        />
+                                    <div key={idx} className="flex flex-col md:flex-row items-center gap-4 p-4 bg-gray-50 rounded-[1.5rem] border border-transparent focus-within:border-lavender/20 transition-all group">
+                                        <select
+                                            className="w-full md:w-32 bg-white px-3 py-2 rounded-xl border border-gray-100 text-xs font-bold text-charcoal outline-none"
+                                            value={m.materialId || ''}
+                                            onChange={(e) => handleSelectInventoryItem(idx, e.target.value)}
+                                        >
+                                            <option value="">-- Manual --</option>
+                                            {inventory.map((inv: any) => (
+                                                <option key={inv._id} value={inv._id}>{inv.name} (₹{inv.defaultPrice})</option>
+                                            ))}
+                                        </select>
+                                        
                                         <input 
                                             type="text" 
                                             value={m.name} 
                                             onChange={(e) => handleUpdateMaterial(idx, { name: e.target.value })}
-                                            className="bg-transparent border-none outline-none font-bold text-charcoal flex-1 placeholder-gray-300" 
+                                            className="bg-transparent border-none outline-none font-bold text-charcoal flex-1 placeholder-gray-300 w-full" 
+                                            placeholder="Material Name"
                                         />
-                                        <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-100">
-                                            <span className="text-[10px] font-black text-lavender">₹</span>
-                                            <input 
-                                                type="number" 
-                                                value={m.cost} 
-                                                onChange={(e) => handleUpdateMaterial(idx, { cost: parseFloat(e.target.value) || 0 })}
-                                                className="w-16 bg-transparent border-none outline-none font-black text-charcoal text-right" 
-                                            />
+                                        
+                                        <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-xl border border-gray-100">
+                                                <span className="text-[10px] font-black text-gray-400">Qty</span>
+                                                <input 
+                                                    type="number" 
+                                                    value={m.quantityUsed} 
+                                                    onChange={(e) => handleUpdateMaterial(idx, { quantityUsed: parseFloat(e.target.value) || 0 })}
+                                                    className="w-12 bg-transparent border-none outline-none font-black text-charcoal text-center" 
+                                                />
+                                            </div>
+                                            <div className="flex items-center gap-1 bg-white px-3 py-1.5 rounded-xl border border-gray-100">
+                                                <span className="text-[10px] font-black text-lavender">₹/U</span>
+                                                <input 
+                                                    type="number" 
+                                                    value={m.costPerUnit} 
+                                                    onChange={(e) => handleUpdateMaterial(idx, { costPerUnit: parseFloat(e.target.value) || 0 })}
+                                                    className="w-12 bg-transparent border-none outline-none font-black text-charcoal text-right" 
+                                                />
+                                            </div>
+                                            <div className="w-20 text-right font-black italic text-lavender tracking-tighter">
+                                                ₹{((Number(m.quantityUsed) || 0) * (Number(m.costPerUnit) || 0)).toFixed(2)}
+                                            </div>
+                                            <button onClick={() => handleRemoveMaterial(idx)} className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition-all p-2">
+                                                <Trash2 size={16} />
+                                            </button>
                                         </div>
-                                        <button onClick={() => handleRemoveMaterial(idx)} className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition-all">
-                                            <Trash2 size={16} />
-                                        </button>
                                     </div>
                                 ))}
                                 <button onClick={handleAddMaterial} className="flex items-center justify-center gap-2 p-5 border-2 border-dashed border-gray-100 rounded-[1.5rem] text-gray-400 hover:border-lavender/30 hover:text-lavender transition-all group">

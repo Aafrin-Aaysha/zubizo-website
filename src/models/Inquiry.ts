@@ -20,7 +20,7 @@ const InquirySchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['New', 'Contacted', 'Confirmed', 'Designing', 'Design Confirmed', 'Printing', 'Delivered', 'Completed', 'Closed'],
+        enum: ['New', 'Contacted', 'Confirmed', 'Designing', 'Design Confirmed', 'Printing', 'Delivered', 'Completed', 'Closed', 'Invoiced'],
         default: 'New',
     },
     assignedTo: {
@@ -51,9 +51,13 @@ const InquirySchema = new mongoose.Schema({
     // Calculator & Billing Data
     costing: {
         materials: [{
+            materialId: { type: mongoose.Schema.Types.ObjectId, ref: 'Material' },
             name: String,
-            cost: Number,
-            checked: { type: Boolean, default: false }
+            quantityUsed: { type: Number, default: 0 },
+            costPerUnit: { type: Number, default: 0 },
+            totalCost: { type: Number, default: 0 },
+            usageType: String,
+            isDeducted: { type: Boolean, default: false }
         }],
         printingCost: { type: Number, default: 0 },
         totalMaterialCost: { type: Number, default: 0 },
@@ -66,6 +70,14 @@ const InquirySchema = new mongoose.Schema({
         totalBill: { type: Number, default: 0 },
         invoiceDate: Date,
         invoiceNumber: String
+    },
+    isInvoiced: {
+        type: Boolean,
+        default: false
+    },
+    isInventoryDeducted: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true });
 

@@ -6,6 +6,23 @@ const MaterialSchema = new mongoose.Schema({
         ref: 'Admin',
         required: true
     },
+    adminName: {
+        type: String,
+        trim: true
+    },
+    category: {
+        type: String,
+        default: 'Core Materials'
+    },
+    usageType: {
+        type: String,
+        enum: ['per_card', 'ratio', 'manual'],
+        default: 'manual'
+    },
+    usageValue: {
+        type: Number,
+        default: 1
+    },
     name: {
         type: String,
         required: true,
@@ -21,7 +38,7 @@ const MaterialSchema = new mongoose.Schema({
         required: true,
         default: 'pcs' // e.g., 'pcs', 'kg', 'meters', 'sheets'
     },
-    costPerUnit: {
+    defaultPrice: {
         type: Number,
         required: true,
         default: 0

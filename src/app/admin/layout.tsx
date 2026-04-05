@@ -39,10 +39,10 @@ const sidebarItems = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default closed on mobile-first
     const [isMobile, setIsMobile] = useState(false);
+    const [adminData, setAdminData] = useState<{name: string, role: string} | null>(null);
     const pathname = usePathname();
     const router = useRouter();
 
-    // Handle screen resize and initial state
     React.useEffect(() => {
         const checkMobile = () => {
             const mobile = window.innerWidth < 1024;
@@ -51,6 +51,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         };
         checkMobile();
         window.addEventListener('resize', checkMobile);
+
+        // Fetch admin data for the header
+        fetch('/api/admin/account')
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (data) setAdminData(data);
+            })
+            .catch(console.error);
+
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
@@ -196,13 +205,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
                         <div className="flex items-center gap-3">
                             <div className="text-right hidden sm:block">
-                                <p className="text-sm font-semibold text-gray-900 leading-none">Admin</p>
+                                <p className="text-sm font-semibold text-gray-900 leading-none">{adminData?.name || 'Admin'}</p>
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-lavender bg-lavender/10 px-1.5 py-0.5 rounded mt-1 inline-block">
-                                    Super Admin
+                                    {adminData?.role === 'super-admin' ? 'Super Admin' : 'Admin'}
                                 </span>
                             </div>
                             <div className="w-10 h-10 bg-lavender rounded-full border-2 border-white shadow-sm flex items-center justify-center text-white font-bold">
-                                A
+                                {adminData?.name ? adminData.name.charAt(0).toUpperCase() : 'A'}
                             </div>
                         </div>
                     </div>
