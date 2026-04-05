@@ -85,12 +85,14 @@ export default function InventoryPage() {
 
     const fetchAdmins = async () => {
         try {
-            const res = await fetch('/api/admin/employees'); // This usually returns employees, but maybe admins too? 
-            // Better to have a dedicated endpoint for admins, but let's see.
-            // Actually, the multi-admin logic uses Admin model.
-            // Let's assume there is an endpoint or we can get them from materials if needed.
-            // For now, I'll just filter what's in 'materials' to get unique admin names.
-        } catch (error) {}
+            const res = await fetch('/api/admin/list');
+            const data = await res.json();
+            if (res.ok) {
+                setAllAdmins(data);
+            }
+        } catch (error) {
+            console.error('Error fetching admin list:', error);
+        }
     };
 
     const fetchMaterials = async () => {
@@ -208,7 +210,9 @@ export default function InventoryPage() {
         return matchesSearch && matchesAdmin;
     });
 
-    const uniqueAdmins = Array.from(new Set(materials.map(m => m.adminName).filter(Boolean))) as string[];
+    const uniqueAdmins = adminData?.role === 'super-admin' 
+        ? allAdmins.map(a => a.name) 
+        : Array.from(new Set(materials.map(m => m.adminName).filter(Boolean))) as string[];
 
     const lowStockCount = materials.filter(m => m.currentStock <= m.lowStockThreshold && m.usageType !== 'manual').length;
     const totalValue = materials.reduce((acc, m) => acc + (m.currentStock * m.defaultPrice), 0);
