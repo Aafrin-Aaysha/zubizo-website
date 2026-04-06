@@ -92,6 +92,11 @@ export async function POST(req: NextRequest) {
 
         const body = await req.json();
 
+        // Validate categoryId — reject empty strings that cause BSONError
+        if (!body.categoryId) {
+            return NextResponse.json({ message: 'Category is required' }, { status: 400 });
+        }
+
         // Ensure slug is generated if not provided
         if (!body.slug && body.name && body.sku) {
             body.slug = `${body.name}-${body.sku}`

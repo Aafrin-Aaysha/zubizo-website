@@ -147,6 +147,12 @@ export default function DesignsPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        // Validate categoryId is set
+        if (!formData.categoryId) {
+            toast.error('Category not loaded yet. Please wait and try again.');
+            return;
+        }
+
         if (formData.packages.length === 0) {
             toast.error('At least one package is required');
             return;

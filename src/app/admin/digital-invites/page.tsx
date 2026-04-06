@@ -178,6 +178,12 @@ export default function DigitalInvitesAdminPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        // Validate categoryId is set
+        if (!formData.categoryId) {
+            toast.error('Category not loaded yet. Please wait and try again.');
+            return;
+        }
+
         // Validate mandatory fields
         const currentCat = categories.find(c => c._id === formData.categoryId);
         if (currentCat?.name === 'Premium E-Website' && !formData.demoUrl) {
