@@ -44,16 +44,6 @@ export const InviteSection = ({
               viewport={{ once: true }}
             >
               <h2 className="text-4xl md:text-5xl font-serif text-charcoal mb-4 italic italic-lavender">{title}</h2>
-              <div className="flex flex-wrap gap-x-6 gap-y-3 mt-6">
-                {features.map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full bg-lavender/10 flex items-center justify-center text-lavender">
-                      <Check size={12} strokeWidth={3} />
-                    </div>
-                    <span className="text-[11px] font-black uppercase tracking-widest text-charcoal/50">{feature}</span>
-                  </div>
-                ))}
-              </div>
             </motion.div>
           </div>
           

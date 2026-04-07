@@ -189,12 +189,15 @@ export const PricingSection = () => {
                                     </p>
                                 </div>
 
-                                <div className="flex items-baseline gap-1 mb-10">
-                                    <span className="text-sm font-black text-lavender">₹</span>
-                                    <span className="text-4xl font-black tracking-tighter italic">{plan.price}</span>
+                                <div className="flex items-baseline gap-3 mb-8">
+                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-lavender/40">Starting from</span>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-sm font-black text-lavender">₹</span>
+                                        <span className="text-4xl font-black tracking-tighter italic">{plan.price}</span>
+                                    </div>
                                 </div>
 
-                                <div className="flex-grow space-y-4 mb-10">
+                                <div className="flex-grow space-y-4">
                                     {plan.features.map((feature, i) => (
                                         <div key={i} className="flex items-start gap-3">
                                             <div className={cn(
@@ -212,19 +215,6 @@ export const PricingSection = () => {
                                         </div>
                                     ))}
                                 </div>
-
-                                <Link 
-                                    href={plan.href}
-                                    className={cn(
-                                        "flex items-center justify-center gap-2 w-full py-4 rounded-full font-black text-[10px] uppercase tracking-[0.15em] transition-all duration-300 active:scale-95",
-                                        plan.isRecommended 
-                                            ? "bg-lavender text-white hover:bg-[#9a6ab5] shadow-xl shadow-lavender/20" 
-                                            : "bg-white text-charcoal border border-charcoal/10 hover:border-lavender/40 shadow-sm"
-                                    )}
-                                >
-                                    {plan.cta}
-                                    <ArrowRight size={14} />
-                                </Link>
                             </motion.div>
                         ))}
                     </motion.div>

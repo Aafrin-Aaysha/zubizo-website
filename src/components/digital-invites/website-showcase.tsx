@@ -37,29 +37,6 @@ export const WebsiteShowcase = () => {
                 The ultimate digital experience. A bespoke, interactive website that tells your story and manages your celebration with modern elegance.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-                {features.map((feature, idx) => (
-                  <div key={idx} className="flex items-start gap-4 p-4 bg-white/60 backdrop-blur-sm rounded-3xl border border-white/40 shadow-sm">
-                    <div className="w-10 h-10 rounded-2xl bg-lavender/10 flex items-center justify-center text-lavender shrink-0">
-                      <feature.icon size={20} />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-charcoal text-sm mb-1">{feature.title}</h4>
-                      <p className="text-[11px] text-charcoal/50 leading-relaxed">{feature.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center gap-6">
-                <Link 
-                  href="/digital-invites/website" 
-                  className="group w-full sm:w-auto flex items-center justify-center gap-3 px-10 py-5 bg-lavender text-white rounded-full font-bold text-sm uppercase tracking-widest hover:bg-lavender/90 transition-all shadow-lg"
-                >
-                  Create My Website
-                  <ArrowRight size={18} />
-                </Link>
-              </div>
             </motion.div>
           </div>
 
