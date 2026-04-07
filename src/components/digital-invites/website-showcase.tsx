@@ -59,13 +59,6 @@ export const WebsiteShowcase = () => {
                   Create My Website
                   <ArrowRight size={18} />
                 </Link>
-                <Link 
-                  href="/catalog?category=Premium+E-Website" 
-                  className="group w-full sm:w-auto flex items-center justify-center gap-3 px-10 py-5 bg-white text-charcoal border border-charcoal/5 rounded-full font-bold text-sm uppercase tracking-widest hover:border-lavender/30 transition-all shadow-sm"
-                >
-                  <PlayCircle size={18} className="text-lavender" />
-                  View Live Demo
-                </Link>
               </div>
             </motion.div>
           </div>

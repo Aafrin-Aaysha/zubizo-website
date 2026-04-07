@@ -60,13 +60,6 @@ export const DigitalInvitesHero = () => {
               Explore Designs
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link 
-              href="#website-invites" 
-              className="group flex items-center gap-3 px-10 py-5 bg-white text-charcoal border border-charcoal/5 rounded-full font-bold text-sm uppercase tracking-widest hover:border-lavender/30 transition-all shadow-sm active:scale-95"
-            >
-              <PlayCircle size={18} className="text-lavender" />
-              View Demo
-            </Link>
           </motion.div>
         </div>
       </div>

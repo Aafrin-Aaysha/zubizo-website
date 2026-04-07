@@ -51,18 +51,6 @@ export default function DesignCard({ design }: { design: any }) {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        {design.demoUrl && (
-                            <a
-                                href={design.demoUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="h-10 px-4 rounded-lg bg-lavender/10 text-lavender flex items-center gap-2 text-[10px] font-black uppercase tracking-widest hover:bg-lavender hover:text-white transition-all border border-lavender/20"
-                            >
-                                <ExternalLink size={12} />
-                                Live Demo
-                            </a>
-                        )}
                         <Link
                             href={`/catalog/${design.slug}`}
                             className="w-10 h-10 rounded-lg border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-lavender hover:border-lavender transition-all group/btn"
