@@ -72,9 +72,9 @@ function MetricCard({ icon: Icon, value, suffix, label, sublabel, color, bg, ind
    Metrics data
 ───────────────────────────────────────────── */
 const metricsData = [
-    { icon: Users,   value: 1000,   suffix: "+", label: "Happy Clients",          sublabel: "Families who trusted us",    color: "text-violet-600", bg: "bg-violet-50"  },
-    { icon: Package, value: 100000, suffix: "+", label: "Invitations Delivered",  sublabel: "Orders completed",           color: "text-emerald-600", bg: "bg-emerald-50"},
-    { icon: Globe2,  value: 15,     suffix: "+", label: "Countries Served",       sublabel: "International orders",       color: "text-blue-600",    bg: "bg-blue-50"   },
+    { icon: Users,   value: 3000,   suffix: "+", label: "Happy Clients",          sublabel: "Families who trusted us",    color: "text-violet-600", bg: "bg-violet-50"  },
+    { icon: Package, value: 200000, suffix: "+", label: "Invitations Delivered",  sublabel: "Orders completed",           color: "text-emerald-600", bg: "bg-emerald-50"},
+    { icon: Globe2,  value: 10,     suffix: "+", label: "Countries Served",       sublabel: "International orders",       color: "text-blue-600",    bg: "bg-blue-50"   },
     { icon: Palette, value: 300,    suffix: "+", label: "Custom Designs",         sublabel: "Unique creations crafted",   color: "text-rose-600",    bg: "bg-rose-50"   },
     { icon: Gem,     value: 20,     suffix: "+", label: "Premium Materials",      sublabel: "Hand-selected finishes",     color: "text-amber-600",   bg: "bg-amber-50"  },
 ];

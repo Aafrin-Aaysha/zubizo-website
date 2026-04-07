@@ -101,7 +101,7 @@ function MetricCard({
 const metrics: Omit<MetricProps, "started" | "delay">[] = [
     {
         icon: Users,
-        value: 1000,
+        value: 3000,
         suffix: "+",
         label: "Happy Clients",
         sublabel: "Families who trusted us",
@@ -110,7 +110,7 @@ const metrics: Omit<MetricProps, "started" | "delay">[] = [
     },
     {
         icon: Package,
-        value: 100000,
+        value: 200000,
         suffix: "+",
         label: "Invitations Delivered",
         sublabel: "Orders completed",
@@ -119,7 +119,7 @@ const metrics: Omit<MetricProps, "started" | "delay">[] = [
     },
     {
         icon: Globe2,
-        value: 15,
+        value: 10,
         suffix: "+",
         label: "Countries Served",
         sublabel: "International orders",
