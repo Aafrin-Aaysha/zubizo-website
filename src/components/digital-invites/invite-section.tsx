@@ -57,19 +57,7 @@ export const InviteSection = ({
             </motion.div>
           </div>
           
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <Link 
-              href={categoryPath}
-              className="group flex items-center gap-3 px-8 py-4 bg-white text-charcoal border border-charcoal/10 rounded-full font-bold text-xs uppercase tracking-widest hover:border-lavender/30 transition-all shadow-sm active:scale-95"
-            >
-              View More {categoryName}
-            </Link>
-          </motion.div>
+          
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4">

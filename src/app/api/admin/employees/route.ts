@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
         if (!admin) return unauthorizedResponse('Admin access required');
 
         await dbConnect();
-        const employees = await Employee.find({ adminId: admin.id }).select('-password').sort({ createdAt: -1 });
+        const employees = await Employee.find({}).select('-password').sort({ createdAt: -1 });
         return NextResponse.json(employees);
     } catch (error) {
         return NextResponse.json({ message: 'Error fetching employees' }, { status: 500 });

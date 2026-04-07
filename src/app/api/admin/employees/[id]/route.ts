@@ -20,10 +20,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             return NextResponse.json({ message: 'Employee not found' }, { status: 404 });
         }
 
-        // Access Control: Ensure the designer belongs to the logged-in admin
-        if (employee.adminId?.toString() !== admin.id) {
-            return unauthorizedResponse('You do not have permission to update this designer');
-        }
+        // Access Control: In shared mode, any valid admin can update any employee.
 
         const updateData: any = {};
         if (name) updateData.name = name;
@@ -55,10 +52,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
             return NextResponse.json({ message: 'Employee not found' }, { status: 404 });
         }
 
-        // Access Control: Ensure the designer belongs to the logged-in admin
-        if (employee.adminId?.toString() !== admin.id) {
-            return unauthorizedResponse('You do not have permission to delete this designer');
-        }
+        // Access Control: In shared mode, any valid admin can delete any employee.
 
         await Employee.findByIdAndDelete(id);
         
