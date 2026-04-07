@@ -322,7 +322,8 @@ export default function OrderDetailPage() {
         doc.text('INVOICE / QUOTATION', 20, 55);
         doc.setFontSize(10);
         doc.setTextColor(100, 100, 100);
-        doc.text(`Doc ID: ${manualOrderId || id.toString().slice(-6).toUpperCase()}`, 20, 65);
+        const docId = manualOrderId || (id ? id.toString().slice(-6).toUpperCase() : 'NEW');
+        doc.text(`Doc ID: ${docId}`, 20, 65);
         doc.text(`Date: ${new Date().toLocaleDateString()}`, 20, 70);
         doc.setTextColor(43, 43, 43);
         doc.setFont('helvetica', 'bold');

@@ -12,21 +12,31 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 async function getSections() {
-  await dbConnect();
-  let sections = await HomePageSection.find({}).sort({ order: 1 });
+  try {
+    await dbConnect();
+    let sections = await HomePageSection.find({}).sort({ order: 1 });
 
-  // Auto-bootstrap for initial run if DB is empty
-  if (sections.length === 0) {
-    await HomePageSection.insertMany(bootstrapSections);
-    sections = await HomePageSection.find({}).sort({ order: 1 });
+    // Auto-bootstrap for initial run if DB is empty
+    if (sections.length === 0) {
+      await HomePageSection.insertMany(bootstrapSections);
+      sections = await HomePageSection.find({}).sort({ order: 1 });
+    }
+
+    return JSON.parse(JSON.stringify(sections));
+  } catch (error) {
+    console.error("Failed to fetch homepage sections:", error);
+    return []; // Return empty sections as fallback
   }
-
-  return JSON.parse(JSON.stringify(sections));
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  await dbConnect();
-  const settings = await SiteSettings.findOne();
+  let settings = null;
+  try {
+    await dbConnect();
+    settings = await SiteSettings.findOne();
+  } catch (error) {
+    console.error("Failed to fetch site settings for metadata:", error);
+  }
 
   return {
     title: "Zubizo | Premier Handcrafted Invitations & Luxury Stationery",
@@ -40,15 +50,22 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const sections = await getSections();
-  const settings = await SiteSettings.findOne().lean();
+  let sections = [];
+  let settings = null;
+
+  try {
+    sections = await getSections();
+    settings = await SiteSettings.findOne().lean();
+  } catch (error) {
+    console.error("Error in Home component:", error);
+  }
 
   return (
     <main className="relative min-h-screen">
       <LuxuryNavbar />
       <SectionRenderer
         sections={sections}
-        siteSettings={JSON.parse(JSON.stringify(settings))}
+        siteSettings={settings ? JSON.parse(JSON.stringify(settings)) : null}
       />
       <LuxuryFooter />
       <WhatsAppFixed />

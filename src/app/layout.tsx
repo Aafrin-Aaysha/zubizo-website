@@ -24,8 +24,13 @@ import dbConnect from "@/lib/db";
 import SiteSettings from "@/models/SiteSettings";
 
 export async function generateMetadata(): Promise<Metadata> {
-  await dbConnect();
-  const settings = await SiteSettings.findOne();
+  let settings = null;
+  try {
+    await dbConnect();
+    settings = await SiteSettings.findOne();
+  } catch (error) {
+    console.error("Failed to fetch site settings for metadata:", error);
+  }
 
   return {
     metadataBase: new URL('https://zubizoart.com'),
