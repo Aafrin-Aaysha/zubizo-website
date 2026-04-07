@@ -15,7 +15,6 @@ const pricingData = {
       features: [
         "HD PNG / JPEG / PDF",
         "WhatsApp & Social Ready",
-        "24 Hour Delivery",
         "Premium Artisanal Design",
         "Personalized Content"
       ],
@@ -31,7 +30,6 @@ const pricingData = {
         "Full HD MP4 Format",
         "Custom Background Music",
         "Instagram Reel Ready",
-        "Premium Logo Animation",
         "Custom Couple Names"
       ],
       cta: "Choose Video Invite",
@@ -48,7 +46,6 @@ const pricingData = {
         "Basic Website Invite",
         "Interactive RSVP System",
         "Google Maps Integration",
-        "3 Months Hosting",
         "Mobile First Design"
       ],
       cta: "Create Starter",
@@ -64,7 +61,6 @@ const pricingData = {
         "Interactive Photo Gallery",
         "Pre-wedding Slideshow",
         "Message Wall for Guests",
-        "6 Months Hosting",
         "Email RSVP Alerts"
       ],
       cta: "Create Value",
@@ -80,7 +76,6 @@ const pricingData = {
         "Engagement Story & Video",
         "Accommodation & Schedule",
         "Guest Wish-list Integration",
-        "12 Months Hosting",
         "Priority Support"
       ],
       cta: "Create Premium",
@@ -96,7 +91,6 @@ const pricingData = {
         "AI Assistant for RSVP",
         "Live Guest Uploads/Gallery",
         "QR Code Guest Entry",
-        "Permanent Link Hosting",
         "Dedicated Manager"
       ],
       cta: "Create Ultimate",
