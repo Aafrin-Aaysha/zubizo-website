@@ -41,12 +41,12 @@ const pricingData = {
     {
       name: "Starter",
       price: "2999",
-      description: "Essential digital invitation with guest management.",
+      description: "Perfect for simple and elegant invites",
       features: [
-        "Basic Website Invite",
-        "Interactive RSVP System",
-        "Google Maps Integration",
-        "Mobile First Design"
+        "4 Website Sections (Blocks)",
+        "Basic Design Layout",
+        "Event Details Page",
+        "Mobile Friendly Design"
       ],
       cta: "Create Starter",
       href: "/digital-invites/website",
@@ -55,13 +55,12 @@ const pricingData = {
     {
       name: "Value",
       price: "3999",
-      description: "The complete interactive wedding experience.",
+      description: "A more engaging experience with added personalization",
       features: [
-        "Story Timeline & Music",
-        "Interactive Photo Gallery",
-        "Pre-wedding Slideshow",
-        "Message Wall for Guests",
-        "Email RSVP Alerts"
+        "Custom Design Styling",
+        "Event Timeline Section",
+        "Background Music",
+        "Mobile Optimized"
       ],
       cta: "Create Value",
       href: "/digital-invites/website",
@@ -70,13 +69,12 @@ const pricingData = {
     {
       name: "Premium",
       price: "4999",
-      description: "Enhanced engagement for your grand celebration.",
+      description: "Ideal for detailed and interactive invites",
       features: [
-        "Blessing Wall & Interaction",
-        "Engagement Story & Video",
-        "Accommodation & Schedule",
-        "Guest Wish-list Integration",
-        "Priority Support"
+        "Fully Custom Design",
+        "Event Timeline & Story Section",
+        "RSVP System (Guest Response)",
+        "Google Maps Integration"
       ],
       cta: "Create Premium",
       href: "/digital-invites/website",
@@ -85,13 +83,13 @@ const pricingData = {
     {
       name: "Ultimate",
       price: "6999",
-      description: "Cutting-edge features for a distinct reveal.",
+      description: "Complete experience with all essential features",
       features: [
-        "All Premium Features",
-        "AI Assistant for RSVP",
-        "Live Guest Uploads/Gallery",
-        "QR Code Guest Entry",
-        "Dedicated Manager"
+        "Advanced Custom Design",
+        "RSVP System",
+        "Photo Gallery + Video Support",
+        "Guest Message Section",
+        "Google Maps Integration"
       ],
       cta: "Create Ultimate",
       href: "/digital-invites/website",
