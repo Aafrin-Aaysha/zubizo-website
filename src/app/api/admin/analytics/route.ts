@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import Inquiry from '@/models/Inquiry';
-import { getServerSession } from 'next-auth'; // Assuming authentication exists
+// import { getServerSession } from 'next-auth'; // Assuming authentication exists
 import Admin from '@/models/Admin';
 
 export const dynamic = 'force-dynamic';

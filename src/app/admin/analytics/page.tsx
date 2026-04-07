@@ -230,7 +230,7 @@ export default function AnalyticsDashboard() {
                                 <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 900, fill: '#999' }} />
                                 <Tooltip 
                                     contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)', padding: '15px' }}
-                                    formatter={(value: number) => [formatCurrency(value), '']}
+                                    formatter={(value: any) => [formatCurrency(Number(value)), '']}
                                 />
                                 <Area type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={4} fillOpacity={1} fill="url(#colorRev)" />
                                 <Area type="monotone" dataKey="profit" stroke="#A237E1" strokeWidth={4} fillOpacity={1} fill="url(#colorProf)" />
