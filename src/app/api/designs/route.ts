@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+export const revalidate = 60;
 import dbConnect from '@/lib/db';
 import Design from '@/models/Design';
 import Category from '@/models/Category';

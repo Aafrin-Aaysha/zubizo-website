@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import dbConnect from '@/lib/db';
 import Employee from '@/models/Employee';
 import { getAdminFromRequest, unauthorizedResponse } from '@/lib/api-auth';

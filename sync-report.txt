@@ -1,0 +1,6 @@
+Material Counts:
+{
+  "Unknown": 1
+}
+
+Ashika Materials:

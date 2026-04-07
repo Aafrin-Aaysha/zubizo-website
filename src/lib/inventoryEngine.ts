@@ -12,6 +12,9 @@ export async function applyDeduction(materialsList: any[], adminId: string) {
         const mat = await Material.findById(item.materialId);
         if (!mat) continue;
 
+        // NEW: Only deduct if selected in the Order Calculator
+        if (item.isSelected === false) continue;
+
         // "manual" materials do not deduct stock
         if (mat.usageType === 'manual') continue;
 

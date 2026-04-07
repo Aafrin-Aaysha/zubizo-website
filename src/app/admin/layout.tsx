@@ -16,7 +16,8 @@ import {
     X,
     ChevronRight,
     Zap,
-    Database
+    Database,
+    BarChart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LogoIcon } from '@/components/ui/logo-icon';
@@ -32,6 +33,7 @@ const sidebarItems = [
     { name: 'Categories', href: '/admin/categories', icon: FolderTree },
     { name: 'Inquiry Logs', href: '/admin/inquiries', icon: MessageSquare },
     { name: 'Inventory', href: '/admin/inventory', icon: Database },
+    { name: 'Analytics', href: '/admin/analytics', icon: BarChart },
     { name: 'Website Settings', href: '/admin/settings', icon: Settings },
     { name: 'Account', href: '/admin/account', icon: User },
 ];

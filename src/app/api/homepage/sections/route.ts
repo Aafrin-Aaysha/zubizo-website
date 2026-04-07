@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+export const revalidate = 60;
 import dbConnect from '@/lib/db';
 import HomePageSection from '@/models/HomePageSection';
 import { bootstrapSections } from '@/lib/bootstrap-homepage';

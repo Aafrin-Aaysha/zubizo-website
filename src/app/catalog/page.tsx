@@ -57,38 +57,7 @@ export default async function CatalogPage({
         }
     }
 
-    // Handle price filters from ShopByPrice section
-    if (price || maxPrice || minPrice) {
-        const p = price ? parseInt(price) : null;
-        const max = maxPrice ? parseInt(maxPrice) : (p === 120 ? Infinity : p);
-        const min = minPrice ? parseInt(minPrice) : (p === 120 ? 120 : 0);
-
-        if (max !== null || min !== 0) {
-            query['packages.pricePerCard'] = {};
-            if (max && max !== Infinity) query['packages.pricePerCard'].$lte = max;
-            if (min) query['packages.pricePerCard'].$gte = min;
-        }
-    }
-
-    // Legacy Price range filtering (optional to keep for compatibility)
-    if (priceRange && !price) {
-        switch (priceRange) {
-            case 'under30':
-                query['packages.pricePerCard'] = { $lte: 30 };
-                break;
-            case 'under60':
-                query['packages.pricePerCard'] = { $lte: 60 };
-                break;
-            case 'under90':
-                query['packages.pricePerCard'] = { $lte: 90 };
-                break;
-            case 'premium':
-                query['packages.pricePerCard'] = { $gte: 120 };
-                break;
-        }
-    }
-
-    // 3. Fetch Designs
+    // 3. Fetch Designs (Querying DB for category and search only)
     let designsQuery = Design.find(query).populate('categoryId');
 
     // 4. Handle sorting
@@ -111,7 +80,32 @@ export default async function CatalogPage({
 
     let designs = await designsQuery.lean();
 
-    // In-memory price sorting if needed because nested Price is hard to sort via simple find()
+    // 5. In-memory Price Filtering (Filtering based on Starting Price shown in UI)
+    if (price || maxPrice || minPrice || priceRange) {
+        const p = price ? parseInt(price) : null;
+        const max = maxPrice ? parseInt(maxPrice) : (p === 120 ? Infinity : p) ?? undefined;
+        const min = minPrice ? parseInt(minPrice) : (p === 120 ? 120 : 0);
+
+        // Map priceRange for legacy support
+        let filterMax = max;
+        let filterMin = min;
+
+        if (priceRange && !price && !maxPrice && !minPrice) {
+            if (priceRange === 'under30') filterMax = 30;
+            else if (priceRange === 'under60') filterMax = 60;
+            else if (priceRange === 'under90') filterMax = 90;
+            else if (priceRange === 'premium') filterMin = 120;
+        }
+
+        designs = designs.filter((design: any) => {
+            const startingPrice = getStartingPrice(design);
+            const matchesMin = filterMin === undefined || filterMin === 0 || startingPrice >= filterMin;
+            const matchesMax = filterMax === undefined || filterMax === Infinity || startingPrice <= filterMax;
+            return matchesMin && matchesMax;
+        });
+    }
+
+    // 6. In-memory price sorting if needed because nested Price is hard to sort via simple find()
     if (sort === 'price_asc' || sort === 'price_desc') {
         designs = (designs as any[]).sort((a, b) => {
             const priceA = getStartingPrice(a);
@@ -155,6 +149,11 @@ export default async function CatalogPage({
             <CatalogUI
                 initialDesigns={serializedDesigns}
                 categories={serializedCategories}
+                activePriceFilter={{
+                    maxPrice: maxPrice || "",
+                    minPrice: minPrice || "",
+                    priceRange: priceRange || "",
+                }}
             />
 
             <LuxuryFooter />

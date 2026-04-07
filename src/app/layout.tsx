@@ -70,6 +70,7 @@ import { CartProvider } from "@/context/cart-context";
 import { Toaster } from "react-hot-toast";
 import GoogleAnalytics from "@/components/layout/GoogleAnalytics";
 import { CustomCursor } from "@/components/ui/custom-cursor";
+import ReactQueryProvider from "@/lib/react-query-provider";
 
 export default function RootLayout({
   children,
@@ -88,11 +89,14 @@ export default function RootLayout({
       >
         <CustomCursor />
         <GoogleAnalytics GA_MEASUREMENT_ID={gaId} />
-        <CartProvider>
-          {children}
-        </CartProvider>
+        <ReactQueryProvider>
+          <CartProvider>
+            {children}
+          </CartProvider>
+        </ReactQueryProvider>
         <Toaster position="bottom-right" />
       </body>
     </html>
   );
 }
+

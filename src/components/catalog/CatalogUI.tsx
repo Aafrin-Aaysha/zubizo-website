@@ -10,6 +10,22 @@ import DesignCard from "./DesignCard";
 interface CatalogUIProps {
     initialDesigns: any[];
     categories: any[];
+    activePriceFilter?: {
+        maxPrice: string;
+        minPrice: string;
+        priceRange: string;
+    };
+}
+
+function getPriceLabel(f?: { maxPrice: string; minPrice: string; priceRange: string }) {
+    if (!f) return null;
+    if (f.priceRange === 'under30') return 'Under ₹30';
+    if (f.priceRange === 'under60') return 'Under ₹60';
+    if (f.priceRange === 'under90') return 'Under ₹90';
+    if (f.priceRange === 'premium') return '₹120+';
+    if (f.maxPrice) return `Under ₹${f.maxPrice}`;
+    if (f.minPrice) return `From ₹${f.minPrice}`;
+    return null;
 }
 
 const SORT_OPTIONS = [
@@ -19,7 +35,7 @@ const SORT_OPTIONS = [
     { label: 'Newest First', value: 'newest' },
 ];
 
-export default function CatalogUI({ initialDesigns, categories }: CatalogUIProps) {
+export default function CatalogUI({ initialDesigns, categories, activePriceFilter }: CatalogUIProps) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -56,8 +72,32 @@ export default function CatalogUI({ initialDesigns, categories }: CatalogUIProps
 
     const activeSortLabel = SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Featured';
 
+    const priceLabel = getPriceLabel(activePriceFilter);
+
+    const clearPriceFilter = () => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete('maxPrice');
+        params.delete('minPrice');
+        params.delete('priceRange');
+        params.delete('price');
+        router.push(`${pathname}?${params.toString()}`);
+    };
+
     return (
         <div className="site-container py-10">
+            {/* Active price filter badge */}
+            {priceLabel && (
+                <div className="flex items-center gap-2 mb-4">
+                    <span className="text-xs text-neutral-500 font-medium">Filtering by price:</span>
+                    <span className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-lavender/10 text-lavender text-xs font-bold border border-lavender/20">
+                        {priceLabel}
+                        <button onClick={clearPriceFilter} className="hover:text-lavender/60 transition-colors" aria-label="Clear price filter">
+                            <X size={12} />
+                        </button>
+                    </span>
+                </div>
+            )}
+
             {/* Sort + View controls & Category Pills Row */}
             <div className="flex flex-col gap-6 mb-8">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

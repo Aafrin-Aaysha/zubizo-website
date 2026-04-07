@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import StatCard from './components/StatCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -20,30 +21,26 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 export default function DashboardPage() {
-    const [stats, setStats] = useState<any[]>([]);
-    const [recentInquiries, setRecentInquiries] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const res = await fetch('/api/dashboard/stats');
-                const data = await res.json();
-                if (res.ok) {
-                    setStats(data.stats);
-                    setRecentInquiries(data.recentInquiries);
-                }
-            } catch (error) {
-                toast.error('Failed to load dashboard data');
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchStats();
-    }, []);
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ['dashboardStats'],
+        queryFn: async () => {
+            const res = await fetch('/api/dashboard/stats');
+            if (!res.ok) throw new Error('Failed to load dashboard data');
+            return res.json();
+        },
+        refetchInterval: 60000,
+    });
 
-    const filteredInquiries = recentInquiries.filter(inv => {
+    useEffect(() => {
+        if (isError) toast.error('Failed to load dashboard data');
+    }, [isError]);
+
+    const stats = data?.stats || [];
+    const recentInquiries = data?.recentInquiries || [];
+
+    const filteredInquiries = recentInquiries.filter((inv: any) => {
         const searchLower = searchQuery.toLowerCase();
         return (
             (inv.designName || '').toLowerCase().includes(searchLower) ||
@@ -57,7 +54,7 @@ export default function DashboardPage() {
         if (recentInquiries.length === 0) return;
 
         const headers = ["Date", "Design Name", "SKU", "Package", "Qty", "Total Estimate", "Source", "Status"];
-        const rows = recentInquiries.map(inv => [
+        const rows = recentInquiries.map((inv: any) => [
             new Date(inv.createdAt).toLocaleString(),
             inv.designName || 'N/A',
             inv.sku || 'N/A',
@@ -70,7 +67,7 @@ export default function DashboardPage() {
 
         const csvContent = [
             headers.join(','),
-            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+            ...rows.map((row: any) => row.map((cell: any) => `"${cell}"`).join(','))
         ].join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -117,7 +114,7 @@ export default function DashboardPage() {
                         <div key={i} className="h-28 md:h-32 bg-white border border-gray-50 rounded-[1.5rem] md:rounded-[2rem] animate-pulse" />
                     ))
                 ) : (
-                    stats.map((stat, index) => (
+                    stats.map((stat: any, index: number) => (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -192,7 +189,7 @@ export default function DashboardPage() {
                                             </td>
                                         </tr>
                                     ) : (
-                                        filteredInquiries.map((inquiry, index) => (
+                                        filteredInquiries.map((inquiry: any, index: number) => (
                                             <tr key={inquiry._id} className="hover:bg-gray-50/30 transition-colors group">
                                                 <td className="px-8 py-5">
                                                     <div className="flex items-center gap-4">

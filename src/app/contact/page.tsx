@@ -6,6 +6,7 @@ import { Phone, MapPin, Clock, MessageCircle } from "lucide-react";
 import { LogoIcon } from "@/components/ui/logo-icon";
 import { LuxuryNavbar } from "@/components/layout/luxury-navbar";
 import { LuxuryFooter } from "@/components/layout/luxury-footer";
+import { LeadCaptureModal, LeadData } from "@/components/ui/LeadCaptureModal";
 
 type SiteSettings = {
     phone?: string;
@@ -18,6 +19,7 @@ type SiteSettings = {
 export default function ContactPage() {
     const [settings, setSettings] = React.useState<SiteSettings | null>(null);
     const [isLoading, setIsLoading] = React.useState(true);
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
 
     React.useEffect(() => {
         fetch("/api/settings")
@@ -28,7 +30,40 @@ export default function ContactPage() {
     }, []);
 
     const waNumber = settings?.whatsappNumber || "7639390868";
-    const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent("Hello! I'd like to enquire about your invitation designs.")}`;
+    
+    const handleModalSubmit = async (data: LeadData) => {
+        try {
+            await fetch('/api/inquiries', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    designName: 'General Inquiry',
+                    sku: '',
+                    selectedPackage: '',
+                    quantity: 0,
+                    estimatedTotal: 0,
+                    source: 'contact_page',
+                    customerName: data.name,
+                    phone: data.phone
+                })
+            });
+        } catch (error) {
+            console.error("Inquiry logging failed", error);
+            throw new Error("Failed to connect to the server.");
+        }
+
+        const message = `*General Inquiry from Website*
+
+Hello Zubizo,
+
+My name is ${data.name}.
+My contact number is ${data.phone}.
+
+I'd like to enquire about your invitation designs.`;
+
+        window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        setIsModalOpen(false);
+    };
 
     const InfoCard = ({ icon: Icon, title, value }: { icon: any; title: string; value?: string }) => (
         <div className="space-y-4">
@@ -101,15 +136,13 @@ export default function ContactPage() {
                             The fastest way to get a response is directly on WhatsApp. Share your requirements
                             and we&apos;ll get back to you instantly.
                         </p>
-                        <a
-                            href={waLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <button
+                            onClick={() => setIsModalOpen(true)}
                             className="inline-flex items-center gap-3 px-10 py-5 bg-green-500 hover:bg-green-600 text-white font-bold text-lg rounded-full transition-all shadow-xl shadow-green-200 hover:shadow-green-300 hover:-translate-y-1 active:scale-95"
                         >
                             <MessageCircle className="h-6 w-6" />
                             Enquire on WhatsApp
-                        </a>
+                        </button>
                         <p className="mt-6 text-xs text-charcoal/30 font-medium uppercase tracking-widest">
                             Typically replies within 30 minutes
                         </p>
@@ -118,6 +151,12 @@ export default function ContactPage() {
             </div>
 
             <LuxuryFooter />
+            
+            <LeadCaptureModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleModalSubmit}
+            />
         </main>
     );
 }

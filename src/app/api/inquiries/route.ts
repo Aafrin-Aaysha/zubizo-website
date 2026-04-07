@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+
+export const dynamic = 'force-dynamic';
 import dbConnect from '@/lib/db';
 import Inquiry from '@/models/Inquiry';
 import Design from '@/models/Design'; 
@@ -52,11 +54,29 @@ export async function POST(req: Request) {
             phone
         } = body;
 
-        if (!designName) {
+        if (!designName && source !== 'contact_page' && source !== 'contact') {
             return NextResponse.json({ message: 'designName is required' }, { status: 400 });
         }
 
         await dbConnect();
+
+        // Prevent Duplicate Inquiries (24-hour window)
+        if (phone && phone.length > 5) {
+            const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            const duplicateQuery: any = { phone, createdAt: { $gte: twentyFourHoursAgo } };
+            
+            if (sku) {
+                duplicateQuery.sku = sku;
+            } else if (source === 'contact_page' || source === 'contact') {
+                duplicateQuery.source = source;
+            }
+
+            const existingInquiry = await Inquiry.findOne(duplicateQuery);
+            if (existingInquiry) {
+                console.log(`Duplicate inquiry skipped for phone: ${phone}`);
+                return NextResponse.json({ message: 'Duplicate skipped', duplicate: true, inquiry: existingInquiry }, { status: 200 });
+            }
+        }
 
         // 1. Fetch available admins for assignment
         const admins = await Admin.find({ role: { $in: ['admin', 'super-admin'] } });
@@ -70,18 +90,36 @@ export async function POST(req: Request) {
         }
 
         const inquiry = await Inquiry.create({
-            designId: designId || null,
-            designName,
-            sku: sku || '',
-            selectedPackage: selectedPackage || '',
-            quantity: quantity || 0,
-            estimatedTotal: estimatedTotal || 0,
-            source: source || 'detail',
             customerName: customerName || '',
             email: email || '',
             phone: phone || '',
             status: 'New',
             assignedAdmin: assignedAdminId,
+            source: source || 'detail',
+            // Inquiry Stage Init
+            interestedDesigns: designName ? [{
+                designId: designId || null,
+                name: designName,
+                sku: sku || ''
+            }] : [],
+            approxQuantity: quantity || 0,
+            // Quotation Stage Init (Auto-create first draft if design exists)
+            quotations: designName ? [{
+                name: 'Initial Quotation',
+                design: {
+                    designId: designId || null,
+                    name: designName,
+                    sku: sku || ''
+                },
+                quantity: quantity || 0,
+                status: 'Draft'
+            }] : [],
+            // Legacy Fields for compatibility
+            designId: designId || null,
+            designName: designName || 'General Inquiry',
+            sku: sku || '',
+            quantity: quantity || 0,
+            estimatedTotal: estimatedTotal || 0,
         });
 
         return NextResponse.json(inquiry, { status: 201 });
@@ -127,24 +165,46 @@ export async function PUT(req: NextRequest) {
             }
         }
 
+        // --- NEW: Handle Quotation Confirmation Logic ---
+        if (updates.confirmedQuotationId) {
+            const confirmedQuo = inquiry.quotations.id(updates.confirmedQuotationId);
+            if (confirmedQuo) {
+                // Unconfirm others
+                inquiry.quotations.forEach((q: any) => {
+                    q.status = q._id.toString() === updates.confirmedQuotationId ? 'Confirmed' : 'Draft';
+                });
+                // Sync legacy top-level fields for analytics/compat
+                updates.designId = confirmedQuo.design.designId;
+                updates.designName = confirmedQuo.design.name;
+                updates.sku = confirmedQuo.design.sku;
+                updates.quantity = confirmedQuo.quantity;
+                updates.costing = confirmedQuo.costing;
+                updates.billing = confirmedQuo.billing;
+                updates.estimatedTotal = confirmedQuo.billing.totalBill;
+            }
+        }
+
         // --- INVENTORY DEDUCTION ENGINE ---
+        // Now uses materials from the confirmed quotation
+        const activeMaterials = inquiry.quotations.find((q: any) => q.status === 'Confirmed')?.costing?.materials 
+                             || updates.costing?.materials 
+                             || inquiry.costing?.materials;
+
         if (updates.hasOwnProperty('isInvoiced')) {
             const wasInvoiced = inquiry.isInvoiced || false;
             const willBeInvoiced = updates.isInvoiced;
 
             if (!wasInvoiced && willBeInvoiced && !inquiry.isInventoryDeducted) {
-                // Generate Invoice -> Deduct stock
-                await applyDeduction(updates.costing?.materials || inquiry.costing?.materials, inquiry.assignedAdmin?.toString());
+                await applyDeduction(activeMaterials, inquiry.assignedAdmin?.toString());
                 updates.isInventoryDeducted = true;
             } else if (wasInvoiced && !willBeInvoiced && inquiry.isInventoryDeducted) {
-                // Untoggling Invoice -> Reverse deduction to stock
-                await reverseDeduction(inquiry.costing?.materials, inquiry.assignedAdmin?.toString());
+                await reverseDeduction(activeMaterials, inquiry.assignedAdmin?.toString());
                 updates.isInventoryDeducted = false;
             }
-        } else if (inquiry.isInvoiced && inquiry.isInventoryDeducted && updates.costing) {
-            // Editing Order After Invoice: Reverse old, Apply new
-            await reverseDeduction(inquiry.costing.materials, inquiry.assignedAdmin?.toString());
-            await applyDeduction(updates.costing.materials, inquiry.assignedAdmin?.toString());
+        } else if (inquiry.isInvoiced && inquiry.isInventoryDeducted && (updates.costing || updates.confirmedQuotationId)) {
+            // Editing Order or Changing Quotation After Invoice
+            await reverseDeduction(inquiry.costing?.materials, inquiry.assignedAdmin?.toString());
+            await applyDeduction(activeMaterials, inquiry.assignedAdmin?.toString());
         }
 
         const updatedInquiry = await Inquiry.findByIdAndUpdate(id, { $set: updates }, { new: true })

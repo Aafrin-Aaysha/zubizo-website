@@ -6,29 +6,41 @@ import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 
 const testimonials = [
     {
-        name: "Priya & Rahul",
-        review: "Zubizo transformed our wedding invitations into works of art. The attention to detail and luxurious finish exceeded our expectations. Our guests couldn't stop talking about them!",
+        name: "Ananya & Rohit",
+        review: "Zubizo made our wedding invitations truly special. The attention to detail and the quality of materials were beyond our expectations. Every guest appreciated the elegance!",
         location: "Chennai",
     },
     {
-        name: "Ananya Menon",
-        review: "The craftsmanship is simply unmatched. Every invitation felt personal and elegant. Zubizo captured the essence of our celebration perfectly.",
+        name: "Priya Sharma",
+        review: "The customization options were amazing. From design to finish, everything was handled so professionally. Highly recommended for anyone looking for premium invites.",
         location: "Bangalore",
     },
     {
-        name: "Vikram & Divya",
-        review: "From the first consultation to the final product, the experience was seamless. The team understood our vision and delivered beyond what we imagined. Truly premium quality!",
-        location: "Mumbai",
+        name: "Ahmed Khan",
+        review: "We ordered from abroad, and the entire process was smooth. The team was responsive and the final product was absolutely stunning. Worth every penny!",
+        location: "Dubai 🌍",
     },
     {
-        name: "Sneha & Arjun",
-        review: "The custom monogram they created for us was breathtaking. The whole process was so smooth and the final result was sheer perfection.",
-        location: "Delhi",
-    }
+        name: "Karthik & Meera",
+        review: "The designs are unique and classy. What we loved most was how they understood our vision and brought it to life beautifully.",
+        location: "Coimbatore",
+    },
+    {
+        name: "Sneha Reddy",
+        review: "From the first conversation to delivery, everything was seamless. The quality, finishing, and packaging were top-notch.",
+        location: "Hyderabad",
+    },
+    {
+        name: "Rahul Verma",
+        review: "Great experience! The team was very patient with all our changes and delivered exactly what we wanted. The invites looked luxurious and premium.",
+        location: "Mumbai",
+    },
 ];
 
 export const Testimonials = ({ data, styling, title, subtitle }: any) => {
-    const list = data?.testimonials?.length > 0 ? data.testimonials : testimonials;
+    // Filter out bad/empty entries from DB; fall back to static list if nothing valid remains
+    const dbList = (data?.testimonials || []).filter((t: any) => t?.review && t.review.trim().length > 3);
+    const list = dbList.length > 0 ? dbList : testimonials;
     const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
     const scroll = (direction: 'left' | 'right') => {

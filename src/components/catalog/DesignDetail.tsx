@@ -12,6 +12,7 @@ import {
     Plus
 } from 'lucide-react';
 import { cn, getWhatsAppNumber } from '@/lib/utils';
+import { LeadCaptureModal, LeadData } from '@/components/ui/LeadCaptureModal';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 interface PriceTier {
@@ -183,6 +184,7 @@ export function DesignDetailClient({ design }: { design: Design }) {
     const [quantity, setQuantity] = useState<number | string>(design.minQuantity || 100);
     const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
     const [isLogging, setIsLogging] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const addOns: AddOn[] = design.addOns || [];
 
@@ -202,8 +204,20 @@ export function DesignDetailClient({ design }: { design: Design }) {
         );
     };
 
-    const handleEnquire = async () => {
-        setIsLogging(true);
+    const estimatedTotal = useMemo(() => {
+        const q = typeof quantity === 'string' ? (parseInt(quantity) || 0) : quantity;
+        const perCardBase = activeTier?.pricePerCard || 0;
+        const perCardAddOns = (design.addOns || [])
+            .filter(a => selectedAddOns.includes(a.label))
+            .reduce((sum, a) => sum + a.pricePerCard, 0);
+        return (perCardBase + perCardAddOns) * q;
+    }, [activeTier, selectedAddOns, quantity, design.addOns]);
+
+    const handleEnquire = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleModalSubmit = async (data: LeadData) => {
         const q = typeof quantity === 'string' ? parseInt(quantity) : quantity;
 
         try {
@@ -216,13 +230,16 @@ export function DesignDetailClient({ design }: { design: Design }) {
                     sku: design.sku,
                     selectedPackage: selectedPackage.title,
                     quantity: q,
-                    estimatedTotal: 0,
-                    source: 'detail',
-                    addOns: selectedAddOns
+                    estimatedTotal: estimatedTotal,
+                    source: 'design_page',
+                    addOns: selectedAddOns,
+                    customerName: data.name,
+                    phone: data.phone
                 })
             });
         } catch (error) {
             console.error("Inquiry logging failed", error);
+            throw new Error("Failed to connect to the server.");
         }
 
         const addOnText = selectedAddOns.length > 0
@@ -235,18 +252,23 @@ export function DesignDetailClient({ design }: { design: Design }) {
 
         const message = `*Inquiry from Website*
 
-Hello Zubizo, I'm interested in:
+Hello Zubizo,
+
+My name is ${data.name}.
+My contact number is ${data.phone}.
+
+I'm interested in:
 *Design:* ${design.name}
 *SKU:* ${design.sku}
 *Package:* ${selectedPackage.title}
-*Inclusions:* ${selectedPackage.inclusions?.join(', ')}
 *Quantity:* ${q} cards${tierText}${addOnText}
+*Estimated Project Value:* ₹${estimatedTotal}
 
 Please share further details.`;
 
         const cleanNumber = getWhatsAppNumber();
         window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`, '_blank');
-        setIsLogging(false);
+        setIsModalOpen(false);
     };
 
     return (
@@ -481,6 +503,12 @@ Please share further details.`;
 
                 </div>
             </div>
+            
+            <LeadCaptureModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleModalSubmit}
+            />
         </div>
     );
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
     Plus, 
     Search, 
@@ -35,170 +36,145 @@ interface Material {
 }
 
 export default function InventoryPage() {
-    const [materials, setMaterials] = useState<Material[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const queryClient = useQueryClient();
     const [searchQuery, setSearchQuery] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isRestockModalOpen, setIsRestockModalOpen] = useState(false);
     const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
-    const [isActionLoading, setIsActionLoading] = useState(false);
-    const [adminData, setAdminData] = useState<{role: string, id: string} | null>(null);
-    const [allAdmins, setAllAdmins] = useState<any[]>([]);
     const [adminFilter, setAdminFilter] = useState('all');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Form states
     const [formData, setFormData] = useState({
-        name: '',
-        category: 'Core Materials',
-        usageType: 'manual',
-        usageValue: 1,
-        currentStock: 0,
-        unit: 'pcs',
-        defaultPrice: 0,
-        lowStockThreshold: 10,
-        applyToAll: false
+        name: '', category: 'Core Materials', usageType: 'manual', usageValue: 1, currentStock: 0, unit: 'pcs', defaultPrice: 0, lowStockThreshold: 10, applyToAll: false
     });
     const [editFormData, setEditFormData] = useState<any>(null);
     const [syncToAll, setSyncToAll] = useState(false);
     const [restockAmount, setRestockAmount] = useState(0);
 
-    useEffect(() => {
-        fetchAdminData();
-        fetchMaterials();
-    }, []);
-
-    const fetchAdminData = async () => {
-        try {
+    const { data: adminData = null } = useQuery<{role: string, id: string} | null>({
+        queryKey: ['adminAccount'],
+        queryFn: async () => {
             const res = await fetch('/api/admin/account');
-            const data = await res.json();
-            if (res.ok) {
-                setAdminData(data);
-                if (data.role === 'super-admin') {
-                    fetchAdmins();
-                }
-            }
-        } catch (error) {
-            console.error('Error fetching admin data:', error);
+            return res.ok ? res.json() : null;
         }
-    };
+    });
 
-    const fetchAdmins = async () => {
-        try {
+    const { data: allAdmins = [] } = useQuery<any[]>({
+        queryKey: ['allAdmins'],
+        queryFn: async () => {
             const res = await fetch('/api/admin/list');
-            const data = await res.json();
-            if (res.ok) {
-                setAllAdmins(data);
-            }
-        } catch (error) {
-            console.error('Error fetching admin list:', error);
-        }
-    };
+            return res.ok ? res.json() : [];
+        },
+        enabled: adminData?.role === 'super-admin'
+    });
 
-    const fetchMaterials = async () => {
-        setIsLoading(true);
-        try {
+    const { data: materials = [], isLoading } = useQuery<Material[]>({
+        queryKey: ['inventory'],
+        queryFn: async () => {
             const res = await fetch('/api/admin/inventory');
-            const data = await res.json();
-            if (res.ok) setMaterials(data);
-        } catch (error) {
-            toast.error('Failed to load inventory');
-        } finally {
-            setIsLoading(false);
+            if (!res.ok) throw new Error('Failed to load inventory');
+            return res.json();
         }
-    };
+    });
 
-    const handleAddMaterial = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsActionLoading(true);
-        try {
-            // Sanitize numeric fields to prevent NaN
-            const payload = {
-                ...formData,
-                usageValue: Number(formData.usageValue) || 1,
-                currentStock: Number(formData.currentStock) || 0,
-                defaultPrice: Number(formData.defaultPrice) || 0,
-                lowStockThreshold: Number(formData.lowStockThreshold) || 10
-            };
-
+    const addMutation = useMutation({
+        mutationFn: async (payload: any) => {
             const res = await fetch('/api/admin/inventory', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (res.ok) {
-                toast.success('Material added successfully');
-                setIsAddModalOpen(false);
-                setFormData({ name: '', category: 'Core Materials', usageType: 'manual', usageValue: 1, currentStock: 0, unit: 'pcs', defaultPrice: 0, lowStockThreshold: 10, applyToAll: false });
-                fetchMaterials();
-            } else {
-                const err = await res.json();
-                toast.error(err.message || 'Failed to add material');
-            }
-        } catch (error) {
-            toast.error('Something went wrong');
-        } finally {
-            setIsActionLoading(false);
-        }
+            if (!res.ok) throw new Error((await res.json()).message || 'Failed to add material');
+            return res.json();
+        },
+        onSuccess: () => {
+            toast.success('Material added successfully');
+            setIsAddModalOpen(false);
+            setFormData({ name: '', category: 'Core Materials', usageType: 'manual', usageValue: 1, currentStock: 0, unit: 'pcs', defaultPrice: 0, lowStockThreshold: 10, applyToAll: false });
+            queryClient.invalidateQueries({ queryKey: ['inventory'] });
+        },
+        onError: (err: any) => toast.error(err.message)
+    });
+
+    const handleAddMaterial = (e: React.FormEvent) => {
+        e.preventDefault();
+        addMutation.mutate({
+            ...formData,
+            usageValue: Number(formData.usageValue) || 1,
+            currentStock: Number(formData.currentStock) || 0,
+            defaultPrice: Number(formData.defaultPrice) || 0,
+            lowStockThreshold: Number(formData.lowStockThreshold) || 10
+        });
     };
 
-    const handleRestock = async (e: React.FormEvent) => {
+    const restockMutation = useMutation({
+        mutationFn: async ({ id, amount }: { id: string, amount: number }) => {
+            const res = await fetch(`/api/admin/inventory/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ restockAmount: amount })
+            });
+            if (!res.ok) throw new Error('Failed to update stock');
+            return res.json();
+        },
+        onSuccess: () => {
+            toast.success('Restocked successfully');
+            setIsRestockModalOpen(false);
+            setRestockAmount(0);
+            queryClient.invalidateQueries({ queryKey: ['inventory'] });
+        },
+        onError: () => toast.error('Failed to update stock')
+    });
+
+    const handleRestock = (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedMaterial) return;
-        setIsActionLoading(true);
-        try {
-            const res = await fetch(`/api/admin/inventory/${selectedMaterial._id}`, {
+        restockMutation.mutate({ id: selectedMaterial._id, amount: restockAmount });
+    };
+
+    const deleteMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const res = await fetch(`/api/admin/inventory/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Failed to delete material');
+        },
+        onSuccess: () => {
+            toast.success('Material deleted');
+            queryClient.invalidateQueries({ queryKey: ['inventory'] });
+        },
+        onError: () => toast.error('Failed to delete material')
+    });
+
+    const handleDelete = (id: string) => {
+        if (!confirm('Are you sure you want to delete this material?')) return;
+        deleteMutation.mutate(id);
+    };
+
+    const updateMutation = useMutation({
+        mutationFn: async ({ id, data }: { id: string, data: any }) => {
+            const res = await fetch(`/api/admin/inventory/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ restockAmount })
+                body: JSON.stringify(data)
             });
-            if (res.ok) {
-                toast.success('Restocked successfully');
-                setIsRestockModalOpen(false);
-                setRestockAmount(0);
-                fetchMaterials();
-            }
-        } catch (error) {
-            toast.error('Failed to update stock');
-        } finally {
-            setIsActionLoading(false);
-        }
-    };
+            if (!res.ok) throw new Error('Failed to update material');
+            return res.json();
+        },
+        onSuccess: () => {
+            toast.success('Material updated successfully');
+            setIsEditModalOpen(false);
+            queryClient.invalidateQueries({ queryKey: ['inventory'] });
+        },
+        onError: () => toast.error('Failed to update material')
+    });
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this material?')) return;
-        try {
-            const res = await fetch(`/api/admin/inventory/${id}`, { method: 'DELETE' });
-            if (res.ok) {
-                toast.success('Material deleted');
-                fetchMaterials();
-            }
-        } catch (error) {
-            toast.error('Failed to delete material');
-        }
-    };
-
-    const handleUpdateMaterial = async (e: React.FormEvent) => {
+    const handleUpdateMaterial = (e: React.FormEvent) => {
         e.preventDefault();
         if (!editFormData || !selectedMaterial) return;
-        setIsActionLoading(true);
-        try {
-            const res = await fetch(`/api/admin/inventory/${selectedMaterial._id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...editFormData, syncToAll })
-            });
-            if (res.ok) {
-                toast.success('Material updated successfully');
-                setIsEditModalOpen(false);
-                fetchMaterials();
-            }
-        } catch (error) {
-            toast.error('Failed to update material');
-        } finally {
-            setIsActionLoading(false);
-        }
+        updateMutation.mutate({ id: selectedMaterial._id, data: { ...editFormData, syncToAll } });
     };
+
+    const isActionLoading = addMutation.isPending || restockMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
 
     const filteredMaterials = materials.filter(m => {
         const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -312,7 +288,7 @@ export default function InventoryPage() {
                         <button className="p-3 text-gray-500 hover:bg-gray-50 rounded-xl transition-colors border border-gray-200">
                             <Filter size={18} />
                         </button>
-                        <button onClick={fetchMaterials} className="p-3 text-gray-500 hover:bg-gray-50 rounded-xl transition-colors border border-gray-200">
+                        <button onClick={() => queryClient.invalidateQueries({ queryKey: ['inventory'] })} className="p-3 text-gray-500 hover:bg-gray-50 rounded-xl transition-colors border border-gray-200">
                             <History size={18} />
                         </button>
                     </div>

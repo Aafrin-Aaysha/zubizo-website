@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,10 +27,8 @@ import toast from 'react-hot-toast';
 import { cn, getStartingPrice } from '@/lib/utils';
 
 export default function DesignsPage() {
+    const queryClient = useQueryClient();
     const router = useRouter();
-    const [designs, setDesigns] = useState<any[]>([]);
-    const [categories, setCategories] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingDesign, setEditingDesign] = useState<any>(null);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
@@ -58,27 +57,25 @@ export default function DesignsPage() {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    useEffect(() => {
-        fetchInitialData();
-    }, []);
-
-    const fetchInitialData = async () => {
-        setIsLoading(true);
-        try {
-            const [designsRes, catsRes] = await Promise.all([
-                fetch('/api/designs?showInactive=true'),
-                fetch('/api/categories')
-            ]);
-            const designsData = await designsRes.json();
-            const catsData = await catsRes.json();
-            setDesigns(Array.isArray(designsData) ? designsData : []);
-            setCategories(Array.isArray(catsData) ? catsData : []);
-        } catch (error) {
-            toast.error('Failed to load data');
-        } finally {
-            setIsLoading(false);
+    const { data: designs = [], isLoading: designsLoading } = useQuery<any[]>({
+        queryKey: ['designs'],
+        queryFn: async () => {
+            const res = await fetch('/api/designs?showInactive=true');
+            if (!res.ok) throw new Error('Failed to load designs');
+            return res.json();
         }
-    };
+    });
+
+    const { data: categories = [], isLoading: categoriesLoading } = useQuery<any[]>({
+        queryKey: ['categories'],
+        queryFn: async () => {
+            const res = await fetch('/api/categories');
+            if (!res.ok) throw new Error('Failed to load categories');
+            return res.json();
+        }
+    });
+
+    const isLoading = designsLoading || categoriesLoading;
 
     useEffect(() => {
         if (formData.name && formData.sku) {
@@ -144,10 +141,33 @@ export default function DesignsPage() {
         setIsSubmitting(false);
     };
 
+    const saveMutation = useMutation({
+        mutationFn: async ({ isEditing, url, method, data }: any) => {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            if (!res.ok) {
+                 const error = await res.json();
+                 throw new Error(error.message || 'Operation failed');
+            }
+            return res.json();
+        },
+        onSuccess: (_, { isEditing }) => {
+            toast.success(isEditing ? 'Design updated' : 'Design created');
+            queryClient.invalidateQueries({ queryKey: ['designs'] });
+            router.refresh();
+            closeModal();
+            setFormData(prev => ({ ...prev, images: [], videoUrl: '', demoUrl: '' })); // reset form state carefully if needed
+        },
+        onError: (err: any) => toast.error(err.message),
+        onSettled: () => setIsSubmitting(false)
+    });
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate categoryId is set
         if (!formData.categoryId) {
             toast.error('Category not loaded yet. Please wait and try again.');
             return;
@@ -159,45 +179,30 @@ export default function DesignsPage() {
         }
 
         setIsSubmitting(true);
-        const url = editingDesign ? `/api/designs/${editingDesign._id}` : '/api/designs';
-        const method = editingDesign ? 'PUT' : 'POST';
+        const isEditing = !!editingDesign;
+        const url = isEditing ? `/api/designs/${editingDesign._id}` : '/api/designs';
+        const method = isEditing ? 'PUT' : 'POST';
 
-        try {
-            const res = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
-
-            if (res.ok) {
-                toast.success(editingDesign ? 'Design updated' : 'Design created');
-                router.refresh(); // Sync server components
-                fetchInitialData();
-                closeModal();
-            } else {
-                const error = await res.json();
-                toast.error(error.message || 'Operation failed');
-            }
-        } catch (error) {
-            toast.error('Something went wrong');
-        } finally {
-            setIsSubmitting(false);
-        }
+        saveMutation.mutate({ isEditing, url, method, data: formData });
     };
+
+    const deleteMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const res = await fetch(`/api/designs/${id}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Failed to delete design');
+            return res.json();
+        },
+        onSuccess: () => {
+            toast.success('Design deleted');
+            queryClient.invalidateQueries({ queryKey: ['designs'] });
+            router.refresh();
+        },
+        onError: () => toast.error('Failed to delete design')
+    });
 
     const deleteDesign = async (id: string) => {
         if (!confirm('Are you sure you want to delete this design?')) return;
-
-        try {
-            const res = await fetch(`/api/designs/${id}`, { method: 'DELETE' });
-            if (res.ok) {
-                toast.success('Design deleted');
-                router.refresh();
-                fetchInitialData();
-            }
-        } catch (error) {
-            toast.error('Failed to delete design');
-        }
+        deleteMutation.mutate(id);
     };
 
     const addPackage = () => {
