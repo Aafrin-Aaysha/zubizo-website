@@ -5,9 +5,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 const sections = [
-  { id: 'image-invites', label: 'Image Invites' },
-  { id: 'video-invites', label: 'Video Invites' },
-  { id: 'website-invites', label: 'Website Invites' },
+  { id: 'categories', label: 'Formats' },
   { id: 'pricing', label: 'Pricing' },
 ];
 

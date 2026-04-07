@@ -69,26 +69,7 @@ export default async function DigitalInvitesPage() {
 
             <CategoryNavigation />
 
-            <InviteSection 
-                id="image-invites"
-                title="E-Invites (Image Format)"
-                features={["HD PNG/JPEG/PDF", "WhatsApp ready", "Quick delivery", "Customizable"]}
-                designs={imageDesigns}
-                categoryName="Image Invites"
-                categoryPath="/digital-invites/image"
-            />
 
-            <InviteSection 
-                id="video-invites"
-                title="E-Invites (Video Format)"
-                features={["MP4 format", "Music + animation", "Instagram-ready", "Custom text"]}
-                designs={videoDesigns}
-                categoryName="Video Invites"
-                categoryPath="/digital-invites/video"
-                showVideoIcon={true}
-            />
-
-            <WebsiteShowcase />
 
             <PricingSection />
 
