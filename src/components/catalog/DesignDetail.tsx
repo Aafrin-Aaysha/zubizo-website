@@ -262,7 +262,6 @@ I'm interested in:
 *SKU:* ${design.sku}
 *Package:* ${selectedPackage.title}
 *Quantity:* ${q} cards${tierText}${addOnText}
-*Estimated Project Value:* ₹${estimatedTotal}
 
 Please share further details.`;
 

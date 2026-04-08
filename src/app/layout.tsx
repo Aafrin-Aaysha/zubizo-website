@@ -42,8 +42,8 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords: ["zubizo", "zubizo art", "handcrafted invitations", "wedding cards india", "nikah invitations", "luxury stationery", "custom invitations", "invitation studio"],
     icons: {
       icon: [
-        { url: '/logo.png', sizes: 'any' },
-        { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+        { url: '/favicon.ico', sizes: 'any' },
+        { url: '/logo.png', type: 'image/png', sizes: '32x32' },
       ],
       apple: '/logo.png',
     },

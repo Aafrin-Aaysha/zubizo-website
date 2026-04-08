@@ -80,11 +80,8 @@ export const LuxuryNavbar = () => {
                         <Link href="/" className="group flex items-center gap-4">
                             <LogoIcon size={32} className="text-lavender transition-transform group-hover:scale-110 duration-500 lg:size-[40px]" />
                             <div className="flex flex-col leading-none">
-                                <span className="text-[14px] lg:text-base font-black tracking-[0.2em] uppercase text-charcoal font-serif">
-                                    ZUBIZO
-                                </span>
-                                <span className="text-[7px] lg:text-[8px] font-black tracking-[0.4em] uppercase text-lavender/60">
-                                    Invitation Studio
+                                <span className="text-[20px] lg:text-[24px] text-charcoal" style={{ fontFamily: 'Amoresa, Parisienne, serif' }}>
+                                    Zubizo
                                 </span>
                             </div>
                         </Link>

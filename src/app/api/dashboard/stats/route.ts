@@ -6,6 +6,7 @@ import Design from '@/models/Design';
 import Category from '@/models/Category';
 import Inquiry from '@/models/Inquiry';
 import Admin from '@/models/Admin';
+import Employee from '@/models/Employee'; // Needed for population
 import { getAdminFromRequest, unauthorizedResponse } from '@/lib/api-auth';
 
 export async function GET(req: NextRequest) {

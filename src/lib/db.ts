@@ -3,6 +3,9 @@ import Category from '@/models/Category';
 import Design from '@/models/Design';
 import SiteSettings from '@/models/SiteSettings';
 import Inquiry from '@/models/Inquiry';
+import Admin from '@/models/Admin';
+import Employee from '@/models/Employee';
+import Material from '@/models/Material';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -38,6 +41,9 @@ async function dbConnect() {
             const _d = Design;
             const _s = SiteSettings;
             const _i = Inquiry;
+            const _a = Admin;
+            const _e = Employee;
+            const _m = Material;
             return mongoose;
         });
     }

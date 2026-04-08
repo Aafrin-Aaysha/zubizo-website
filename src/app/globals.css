@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Amoresa';
+  src: url('https://fontshub.pro/f-files/6730ce245034ad8b944fdd0f/files/Amoresa.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --color-primary: #ae7fcb;
   --color-lavender: #ae7fcb;

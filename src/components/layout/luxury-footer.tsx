@@ -1,10 +1,52 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
 import { Phone, Instagram } from "lucide-react";
 import { LogoIcon } from "@/components/ui/logo-icon";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
+import { LeadCaptureModal, LeadData } from "@/components/ui/LeadCaptureModal";
+import { getWhatsAppNumber, sanitizeWhatsAppNumber } from "@/lib/utils";
 
 const Footer = () => {
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+    const handleWhatsAppClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsModalOpen(true);
+    };
+
+    const handleModalSubmit = async (data: LeadData) => {
+        try {
+            await fetch('/api/inquiries', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customerName: data.name,
+                    phone: data.phone,
+                    source: 'footer_whatsapp',
+                    status: 'New',
+                    notes: 'Customer clicked on footer WhatsApp link'
+                })
+            });
+        } catch (error) {
+            console.error("Inquiry logging failed", error);
+        }
+
+        const waNumber = sanitizeWhatsAppNumber(getWhatsAppNumber());
+        const message = `*Inquiry from Website*
+
+Hello Zubizo,
+
+My name is ${data.name}.
+My contact number is ${data.phone}.
+
+I would like to inquire about your services.`;
+        
+        window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        setIsModalOpen(false);
+    };
+
     return (
         <footer id="contact" className="bg-pearl-white pt-20 pb-10">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -19,7 +61,7 @@ const Footer = () => {
                                 <LogoIcon size={48} />
                             </div>
                             <span className="text-[10px] uppercase tracking-[0.4em] text-charcoal/40 font-bold">
-                                Zubizo Invitation Studio
+                                Zubizo
                             </span>
                         </Link>
                         <p className="text-sm text-charcoal/60 font-medium max-w-xs leading-relaxed font-sans">
@@ -81,19 +123,19 @@ const Footer = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="https://wa.me/919092981748" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group transition-all">
+                                <button onClick={handleWhatsAppClick} className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group transition-all">
                                     <div className="w-8 h-8 rounded-lg bg-lavender/5 flex items-center justify-center text-[#25D366] group-hover:bg-[#25D366] group-hover:text-white transition-all">
                                         <WhatsAppIcon size={14} />
                                     </div>
                                     +91 90929 81748
-                                </a>
+                                </button>
                             </li>
                             <li>
-                                <a href="https://www.instagram.com/zubizo._art?igsh=MWtjcjN3Y2JjbW9pag==" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group transition-all">
+                                <a href="https://www.instagram.com/zubizo.art?igsh=MWxkdWcwbjdhMDE2bw==" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-charcoal/70 font-medium group transition-all">
                                     <div className="w-8 h-8 rounded-lg bg-lavender/5 flex items-center justify-center text-lavender group-hover:bg-lavender group-hover:text-white transition-all">
                                         <Instagram size={14} strokeWidth={1.5} />
                                     </div>
-                                    @zubizo._art
+                                    @zubizo.art
                                 </a>
                             </li>
                         </ul>
@@ -110,6 +152,12 @@ const Footer = () => {
                     </p>
                 </div>
             </div>
+
+            <LeadCaptureModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleModalSubmit}
+            />
         </footer>
     );
 };

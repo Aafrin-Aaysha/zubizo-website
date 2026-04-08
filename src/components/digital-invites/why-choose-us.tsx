@@ -12,7 +12,7 @@ const reasons = [
   },
   {
     title: "Fast Delivery",
-    desc: "Experience rapid turnaround times with digital invites delivered in 24-48 hours.",
+    desc: "Experience rapid turnaround times with digital invites delivered with premium speed.",
     icon: Zap,
     accent: "bg-blush-rose text-dusty-mauve"
   },

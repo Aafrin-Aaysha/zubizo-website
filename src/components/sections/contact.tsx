@@ -4,6 +4,8 @@ import * as React from "react";
 import { motion } from "framer-motion";
 import { Phone, MapPin, Clock, Instagram, ExternalLink } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
+import { LeadCaptureModal, LeadData } from "@/components/ui/LeadCaptureModal";
+import { getWhatsAppNumber, sanitizeWhatsAppNumber } from "@/lib/utils";
 
 // Note: Data is now fetched dynamically from /api/settings.
 // Fallback defaults below.
@@ -18,7 +20,7 @@ const DEFAULT_CONTACT = {
     },
     phone: "+91 81245 48133",
     whatsapp: "9092981748",
-    instagram: "@zubizo._art",
+    instagram: "@zubizo.art",
     workingHours: [
         { day: "Monday – Saturday", time: "10:00 AM – 7:00 PM" },
         { day: "Sunday", time: "Closed" }
@@ -28,6 +30,7 @@ const DEFAULT_CONTACT = {
 export const ContactSection = ({ data, styling, title, subtitle }: any) => {
     const [settings, setSettings] = React.useState<any>(null);
     const [isLoading, setIsLoading] = React.useState(true);
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
 
     React.useEffect(() => {
         fetch("/api/settings")
@@ -42,7 +45,41 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
     const address = settings?.address || `${DEFAULT_CONTACT.address.line1}\n${DEFAULT_CONTACT.address.line2}\n${DEFAULT_CONTACT.address.line3}`;
     const businessHours = settings?.businessHours || "Mon-Sat: 10AM-7PM";
 
-    const waLink = `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent("Hi Zubizo, I would like to enquire about your invitation designs.")}`;
+    const handleWhatsAppClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsModalOpen(true);
+    };
+
+    const handleModalSubmit = async (data: LeadData) => {
+        try {
+            await fetch('/api/inquiries', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customerName: data.name,
+                    phone: data.phone,
+                    source: 'contact_page_whatsapp',
+                    status: 'New',
+                    notes: 'Customer clicked on contact page WhatsApp link'
+                })
+            });
+        } catch (error) {
+            console.error("Inquiry logging failed", error);
+        }
+
+        const waNumber = sanitizeWhatsAppNumber(getWhatsAppNumber());
+        const message = `*Inquiry from Website*
+
+Hello Zubizo,
+
+My name is ${data.name}.
+My contact number is ${data.phone}.
+
+I would like to inquire about your invitation designs.`;
+        
+        window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        setIsModalOpen(false);
+    };
 
     return (
         <div
@@ -70,7 +107,7 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                             className="text-[36px] font-medium text-charcoal font-serif mb-4"
                             style={{ color: styling?.textColor }}
                         >
-                            {title || "Zubizo Invitation Studio"}
+                            {title || "Zubizo"}
                         </h2>
                         <p className="font-sans text-[15px] font-medium text-charcoal/70 leading-relaxed max-w-2xl mx-auto">
                             {data?.description || "We’d love to help you create something beautiful."}
@@ -154,15 +191,13 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                             <div className="flex-1">
                                 <p className="font-sans text-[12px] font-medium uppercase tracking-[0.08em] text-[#8A8A8A] mb-1">WhatsApp</p>
                                 <p className="font-sans text-[18px] font-medium text-[#1A1A1A] mb-4">{isLoading ? "..." : whatsapp}</p>
-                                <a
-                                    href={waLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                <button
+                                    onClick={handleWhatsAppClick}
                                     className="font-sans inline-flex items-center gap-3 px-6 py-3 bg-[#25D366]/10 text-[#25D366] border border-[#25D366]/20 rounded-xl font-medium"
                                 >
                                     <WhatsAppIcon size={18} />
                                     Chat on WhatsApp
-                                </a>
+                                </button>
                             </div>
                         </div>
 
@@ -174,18 +209,24 @@ export const ContactSection = ({ data, styling, title, subtitle }: any) => {
                             <div>
                                 <p className="font-sans text-[12px] font-medium uppercase tracking-[0.08em] text-[#8A8A8A] mb-1">Instagram</p>
                                 <a
-                                    href="https://www.instagram.com/zubizo._art?igsh=MWtjcjN3Y2JjbW9pag=="
+                                    href="https://www.instagram.com/zubizo.art?igsh=MWxkdWcwbjdhMDE2bw=="
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="font-sans text-[18px] font-medium text-[#1A1A1A]"
                                 >
-                                    @zubizo._art
+                                    @zubizo.art
                                 </a>
                             </div>
                         </div>
                     </motion.div>
                 </div>
             </div>
+
+            <LeadCaptureModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleModalSubmit}
+            />
         </div>
     );
 };

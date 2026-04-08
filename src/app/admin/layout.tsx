@@ -118,13 +118,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             <LogoIcon size={32} />
                         </div>
                         {isSidebarOpen && (
-                            <motion.span
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="font-bold text-xl tracking-tight text-charcoal/80"
-                            >
-                                Zubizo
-                            </motion.span>
+                             <motion.span
+                                 initial={{ opacity: 0 }}
+                                 animate={{ opacity: 1 }}
+                                 className="text-2xl text-charcoal/80"
+                                 style={{ fontFamily: 'Amoresa, Parisienne, serif' }}
+                             >
+                                 Zubizo
+                             </motion.span>
                         )}
                     </div>
                 </div>
@@ -192,7 +193,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         {isMobile && (
                             <div className="flex items-center gap-2">
                                 <LogoIcon size={24} />
-                                <span className="font-bold text-lg text-charcoal/80">Zubizo</span>
+                                 <span className="text-2xl text-charcoal/80" style={{ fontFamily: 'Amoresa, Parisienne, serif' }}>Zubizo</span>
                             </div>
                         )}
                     </div>
