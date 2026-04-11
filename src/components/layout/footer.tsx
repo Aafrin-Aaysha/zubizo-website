@@ -66,7 +66,7 @@ I would like to inquire about your services.`;
                                 <LogoIcon size={48} />
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-2xl text-gray-900 transition-colors group-hover:text-lavender" style={{ fontFamily: 'Amoresa, Parisienne, serif' }}>
+                                <span className="text-2xl font-extrabold italic text-gray-900 transition-colors group-hover:text-lavender" style={{ fontFamily: 'var(--font-fraunces), serif' }}>
                                     Zubizo
                                 </span>
                             </div>
