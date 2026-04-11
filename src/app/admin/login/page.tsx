@@ -44,8 +44,8 @@ export default function AdminLoginPage() {
             <Toaster position="top-right" />
 
             {/* Background Decor */}
-            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#ae7fcb]/10 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#d8b4fe]/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-lavender/10 rounded-full blur-3xl animate-pulse" />
+            <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-lavender/10 rounded-full blur-3xl animate-pulse" />
 
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -55,18 +55,20 @@ export default function AdminLoginPage() {
                 <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 overflow-hidden border border-gray-100">
                     <div className="p-10">
                         <div className="flex flex-col items-center mb-10">
-                            <div className="w-16 h-16 bg-[#ae7fcb] rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-[#ae7fcb]/30">
-                                <span className="text-3xl font-bold text-white uppercase">Z</span>
+                            <div className="w-16 h-16 bg-lavender/5 rounded-2xl flex items-center justify-center mb-6">
+                                <LogoIcon size={48} className="text-lavender" />
                             </div>
-                            <h2 className="text-3xl font-bold text-gray-900">Admin Login</h2>
-                            <p className="text-gray-500 mt-2 text-center">Enter your credentials to access the Zubizo dashboard</p>
+                            <h2 className="text-3xl font-extrabold italic text-charcoal" style={{ fontFamily: 'var(--font-fraunces), serif' }}>
+                                Admin Portal
+                            </h2>
+                            <p className="text-gray-500 mt-2 text-center text-sm font-medium uppercase tracking-widest opacity-60">Restricted Access</p>
                         </div>
 
                         <form onSubmit={handleLogin} className="space-y-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-gray-700 ml-1">Email Address</label>
                                 <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#ae7fcb] transition-colors">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-lavender transition-colors">
                                         <Mail size={18} />
                                     </div>
                                     <input
@@ -74,7 +76,7 @@ export default function AdminLoginPage() {
                                         required
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#ae7fcb]/20 focus:border-[#ae7fcb] transition-all"
+                                        className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-lavender/20 focus:border-lavender transition-all"
                                     />
                                 </div>
                             </div>
@@ -82,7 +84,7 @@ export default function AdminLoginPage() {
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-gray-700 ml-1">Password</label>
                                 <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#ae7fcb] transition-colors">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-lavender transition-colors">
                                         <Lock size={18} />
                                     </div>
                                     <input
@@ -90,12 +92,12 @@ export default function AdminLoginPage() {
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#ae7fcb]/20 focus:border-[#ae7fcb] transition-all"
+                                        className="w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-lavender/20 focus:border-lavender transition-all"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-[#ae7fcb] transition-colors"
+                                        className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-lavender transition-colors"
                                     >
                                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
@@ -116,7 +118,7 @@ export default function AdminLoginPage() {
                                             animate={{ x: [0, 4, 0] }}
                                             transition={{ repeat: Infinity, duration: 1.5 }}
                                         >
-                                            <Lock size={18} className="text-[#ae7fcb]" />
+                                            <Lock size={18} className="text-lavender" />
                                         </motion.div>
                                     </>
                                 )}
@@ -124,9 +126,9 @@ export default function AdminLoginPage() {
                         </form>
                     </div>
 
-                    <div className="bg-[#ae7fcb]/5 p-5 text-center border-t border-[#ae7fcb]/10">
+                    <div className="bg-lavender/5 p-5 text-center border-t border-lavender/10">
                         <p className="text-xs text-gray-500 font-medium uppercase tracking-widest flex items-center justify-center gap-2">
-                            <AlertCircle size={14} className="text-[#ae7fcb]" />
+                            <AlertCircle size={14} className="text-lavender" />
                             Secure Admin Access Only
                         </p>
                     </div>
@@ -134,7 +136,7 @@ export default function AdminLoginPage() {
 
                 {/* Help Link */}
                 <p className="mt-8 text-center text-gray-400 text-sm">
-                    Forgot password? <span className="text-[#ae7fcb] cursor-pointer hover:underline font-semibold">Contact super admin</span>
+                    Forgot password? <span className="text-lavender cursor-pointer hover:underline font-semibold">Contact super admin</span>
                 </p>
             </motion.div>
         </div>

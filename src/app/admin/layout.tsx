@@ -121,8 +121,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                              <motion.span
                                  initial={{ opacity: 0 }}
                                  animate={{ opacity: 1 }}
-                                 className="text-2xl text-charcoal/80"
-                                 style={{ fontFamily: 'Amoresa, Parisienne, serif' }}
+                                 className="text-2xl text-lavender font-extrabold italic"
+                                 style={{ fontFamily: 'var(--font-fraunces), serif' }}
                              >
                                  Zubizo
                              </motion.span>
@@ -193,7 +193,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         {isMobile && (
                             <div className="flex items-center gap-2">
                                 <LogoIcon size={24} />
-                                 <span className="text-2xl text-charcoal/80" style={{ fontFamily: 'Amoresa, Parisienne, serif' }}>Zubizo</span>
+                                 <span className="text-2xl text-lavender font-extrabold italic" style={{ fontFamily: 'var(--font-fraunces), serif' }}>Zubizo</span>
                             </div>
                         )}
                     </div>
