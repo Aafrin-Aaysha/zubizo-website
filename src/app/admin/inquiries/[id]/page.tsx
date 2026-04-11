@@ -26,13 +26,7 @@ import {
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { jsPDF } from 'jspdf';
-import 'jspdf-autotable';
-
-declare module 'jspdf' {
-    interface jsPDF {
-        autoTable: (options: any) => jsPDF;
-    }
-}
+import autoTable from 'jspdf-autotable';
 
 export default function OrderDetailPage() {
     const { id } = useParams();
@@ -332,22 +326,22 @@ export default function OrderDetailPage() {
         doc.text(String(order.customerName || 'Client'), 20, 92);
         doc.text(`Phone: ${String(order.phone || 'N/A')}`, 20, 97);
 
-        doc.autoTable({
+        const result = autoTable(doc, {
             startY: 115,
             head: [['Item', 'Description', 'Amount']],
             body: [
-                ['Invitations', `${selectedDesign?.name || 'Custom'} (${quoQuantity} units)`, `₹${(quoQuantity * (selectedDesign?.price || 0))}`],
-                ['Design Charges', 'Professional layout', `₹${designingCharge}`],
-                ['Shipping Charges', 'Delivery', `₹${shippingCharge}`],
-                ['Misc Charges', 'Language/Customization', `₹${(Number(languageCharge) + Number(customizationCharge))}`],
-                ...(discount > 0 ? [['Discount', `${discountType === 'percentage' ? discount + '%' : 'Bulk Discount'}`, `-₹${calculatedDiscount.toFixed(0)}`]] : [])
+                ['Invitations', `${selectedDesign?.name || 'Custom'} (${quoQuantity} units)`, `\u20B9${(quoQuantity * (selectedDesign?.price || 0))}`],
+                ['Design Charges', 'Professional layout', `\u20B9${designingCharge}`],
+                ['Shipping Charges', 'Delivery', `\u20B9${shippingCharge}`],
+                ['Misc Charges', 'Language/Customization', `\u20B9${(Number(languageCharge) + Number(customizationCharge))}`],
+                ...(discount > 0 ? [['Discount', `${discountType === 'percentage' ? discount + '%' : 'Bulk Discount'}`, `-\u20B9${calculatedDiscount.toFixed(0)}`]] : [])
             ],
             theme: 'striped',
             headStyles: { fillColor: [153, 110, 182] },
             columnStyles: { 2: { halign: 'right' } }
         });
 
-        const finalY = (doc as any).lastAutoTable.finalY + 10;
+        const finalY = ((doc as any).lastAutoTable?.finalY || 160) + 10;
         doc.setFontSize(14);
         doc.setFont('helvetica', 'bold');
         doc.text('Grand Total:', 140, finalY + 10);
