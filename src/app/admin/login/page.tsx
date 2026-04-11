@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Lock, Mail, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import { LogoIcon } from '@/components/ui/logo-icon';
 
 export default function AdminLoginPage() {
     const [email, setEmail] = useState('');
