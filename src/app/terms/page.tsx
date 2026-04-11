@@ -45,7 +45,7 @@ const termsData: PolicySection[] = [
     {
         id: "order-confirmation",
         icon: CheckCircle,
-        label: "1. Order Confirmation",
+        label: "Order Confirmation",
         heading: "Order Confirmation",
         color: "text-emerald-600",
         bgColor: "bg-emerald-50",
@@ -62,7 +62,7 @@ const termsData: PolicySection[] = [
     {
         id: "design-process",
         icon: Palette,
-        label: "2. Design Process & Approval",
+        label: "Design Process & Approval",
         heading: "Design Process & Approval",
         color: "text-violet-600",
         bgColor: "bg-violet-50",
@@ -81,7 +81,7 @@ const termsData: PolicySection[] = [
     {
         id: "production-timeline",
         icon: Clock,
-        label: "3. Production Timeline",
+        label: "Production Timeline",
         heading: "Production Timeline",
         color: "text-amber-600",
         bgColor: "bg-amber-50",
@@ -100,7 +100,7 @@ const termsData: PolicySection[] = [
     {
         id: "payment-policy",
         icon: CreditCard,
-        label: "4. Payment Policy",
+        label: "Payment Policy",
         heading: "Payment Policy",
         color: "text-blue-600",
         bgColor: "bg-blue-50",
@@ -118,7 +118,7 @@ const termsData: PolicySection[] = [
     {
         id: "cancellation-refund",
         icon: XCircle,
-        label: "5. Cancellation & Refund",
+        label: "Cancellation & Refund",
         heading: "Cancellation & Refund",
         color: "text-rose-600",
         bgColor: "bg-rose-50",
@@ -135,7 +135,7 @@ const termsData: PolicySection[] = [
     {
         id: "color-material",
         icon: AlertTriangle,
-        label: "6. Color & Material Disclaimer",
+        label: "Color & Material Disclaimer",
         heading: "Color & Material Disclaimer",
         color: "text-orange-600",
         bgColor: "bg-orange-50",
@@ -152,7 +152,7 @@ const termsData: PolicySection[] = [
     {
         id: "delivery-policy",
         icon: Truck,
-        label: "7. Delivery Policy",
+        label: "Delivery Policy",
         heading: "Delivery Policy",
         color: "text-teal-600",
         bgColor: "bg-teal-50",
@@ -170,7 +170,7 @@ const termsData: PolicySection[] = [
     {
         id: "responsibility",
         icon: Users,
-        label: "8. Responsibility",
+        label: "Responsibility",
         heading: "Responsibility",
         color: "text-slate-600",
         bgColor: "bg-slate-50",
@@ -188,41 +188,41 @@ const termsData: PolicySection[] = [
 
 const shippingData: PolicyItem[] = [
     {
-        title: "1. Delivery Time",
+        title: "Delivery Time",
         points: [
             "Orders within Tamil Nadu will be delivered in 2–3 working days.",
             "Orders to other states will be delivered in 3–7 working days, depending on the location.",
         ],
     },
     {
-        title: "2. Shipping Charges",
+        title: "Shipping Charges",
         points: [
             "Shipping charges are applicable and vary based on location and order size.",
             "Final charges will be informed before dispatch.",
         ],
     },
     {
-        title: "3. Tracking",
+        title: "Tracking",
         points: [
             "Tracking details will be shared once the order is dispatched so you can monitor your delivery.",
         ],
     },
     {
-        title: "4. Delays",
+        title: "Delays",
         points: [
             "Delivery timelines may be affected due to courier delays, weather conditions, or other unforeseen circumstances.",
             "We are not responsible for such delays.",
         ],
     },
     {
-        title: "5. Damage or Loss",
+        title: "Damage or Loss",
         points: [
             "We are not responsible for any damage or loss during transit handled by courier services.",
             "However, we will assist you in resolving the issue wherever possible.",
         ],
     },
     {
-        title: "6. Address Accuracy",
+        title: "Address Accuracy",
         points: [
             "Customers must provide complete and accurate shipping details.",
             "We are not responsible for delivery issues caused due to incorrect address information.",
@@ -402,11 +402,7 @@ export default function TermsPage() {
                                 >
                                     <div className="p-6 md:p-8">
                                         <div className="flex items-start gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center shrink-0 mt-0.5">
-                                                <span className="text-xs font-black text-teal-600">
-                                                    {i + 1}
-                                                </span>
-                                            </div>
+                                            <div className="w-1.5 h-1.5 rounded-full bg-teal-200 mt-2.5 shrink-0" />
                                             <div className="flex-1">
                                                 <h3 className="text-base font-black text-charcoal mb-3 uppercase tracking-wide">
                                                     {item.title.replace(

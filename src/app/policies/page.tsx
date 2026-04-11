@@ -27,7 +27,6 @@ import {
 const termsItems = [
     {
         id: "order-confirmation",
-        number: "01",
         icon: CheckCircle2,
         title: "Order Confirmation",
         color: "text-emerald-600",
@@ -41,7 +40,6 @@ const termsItems = [
     },
     {
         id: "design-process",
-        number: "02",
         icon: Palette,
         title: "Design Process & Approval",
         color: "text-violet-600",
@@ -59,7 +57,6 @@ const termsItems = [
     },
     {
         id: "production-timeline",
-        number: "03",
         icon: Clock,
         title: "Production Timeline",
         color: "text-amber-600",
@@ -75,7 +72,6 @@ const termsItems = [
     },
     {
         id: "payment-policy",
-        number: "04",
         icon: CreditCard,
         title: "Payment Policy",
         color: "text-blue-600",
@@ -91,7 +87,6 @@ const termsItems = [
     },
     {
         id: "cancellation",
-        number: "05",
         icon: XCircle,
         title: "Cancellation & Refund",
         color: "text-rose-600",
@@ -105,7 +100,6 @@ const termsItems = [
     },
     {
         id: "color-material",
-        number: "06",
         icon: AlertTriangle,
         title: "Color & Material Disclaimer",
         color: "text-orange-600",
@@ -119,7 +113,6 @@ const termsItems = [
     },
     {
         id: "delivery-policy",
-        number: "07",
         icon: Truck,
         title: "Delivery Policy",
         color: "text-teal-600",
@@ -134,7 +127,6 @@ const termsItems = [
     },
     {
         id: "responsibility",
-        number: "08",
         icon: ShieldAlert,
         title: "Responsibility",
         color: "text-slate-600",
@@ -353,14 +345,9 @@ export default function PoliciesPage() {
                                                 <Icon size={20} />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-3 mb-3 flex-wrap">
-                                                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-2.5 py-1 rounded-full ${item.badge}`}>
-                                                        {item.number}
-                                                    </span>
                                                     <h3 className="text-base font-black text-charcoal uppercase tracking-wide">
                                                         {item.title}
                                                     </h3>
-                                                </div>
 
                                                 {/* Points */}
                                                 <ul className="space-y-2.5">
@@ -461,12 +448,8 @@ export default function PoliciesPage() {
                                     key={i}
                                     className="flex items-start gap-4"
                                 >
-                                    <div className="w-8 h-8 rounded-xl bg-rose-50 flex items-center justify-center shrink-0 mt-0.5">
-                                        <span className="text-xs font-black text-rose-500">
-                                            {String(i + 1).padStart(2, "0")}
-                                        </span>
-                                    </div>
-                                    <p className="text-sm text-neutral-700 leading-relaxed pt-1">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-rose-200 mt-2.5 shrink-0" />
+                                    <p className="text-sm text-neutral-700 leading-relaxed">
                                         {point}
                                     </p>
                                 </li>

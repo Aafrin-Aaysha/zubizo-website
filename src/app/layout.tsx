@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Parisienne } from "next/font/google";
+import { Cormorant_Garamond, Parisienne, Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -18,6 +18,18 @@ const parisienne = Parisienne({
   variable: "--font-parisienne",
   subsets: ["latin"],
   weight: ["400"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  style: ["normal", "italic"],
 });
 
 import dbConnect from "@/lib/db";
@@ -90,7 +102,7 @@ export default function RootLayout({
         <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,300,400&display=swap" rel="stylesheet" />
       </head>
       <body
-        className={`${cormorantGaramond.variable} ${parisienne.variable} antialiased`}
+        className={`${cormorantGaramond.variable} ${parisienne.variable} ${inter.variable} ${fraunces.variable} antialiased`}
       >
         <CustomCursor />
         <GoogleAnalytics GA_MEASUREMENT_ID={gaId} />
