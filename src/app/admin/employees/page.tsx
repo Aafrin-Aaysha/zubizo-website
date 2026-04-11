@@ -12,7 +12,9 @@ import {
     Shield,
     Key,
     CheckCircle2,
-    XCircle
+    XCircle,
+    Eye,
+    EyeOff
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
@@ -33,6 +35,7 @@ export default function EmployeesPage() {
         isActive: true
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         fetchEmployees();
@@ -248,11 +251,18 @@ export default function EmployeesPage() {
                                         <div className="relative">
                                             <Key className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                             <input
-                                                type="password" required={!editingEmployee} value={formData.password}
+                                                type={showPassword ? 'text' : 'password'} required={!editingEmployee} value={formData.password}
                                                 onChange={e => setFormData({ ...formData, password: e.target.value })}
-                                                className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-bold"
+                                                className="w-full pl-12 pr-12 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-bold"
                                                 placeholder="••••••••"
                                             />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(p => !p)}
+                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-lavender transition-colors"
+                                            >
+                                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
                                         </div>
                                     </div>
                                     
