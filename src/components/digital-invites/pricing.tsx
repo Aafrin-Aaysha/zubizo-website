@@ -175,10 +175,10 @@ export const PricingSection = () => {
                                 )}
 
                                 <div className="mb-10">
-                                    <h3 className={cn(
-                                        "text-xl font-serif mb-2",
-                                        plan.isRecommended ? "text-white" : "text-charcoal"
-                                    )}>
+                                    <h3
+                                        className="text-2xl font-bold font-serif mb-2"
+                                        style={{ color: plan.isRecommended ? "#c4b5fd" : "#1a1a2e" }}
+                                    >
                                         {plan.name}
                                     </h3>
                                     <p className={cn(
