@@ -225,13 +225,17 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                         </button>
                     </div>
                     {design && (
-                        <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-4">
-                            {design.images?.[0] && <img src={design.images[0]} className="w-12 h-12 rounded object-cover" />}
+                        <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-4"
+                        >
+                            {design.images?.[0] && <img src={design.images[0]} className="w-12 h-12 rounded-lg object-cover shadow-sm" />}
                             <div>
                                 <p className="font-bold text-emerald-900">{design.name}</p>
-                                <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Matched</p>
+                                <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Design Matched</p>
                             </div>
-                        </div>
+                        </motion.div>
                     )}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -305,22 +309,33 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                             <span>Cards Cost</span>
                             <span className="font-bold text-white">₹{subtotal.toFixed(2)}</span>
                         </div>
-                        <div className="space-y-2">
-                            <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg">
-                                <span className="text-gray-400 text-xs">Designing</span>
-                                <input type="number" value={designingCharge === 0 ? '' : designingCharge} onChange={e=>setDesigningCharge(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-20 bg-transparent text-right outline-none font-bold text-white uppercase tracking-widest" />
+                        <div className="space-y-4">
+                            <div className="flex justify-between items-center group">
+                                <span className="text-gray-400">Designing Charge</span>
+                                <div className="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity bg-white/5 px-2 py-1 rounded-lg">
+                                    <IndianRupee size={12}/>
+                                    <input type="number" value={designingCharge === 0 ? '' : designingCharge} onChange={e=>setDesigningCharge(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 bg-transparent border-none p-0 text-right outline-none text-white font-bold text-sm" />
+                                </div>
                             </div>
-                            <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg">
-                                <span className="text-gray-400 text-xs">Shipping</span>
-                                <input type="number" value={shippingCharge === 0 ? '' : shippingCharge} onChange={e=>setShippingCharge(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-20 bg-transparent text-right outline-none font-bold text-white uppercase tracking-widest" />
+                            <div className="flex justify-between items-center group">
+                                <span className="text-gray-400">Shipping Charge</span>
+                                <div className="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity bg-white/5 px-2 py-1 rounded-lg">
+                                    <IndianRupee size={12}/>
+                                    <input type="number" value={shippingCharge === 0 ? '' : shippingCharge} onChange={e=>setShippingCharge(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 bg-transparent border-none p-0 text-right outline-none text-white font-bold text-sm" />
+                                </div>
                             </div>
                         </div>
 
                         {customCharges.map((c, i) => (
-                            <div key={i} className="flex items-center gap-2 bg-white/5 p-2 rounded-lg">
-                                <input value={c.label} onChange={e => { const arr = [...customCharges]; arr[i].label = e.target.value; setCustomCharges(arr); }} className="flex-1 bg-transparent text-xs outline-none text-white" placeholder="Label..." />
-                                <input type="number" value={c.amount === 0 ? '' : c.amount} onChange={e => { const arr = [...customCharges]; arr[i].amount = e.target.value === '' ? 0 : Number(e.target.value); setCustomCharges(arr); }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 bg-transparent text-right outline-none font-bold text-white text-xs uppercase tracking-widest" />
-                                <button type="button" onClick={() => removeCustomCharge(i)} className="text-red-400"><Trash2 size={12}/></button>
+                            <div key={i} className="flex items-center gap-2 group">
+                                <input value={c.label} onChange={e => { const arr = [...customCharges]; arr[i].label = e.target.value; setCustomCharges(arr); }} className="flex-1 bg-white/5 rounded p-2 text-xs outline-none text-white border-none" placeholder="Label..." />
+                                <div className="flex items-center gap-1 bg-white/5 px-2 py-1.5 rounded-lg opacity-80 group-hover:opacity-100 transition-opacity">
+                                    <IndianRupee size={10} className="text-gray-400" />
+                                    <input type="number" value={c.amount === 0 ? '' : c.amount} onChange={e => { const arr = [...customCharges]; arr[i].amount = e.target.value === '' ? 0 : Number(e.target.value); setCustomCharges(arr); }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-12 bg-transparent border-none p-0 text-right outline-none text-white font-bold text-xs" />
+                                </div>
+                                <button type="button" onClick={() => removeCustomCharge(i)} className="text-red-400 p-2 hover:bg-white/10 rounded-lg group/btn">
+                                    <Trash2 size={12} className="group-hover/btn:scale-110 transition-transform"/>
+                                </button>
                             </div>
                         ))}
                         <button type="button" onClick={addCustomCharge} className="text-[10px] text-lavender font-bold uppercase tracking-widest">+ Add Charge</button>
