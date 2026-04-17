@@ -460,7 +460,7 @@ export default function InventoryPage() {
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="bg-white rounded-[40px] w-full max-w-lg overflow-hidden shadow-2xl relative z-10 p-8"
+                            className="bg-white rounded-[40px] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl relative z-10 p-8"
                         >
                             <div className="flex items-center justify-between mb-8">
                                 <h2 className="text-2xl font-bold text-gray-900 leading-tight">Add New Material</h2>
@@ -709,7 +709,7 @@ export default function InventoryPage() {
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="bg-white rounded-[40px] w-full max-w-lg overflow-hidden shadow-2xl relative z-10 p-8"
+                            className="bg-white rounded-[40px] w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl relative z-10 p-8"
                         >
                             <div className="flex items-center justify-between mb-8">
                                 <h2 className="text-2xl font-bold text-gray-900 leading-tight">Edit Material</h2>

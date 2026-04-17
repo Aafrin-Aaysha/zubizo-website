@@ -319,10 +319,14 @@ export default function InvoiceGenerator() {
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Qty/Card:</span>
+                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Qty Required:</span>
                                             <input
                                                 type="number" step="0.01" value={m.quantityPerCard === 0 ? '' : m.quantityPerCard} 
-                                                onChange={e => updateMaterialQty(i, e.target.value === '' ? 0 : Number(e.target.value))}
+                                                onChange={e => {
+                                                    const copy = [...materials];
+                                                    copy[i].quantityPerCard = e.target.value === '' ? 0 : Number(e.target.value);
+                                                    setMaterials(copy);
+                                                }}
                                                 onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                 className="w-16 p-1 text-center font-bold text-sm bg-white border border-gray-200 rounded outline-none"
                                             />

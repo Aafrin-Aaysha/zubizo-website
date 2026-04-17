@@ -723,7 +723,7 @@ export default function DesignsPage() {
                                                                     <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Rate: ₹{invItem?.defaultPrice || 0}/{invItem?.unit || 'pc'}</p>
                                                                 </div>
                                                                 <div className="flex items-center gap-2">
-                                                                    <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Qty/Card:</span>
+                                                                    <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Qty Required:</span>
                                                                     <input type="number" step="0.01" value={m.quantityPerCard === 0 ? '' : m.quantityPerCard} onChange={e => {
                                                                         const copy = [...formData.materials];
                                                                         copy[idx].quantityPerCard = e.target.value === '' ? 0 : Number(e.target.value);
