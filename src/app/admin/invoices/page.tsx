@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Download, FileText, Search, Loader2 } from 'lucide-react';
+import { Download, FileText, Search, Loader2, Edit2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
@@ -192,7 +192,14 @@ export default function InvoicesHistoryPage() {
                                                 +₹{invoice.profit}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                                            <Link
+                                                href={`/admin/invoices/${invoice._id}/edit`}
+                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors inline-block"
+                                                title="Edit Invoice"
+                                            >
+                                                <Edit2 size={20} />
+                                            </Link>
                                             <button 
                                                 onClick={() => handleExportPDF(invoice)}
                                                 className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors inline-block"
