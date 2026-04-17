@@ -236,11 +236,11 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Quantity *</label>
-                            <input required type="number" min="1" value={quantity} onChange={e => setQuantity(Number(e.target.value))} className="w-full p-4 bg-gray-50 border-none rounded-xl focus:bg-white outline-none transition-all font-black text-xl text-center" />
+                            <input required type="number" min="1" value={quantity === 0 ? '' : quantity} onChange={e => setQuantity(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full p-4 bg-gray-50 border-none rounded-xl focus:bg-white outline-none transition-all font-black text-xl text-center" />
                         </div>
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Price / Card (₹) *</label>
-                            <input required type="number" step="0.01" min="0" value={pricePerCard} onChange={e => setPricePerCard(Number(e.target.value))} className="w-full p-4 bg-gray-50 border-none rounded-xl focus:bg-white outline-none transition-all font-black text-xl text-center" />
+                            <input required type="number" step="0.01" min="0" value={pricePerCard === 0 ? '' : pricePerCard} onChange={e => setPricePerCard(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full p-4 bg-gray-50 border-none rounded-xl focus:bg-white outline-none transition-all font-black text-xl text-center" />
                         </div>
                     </div>
                 </div>
@@ -275,19 +275,23 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                                         </div>
                                         <div className="flex items-center gap-1.5 mt-1">
                                             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Rate (₹):</span>
-                                            <input type="number" step="0.01" value={m.costPerUnit} onChange={e => updateMaterialRate(i, Number(e.target.value))} className="w-16 p-0.5 text-center font-bold text-[10px] bg-white border border-gray-200 rounded outline-none text-purple-600" />
+                                            <input type="number" step="0.01" value={m.costPerUnit === 0 ? '' : m.costPerUnit} onChange={e => updateMaterialRate(i, e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 p-0.5 text-center font-bold text-[10px] bg-white border border-gray-200 rounded outline-none text-purple-600" />
                                             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">/ {m.unit}</span>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Qty Required:</span>
-                                        <input type="number" step="0.01" value={m.quantityPerCard} onChange={e => updateMaterialQty(i, Number(e.target.value))} className="w-16 p-1 text-center font-bold text-sm bg-white border border-gray-200 rounded outline-none" />
+                                        <input type="number" step="0.01" value={m.quantityPerCard === 0 ? '' : m.quantityPerCard} onChange={e => updateMaterialQty(i, e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 p-1 text-center font-bold text-sm bg-white border border-gray-200 rounded outline-none" />
                                     </div>
                                     <button type="button" onClick={() => removeMaterial(i)} className="text-red-400 hover:text-red-500 p-1">
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
                             ))}
+                            <div className="mt-4 p-3 bg-purple-50/50 rounded-xl flex items-center justify-between text-sm font-bold text-purple-900">
+                                <span>Total Material Cost Prediction:</span>
+                                <span>₹{totalMaterialCost.toFixed(2)}</span>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -304,18 +308,18 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                         <div className="space-y-2">
                             <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg">
                                 <span className="text-gray-400 text-xs">Designing</span>
-                                <input type="number" value={designingCharge} onChange={e=>setDesigningCharge(Number(e.target.value))} className="w-20 bg-transparent text-right outline-none font-bold text-white" />
+                                <input type="number" value={designingCharge === 0 ? '' : designingCharge} onChange={e=>setDesigningCharge(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-20 bg-transparent text-right outline-none font-bold text-white uppercase tracking-widest" />
                             </div>
                             <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg">
                                 <span className="text-gray-400 text-xs">Shipping</span>
-                                <input type="number" value={shippingCharge} onChange={e=>setShippingCharge(Number(e.target.value))} className="w-20 bg-transparent text-right outline-none font-bold text-white" />
+                                <input type="number" value={shippingCharge === 0 ? '' : shippingCharge} onChange={e=>setShippingCharge(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-20 bg-transparent text-right outline-none font-bold text-white uppercase tracking-widest" />
                             </div>
                         </div>
 
                         {customCharges.map((c, i) => (
                             <div key={i} className="flex items-center gap-2 bg-white/5 p-2 rounded-lg">
                                 <input value={c.label} onChange={e => { const arr = [...customCharges]; arr[i].label = e.target.value; setCustomCharges(arr); }} className="flex-1 bg-transparent text-xs outline-none text-white" placeholder="Label..." />
-                                <input type="number" value={c.amount} onChange={e => { const arr = [...customCharges]; arr[i].amount = Number(e.target.value); setCustomCharges(arr); }} className="w-16 bg-transparent text-right outline-none font-bold text-white text-xs" />
+                                <input type="number" value={c.amount === 0 ? '' : c.amount} onChange={e => { const arr = [...customCharges]; arr[i].amount = e.target.value === '' ? 0 : Number(e.target.value); setCustomCharges(arr); }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 bg-transparent text-right outline-none font-bold text-white text-xs uppercase tracking-widest" />
                                 <button type="button" onClick={() => removeCustomCharge(i)} className="text-red-400"><Trash2 size={12}/></button>
                             </div>
                         ))}
@@ -327,6 +331,18 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                             <span className="font-black text-white">₹{grandTotal.toFixed(2)}</span>
                         </div>
                     </div>
+                </div>
+
+                {/* Admin Profit Insight */}
+                <div className="bg-emerald-50 p-6 rounded-[2rem] border border-emerald-100">
+                    <div className="flex items-center justify-between mb-2">
+                        <h2 className="text-sm font-bold text-emerald-900 uppercase tracking-widest">Admin Profit</h2>
+                        <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600"><IndianRupee size={16}/></div>
+                    </div>
+                    <p className="text-3xl font-black text-emerald-600">₹{profit.toFixed(2)}</p>
+                    <p className="text-[10px] text-emerald-500 font-bold mt-2 leading-tight uppercase tracking-widest">
+                        Calculated dynamically based on live inventory prices.
+                    </p>
                 </div>
 
                 {isEditing && (
