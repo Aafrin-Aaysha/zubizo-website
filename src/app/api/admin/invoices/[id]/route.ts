@@ -6,14 +6,15 @@ import { getAdminFromRequest, unauthorizedResponse } from '@/lib/api-auth';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-    console.log('GET Invoice Request for ID:', params.id);
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    console.log('GET Invoice Request for ID:', id);
     try {
         const admin = await getAdminFromRequest(req);
         if (!admin) return unauthorizedResponse();
 
         await dbConnect();
-        const invoice = await Invoice.findById(params.id).lean();
+        const invoice = await Invoice.findById(id).lean();
         
         if (!invoice) return NextResponse.json({ message: 'Invoice not found' }, { status: 404 });
 
@@ -24,7 +25,8 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     try {
         const admin = await getAdminFromRequest(req);
         if (!admin) return unauthorizedResponse();
@@ -43,7 +45,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
         await dbConnect();
 
-        const oldInvoice = await Invoice.findById(params.id);
+        const oldInvoice = await Invoice.findById(id);
         if (!oldInvoice) return NextResponse.json({ message: 'Invoice not found' }, { status: 404 });
 
         // 1. REVERSE PREVIOUS STOCK DEDUCTIONS
@@ -102,7 +104,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         const profit = grandTotal - totalMaterialCost;
 
         // 3. UPDATE INVOICE
-        const updatedInvoice = await Invoice.findByIdAndUpdate(params.id, {
+        const updatedInvoice = await Invoice.findByIdAndUpdate(id, {
             customerName,
             customerPhone,
             customerAddress,
