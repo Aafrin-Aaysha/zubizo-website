@@ -4,7 +4,10 @@ import Invoice from '@/models/Invoice';
 import Material from '@/models/Material';
 import { getAdminFromRequest, unauthorizedResponse } from '@/lib/api-auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+    console.log('GET Invoice Request for ID:', params.id);
     try {
         const admin = await getAdminFromRequest(req);
         if (!admin) return unauthorizedResponse();
