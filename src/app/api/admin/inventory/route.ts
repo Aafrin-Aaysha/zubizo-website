@@ -33,7 +33,11 @@ export async function POST(req: NextRequest) {
         if (!admin) return unauthorizedResponse();
 
         const body = await req.json();
-        const { name, category, usageType, usageValue, currentStock, unit, defaultPrice, lowStockThreshold, targetAdminId, targetAdminName, applyToAll } = body;
+        const { 
+            name, category, usageType, usageValue, currentStock, unit, 
+            defaultPrice, lowStockThreshold, targetAdminId, targetAdminName, 
+            applyToAll, size, gsm, trackInventory 
+        } = body;
 
         await dbConnect();
         
@@ -57,7 +61,10 @@ export async function POST(req: NextRequest) {
                             currentStock: targetAdmin._id.toString() === admin.id ? (Number(currentStock) || 0) : 0,
                             unit: (unit || 'pcs').trim(),
                             defaultPrice: Number(defaultPrice) || 0,
-                            lowStockThreshold: Number(lowStockThreshold) || 10
+                            lowStockThreshold: Number(lowStockThreshold) || 10,
+                            size: size || '',
+                            gsm: gsm || '',
+                            trackInventory: trackInventory !== undefined ? trackInventory : true
                         });
                         createdMaterials.push(material);
                     }
@@ -92,7 +99,10 @@ export async function POST(req: NextRequest) {
             currentStock: currentStock || 0,
             unit: unit || 'pcs',
             defaultPrice: defaultPrice || 0,
-            lowStockThreshold: lowStockThreshold || 10
+            lowStockThreshold: lowStockThreshold || 10,
+            size: size || '',
+            gsm: gsm || '',
+            trackInventory: trackInventory !== undefined ? trackInventory : true
         });
 
         return NextResponse.json(material, { status: 201 });

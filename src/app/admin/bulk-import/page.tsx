@@ -857,8 +857,8 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                                     <div>
                                                         <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Min Order Qty</label>
                                                         <input
-                                                            type="number" value={design.minQuantity}
-                                                            onChange={e => updateDesign(dIdx, { minQuantity: parseInt(e.target.value) || 50 })}
+                                                            type="number" value={design.minQuantity === 0 ? '' : design.minQuantity}
+                                                            onChange={e => updateDesign(dIdx, { minQuantity: e.target.value === '' ? 0 : parseInt(e.target.value) })}
                                                             onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                             disabled={design._status === 'success'}
                                                             className="w-full px-4 py-2.5 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-lavender outline-none transition-all font-black text-charcoal text-sm disabled:opacity-50"
@@ -964,24 +964,24 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                                                     {pkg.priceTiers.map((tier, tIdx) => (
                                                                         <div key={tIdx} className="flex items-center gap-2 bg-white p-2 rounded-xl border border-gray-100">
                                                                             <input
-                                                                                type="number" value={tier.minQty ?? ''} placeholder="Min"
-                                                                                onChange={e => updateTier(dIdx, pIdx, tIdx, 'minQty', e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                                                type="number" value={tier.minQty === 0 ? '' : tier.minQty} placeholder="Min"
+                                                                                onChange={e => updateTier(dIdx, pIdx, tIdx, 'minQty', e.target.value === '' ? 0 : parseInt(e.target.value))}
                                                                                 onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                 disabled={design._status === 'success'}
                                                                                 className="w-20 px-2 py-1.5 bg-gray-50 rounded-lg text-xs font-bold text-center outline-none focus:bg-white focus:ring-1 focus:ring-lavender disabled:opacity-50"
                                                                             />
                                                                             <span className="text-gray-300 text-xs">→</span>
                                                                             <input
-                                                                                type="number" value={tier.maxQty ?? ''} placeholder="Max"
-                                                                                onChange={e => updateTier(dIdx, pIdx, tIdx, 'maxQty', e.target.value === '' ? null : parseInt(e.target.value))}
+                                                                                type="number" value={tier.maxQty === 0 ? '' : tier.maxQty} placeholder="Max"
+                                                                                onChange={e => updateTier(dIdx, pIdx, tIdx, 'maxQty', e.target.value === '' ? 0 : parseInt(e.target.value))}
                                                                                 onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                 disabled={design._status === 'success'}
                                                                                 className="w-20 px-2 py-1.5 bg-gray-50 rounded-lg text-xs font-bold text-center outline-none focus:bg-white focus:ring-1 focus:ring-lavender disabled:opacity-50"
                                                                             />
                                                                             <span className="text-gray-400 text-xs">₹</span>
                                                                             <input
-                                                                                type="number" value={tier.pricePerCard ?? ''} placeholder="Price"
-                                                                                onChange={e => updateTier(dIdx, pIdx, tIdx, 'pricePerCard', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                                                                                type="number" value={tier.pricePerCard === 0 ? '' : tier.pricePerCard} placeholder="Price"
+                                                                                onChange={e => updateTier(dIdx, pIdx, tIdx, 'pricePerCard', e.target.value === '' ? 0 : parseFloat(e.target.value))}
                                                                                 onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                 disabled={design._status === 'success'}
                                                                                 className="w-20 px-2 py-1.5 bg-gray-50 rounded-lg text-xs font-black text-center outline-none focus:bg-white focus:ring-1 focus:ring-lavender disabled:opacity-50"

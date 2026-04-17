@@ -38,6 +38,18 @@ const MaterialSchema = new mongoose.Schema({
         required: true,
         default: 'pcs' // e.g., 'pcs', 'kg', 'meters', 'sheets'
     },
+    size: {
+        type: String,
+        trim: true
+    },
+    gsm: {
+        type: String,
+        trim: true
+    },
+    trackInventory: {
+        type: Boolean,
+        default: true
+    },
     defaultPrice: {
         type: Number,
         required: true,

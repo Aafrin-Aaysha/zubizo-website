@@ -14,7 +14,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     try {
         const { id } = await params;
         await dbConnect();
-        const design = await Design.findById(id).populate('categoryId');
+        const design = await Design.findById(id).populate('categoryId').populate('materials.materialId');
 
         if (!design) {
             return NextResponse.json({ message: 'Design not found' }, { status: 404 });

@@ -426,6 +426,7 @@ Please share further details.`;
                                     if (val === '') { setQuantity(''); return; }
                                     setQuantity(parseInt(val) || 0);
                                 }}
+                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                 className={cn(
                                     "w-full h-14 pl-6 pr-20 bg-white border-2 rounded-[1rem] font-bold text-base transition-all outline-none placeholder:font-medium placeholder:text-gray-400",
                                     isInvalidQuantity

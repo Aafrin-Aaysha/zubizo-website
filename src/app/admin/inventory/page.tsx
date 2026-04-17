@@ -33,6 +33,9 @@ interface Material {
     lowStockThreshold: number;
     lastRestockedAt: string;
     isActive: boolean;
+    size?: string;
+    gsm?: string;
+    trackInventory?: boolean;
 }
 
 export default function InventoryPage() {
@@ -43,10 +46,21 @@ export default function InventoryPage() {
     const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
     const [adminFilter, setAdminFilter] = useState('all');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
+ 
     // Form states
     const [formData, setFormData] = useState({
-        name: '', category: 'Core Materials', usageType: 'manual', usageValue: 1, currentStock: 0, unit: 'pcs', defaultPrice: 0, lowStockThreshold: 10, applyToAll: false
+        name: '', 
+        category: 'Core Materials', 
+        usageType: 'manual', 
+        usageValue: 1, 
+        currentStock: 0, 
+        unit: 'pcs', 
+        defaultPrice: 0, 
+        lowStockThreshold: 10, 
+        applyToAll: false,
+        size: '',
+        gsm: '',
+        trackInventory: true
     });
     const [editFormData, setEditFormData] = useState<any>(null);
     const [syncToAll, setSyncToAll] = useState(false);
@@ -91,7 +105,20 @@ export default function InventoryPage() {
         onSuccess: () => {
             toast.success('Material added successfully');
             setIsAddModalOpen(false);
-            setFormData({ name: '', category: 'Core Materials', usageType: 'manual', usageValue: 1, currentStock: 0, unit: 'pcs', defaultPrice: 0, lowStockThreshold: 10, applyToAll: false });
+            setFormData({ 
+                name: '', 
+                category: 'Core Materials', 
+                usageType: 'manual', 
+                usageValue: 1, 
+                currentStock: 0, 
+                unit: 'pcs', 
+                defaultPrice: 0, 
+                lowStockThreshold: 10, 
+                applyToAll: false,
+                size: '',
+                gsm: '',
+                trackInventory: true
+            });
             queryClient.invalidateQueries({ queryKey: ['inventory'] });
         },
         onError: (err: any) => toast.error(err.message)
@@ -119,7 +146,7 @@ export default function InventoryPage() {
             return res.json();
         },
         onSuccess: () => {
-            toast.success('Restocked successfully');
+            toast.success('Stock adjusted successfully');
             setIsRestockModalOpen(false);
             setRestockAmount(0);
             queryClient.invalidateQueries({ queryKey: ['inventory'] });
@@ -130,7 +157,7 @@ export default function InventoryPage() {
     const handleRestock = (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedMaterial) return;
-        restockMutation.mutate({ id: selectedMaterial._id, amount: restockAmount });
+        restockMutation.mutate({ id: selectedMaterial._id, amount: Number(restockAmount) });
     };
 
     const deleteMutation = useMutation({
@@ -332,16 +359,33 @@ export default function InventoryPage() {
                                         >
                                             <td className="px-6 py-4">
                                                 <div className="font-bold text-gray-900">{material.name}</div>
-                                                <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{material.category} {material.adminName ? `• ${material.adminName}` : ''}</div>
+                                                <div className="flex items-center gap-1.5 mt-0.5">
+                                                    <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{material.category} {material.adminName ? `• ${material.adminName}` : ''}</span>
+                                                    {(material.size || material.gsm) && (
+                                                        <span className="text-[10px] text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded-md font-bold border border-purple-100 flex items-center gap-1">
+                                                            {material.size && <span>{material.size}</span>}
+                                                            {material.size && material.gsm && <span>•</span>}
+                                                            {material.gsm && <span>{material.gsm}gsm</span>}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
-                                                    <span className={`font-bold ${isLowStock && material.usageType !== 'manual' ? 'text-amber-600' : 'text-gray-900'}`}>
-                                                        {material.currentStock} {material.unit}
-                                                    </span>
-                                                    {isLowStock && material.usageType !== 'manual' && (
-                                                        <span className="text-[10px] text-amber-500 font-bold uppercase tracking-tight flex items-center gap-1">
-                                                            <AlertTriangle size={10} /> Low Stock (Thr: {material.lowStockThreshold})
+                                                    {material.trackInventory !== false ? (
+                                                        <>
+                                                            <span className={`font-bold ${isLowStock && material.usageType !== 'manual' ? 'text-amber-600' : 'text-gray-900'}`}>
+                                                                {material.currentStock} {material.unit}
+                                                            </span>
+                                                            {isLowStock && material.usageType !== 'manual' && (
+                                                                <span className="text-[10px] text-amber-500 font-bold uppercase tracking-tight flex items-center gap-1">
+                                                                    <AlertTriangle size={10} /> Low Stock (Thr: {material.lowStockThreshold})
+                                                                </span>
+                                                            )}
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-[10px] text-blue-600 bg-blue-50 px-2 py-1 rounded-full font-black uppercase tracking-widest border border-blue-100 w-fit">
+                                                            Outsourced
                                                         </span>
                                                     )}
                                                 </div>
@@ -356,7 +400,7 @@ export default function InventoryPage() {
                                                     <button 
                                                         onClick={() => { setSelectedMaterial(material); setRestockAmount(0); setIsRestockModalOpen(true); }}
                                                         className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                                                        title="Restock"
+                                                        title="Adjust Stock"
                                                     >
                                                         <ArrowUpRight size={18} />
                                                     </button>
@@ -370,7 +414,10 @@ export default function InventoryPage() {
                                                                 usageValue: material.usageValue,
                                                                 unit: material.unit,
                                                                 defaultPrice: material.defaultPrice,
-                                                                lowStockThreshold: material.lowStockThreshold
+                                                                lowStockThreshold: material.lowStockThreshold,
+                                                                size: material.size || '',
+                                                                gsm: material.gsm || '',
+                                                                trackInventory: material.trackInventory !== undefined ? material.trackInventory : true
                                                             });
                                                             setSyncToAll(false);
                                                             setIsEditModalOpen(true); 
@@ -465,14 +512,67 @@ export default function InventoryPage() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-[11px] font-bold text-gray-700 ml-1">Initial Stock</label>
+                                        <label className="text-sm font-bold text-gray-700 ml-1">Size (e.g., A4, 5x7)</label>
                                         <input 
-                                            type="number" 
-                                            value={formData.currentStock}
-                                            onChange={(e) => setFormData({...formData, currentStock: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
+                                            type="text" 
+                                            value={formData.size}
+                                            onChange={(e) => setFormData({...formData, size: e.target.value})}
                                             className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                            placeholder="Standard/A4"
                                         />
                                     </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-gray-700 ml-1">GSM (e.g., 300)</label>
+                                        <input 
+                                            type="text" 
+                                            value={formData.gsm}
+                                            onChange={(e) => setFormData({...formData, gsm: e.target.value})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                            placeholder="300"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                    <input 
+                                        type="checkbox" 
+                                        id="trackInventory"
+                                        checked={formData.trackInventory}
+                                        onChange={(e) => setFormData({...formData, trackInventory: e.target.checked})}
+                                        className="w-5 h-5 rounded accent-emerald-600"
+                                    />
+                                    <label htmlFor="trackInventory" className="text-sm font-bold text-emerald-900">
+                                        Track Stock Inventory (Turn off for outsourced cards)
+                                    </label>
+                                </div>
+                                {formData.trackInventory && (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-bold text-gray-700 ml-1">Initial Stock</label>
+                                            <input 
+                                                type="number" 
+                                                value={formData.currentStock === 0 ? '' : formData.currentStock}
+                                                onChange={(e) => setFormData({...formData, currentStock: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
+                                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                                className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-bold text-gray-700 ml-1">Unit</label>
+                                            <select 
+                                                value={formData.unit}
+                                                onChange={(e) => setFormData({...formData, unit: e.target.value})}
+                                                className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                            >
+                                                <option value="pcs">Pieces (pcs)</option>
+                                                <option value="kg">Kilograms (kg)</option>
+                                                <option value="sheets">Sheets</option>
+                                                <option value="meters">Meters</option>
+                                                <option value="rolls">Rolls</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                )}
+                                {!formData.trackInventory && (
                                     <div className="space-y-2">
                                         <label className="text-sm font-bold text-gray-700 ml-1">Unit</label>
                                         <select 
@@ -487,15 +587,16 @@ export default function InventoryPage() {
                                             <option value="rolls">Rolls</option>
                                         </select>
                                     </div>
-                                </div>
+                                )}
                                 <div className="grid grid-cols-3 gap-4">
                                     <div className="space-y-2">
                                         <label className="text-[11px] font-bold text-gray-700 ml-1">Default Price (₹)</label>
                                         <input 
                                             type="number" 
                                             step="0.01"
-                                            value={formData.defaultPrice}
+                                            value={formData.defaultPrice === 0 ? '' : formData.defaultPrice}
                                             onChange={(e) => setFormData({...formData, defaultPrice: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
+                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                             className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>
@@ -504,8 +605,9 @@ export default function InventoryPage() {
                                         <input 
                                             type="number" 
                                             step="0.0001"
-                                            value={formData.usageValue}
-                                            onChange={(e) => setFormData({...formData, usageValue: e.target.value === '' ? 1 : parseFloat(e.target.value)})}
+                                            value={formData.usageValue === 0 ? '' : formData.usageValue}
+                                            onChange={(e) => setFormData({...formData, usageValue: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
+                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                             className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>
@@ -513,8 +615,9 @@ export default function InventoryPage() {
                                         <label className="text-[11px] font-bold text-gray-700 ml-1">Low Thrsh</label>
                                         <input 
                                             type="number" 
-                                            value={formData.lowStockThreshold}
-                                            onChange={(e) => setFormData({...formData, lowStockThreshold: e.target.value === '' ? 10 : parseInt(e.target.value)})}
+                                            value={formData.lowStockThreshold === 0 ? '' : formData.lowStockThreshold}
+                                            onChange={(e) => setFormData({...formData, lowStockThreshold: e.target.value === '' ? 0 : parseInt(e.target.value)})}
+                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                             className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>
@@ -561,32 +664,33 @@ export default function InventoryPage() {
                             exit={{ scale: 0.9, opacity: 0 }}
                             className="bg-white rounded-[40px] w-full max-w-sm overflow-hidden shadow-2xl relative z-10 p-8"
                         >
-                            <h2 className="text-2xl font-bold text-gray-900 mb-2">Restock Material</h2>
-                            <p className="text-gray-500 mb-8 border-l-4 border-emerald-400 pl-4">Add additional stock for <span className="font-bold text-gray-900">{selectedMaterial?.name}</span></p>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-2">Adjust Stock</h2>
+                            <p className="text-gray-500 mb-8 border-l-4 border-emerald-400 pl-4">Add or reduce stock for <span className="font-bold text-gray-900">{selectedMaterial?.name}</span></p>
                             <form onSubmit={handleRestock} className="space-y-6">
                                 <div className="space-y-2">
-                                    <label className="text-sm font-bold text-gray-700 ml-1">Amount to Add ({selectedMaterial?.unit})</label>
+                                    <label className="text-sm font-bold text-gray-700 ml-1">Amount to Add/Reduce (Use - for reduction)</label>
                                     <input 
                                         type="number" 
                                         required
                                         autoFocus
-                                        value={restockAmount}
-                                        onChange={(e) => setRestockAmount(parseInt(e.target.value))}
+                                        value={restockAmount === 0 ? '' : restockAmount}
+                                        onChange={(e) => setRestockAmount(e.target.value === '' ? 0 : Number(e.target.value))}
+                                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                         className="w-full px-6 py-6 bg-emerald-50/50 border border-emerald-100 rounded-3xl focus:outline-none focus:ring-4 focus:ring-emerald-100 focus:border-emerald-400 transition-all font-bold text-2xl text-emerald-700 text-center"
                                         placeholder="0"
                                     />
                                 </div>
                                 <div className="p-4 bg-gray-50 rounded-2xl flex justify-between items-center text-sm">
                                     <span className="text-gray-500">New Balance:</span>
-                                    <span className="font-bold text-gray-900">{(selectedMaterial?.currentStock || 0) + restockAmount} {selectedMaterial?.unit}</span>
+                                    <span className="font-bold text-gray-900">{(selectedMaterial?.currentStock || 0) + (Number(restockAmount) || 0)} {selectedMaterial?.unit}</span>
                                 </div>
                                 <button 
                                     type="submit"
-                                    disabled={isActionLoading || restockAmount <= 0}
+                                    disabled={isActionLoading || !restockAmount || Number(restockAmount) === 0 || ((selectedMaterial?.currentStock || 0) + Number(restockAmount) < 0)}
                                     className="w-full py-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-[32px] font-bold text-lg shadow-xl shadow-emerald-900/10 active:scale-95 transition-all flex items-center justify-center gap-2"
                                 >
                                     {isActionLoading ? <Loader2 className="animate-spin" /> : <Plus size={22} />}
-                                    Confirm Restocking
+                                    Confirm Adjustment
                                 </button>
                             </form>
                         </motion.div>
@@ -654,13 +758,46 @@ export default function InventoryPage() {
                                         </select>
                                     </div>
                                 </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-gray-700 ml-1">Size (e.g., A4, 5x7)</label>
+                                        <input 
+                                            type="text" 
+                                            value={editFormData.size}
+                                            onChange={(e) => setEditFormData({...editFormData, size: e.target.value})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-gray-700 ml-1">GSM (e.g., 300)</label>
+                                        <input 
+                                            type="text" 
+                                            value={editFormData.gsm}
+                                            onChange={(e) => setEditFormData({...editFormData, gsm: e.target.value})}
+                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                                    <input 
+                                        type="checkbox" 
+                                        id="editTrackInventory"
+                                        checked={editFormData.trackInventory}
+                                        onChange={(e) => setEditFormData({...editFormData, trackInventory: e.target.checked})}
+                                        className="w-5 h-5 rounded accent-emerald-600"
+                                    />
+                                    <label htmlFor="editTrackInventory" className="text-sm font-bold text-emerald-900">
+                                        Track Stock Inventory (Turn off for outsourced cards)
+                                    </label>
+                                </div>
                                 <div className="grid grid-cols-3 gap-4">
                                     <div className="space-y-2">
                                         <label className="text-[11px] font-bold text-gray-700 ml-1">Default Price (₹)</label>
                                         <input 
                                             type="number" 
-                                            value={editFormData.defaultPrice}
-                                            onChange={(e) => setEditFormData({...editFormData, defaultPrice: parseFloat(e.target.value)})}
+                                            value={editFormData.defaultPrice === 0 ? '' : editFormData.defaultPrice}
+                                            onChange={(e) => setEditFormData({...editFormData, defaultPrice: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
+                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                             className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>
@@ -669,20 +806,24 @@ export default function InventoryPage() {
                                         <input 
                                             type="number" 
                                             step="0.0001"
-                                            value={editFormData.usageValue}
-                                            onChange={(e) => setEditFormData({...editFormData, usageValue: parseFloat(e.target.value)})}
+                                            value={editFormData.usageValue === 0 ? '' : editFormData.usageValue}
+                                            onChange={(e) => setEditFormData({...editFormData, usageValue: e.target.value === '' ? 0 : parseFloat(e.target.value)})}
+                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                             className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
                                         />
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[11px] font-bold text-gray-700 ml-1">Low Thrsh</label>
-                                        <input 
-                                            type="number" 
-                                            value={editFormData.lowStockThreshold}
-                                            onChange={(e) => setEditFormData({...editFormData, lowStockThreshold: parseInt(e.target.value)})}
-                                            className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
-                                        />
-                                    </div>
+                                    {editFormData.trackInventory && (
+                                        <div className="space-y-2">
+                                            <label className="text-[11px] font-bold text-gray-700 ml-1">Low Thrsh</label>
+                                            <input 
+                                                type="number" 
+                                                value={editFormData.lowStockThreshold === 0 ? '' : editFormData.lowStockThreshold}
+                                                onChange={(e) => setEditFormData({...editFormData, lowStockThreshold: e.target.value === '' ? 0 : parseInt(e.target.value)})}
+                                                onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                                className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:border-purple-400 transition-all font-medium"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
 
                                 {adminData?.role === 'super-admin' && (

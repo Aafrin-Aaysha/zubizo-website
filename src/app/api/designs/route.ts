@@ -48,6 +48,7 @@ export async function GET(req: NextRequest) {
 
         let queryBuilder = Design.find(query)
             .populate('categoryId')
+            .populate('materials.materialId')
             .sort({ createdAt: -1 });
 
         if (limit) {

@@ -264,11 +264,12 @@ export default function CategoriesPage() {
                                         <input
                                             type="number"
                                             required
-                                            value={displayOrder === 0 && editingCategory === null ? '' : displayOrder}
+                                            value={displayOrder === 0 ? '' : displayOrder}
                                             onChange={(e) => {
                                                 const val = e.target.value;
                                                 setDisplayOrder(val === '' ? 0 : parseInt(val) || 0);
                                             }}
+                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                             className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-black text-charcoal"
                                         />
                                     </div>

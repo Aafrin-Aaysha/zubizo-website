@@ -48,6 +48,7 @@ export default function DesignsPage() {
         basePrice: 0 as number | string,
         packages: [] as any[],
         addOns: [] as any[],
+        materials: [] as any[],
         isTrending: false,
         isFeatured: false,
         isActive: true,
@@ -71,6 +72,15 @@ export default function DesignsPage() {
         queryFn: async () => {
             const res = await fetch('/api/categories');
             if (!res.ok) throw new Error('Failed to load categories');
+            return res.json();
+        }
+    });
+
+    const { data: inventory = [] } = useQuery<any[]>({
+        queryKey: ['inventory'],
+        queryFn: async () => {
+            const res = await fetch('/api/admin/inventory');
+            if (!res.ok) throw new Error('Failed to load inventory');
             return res.json();
         }
     });
@@ -285,6 +295,7 @@ export default function DesignsPage() {
                         : [{ minQty: design.minQuantity || 50, maxQty: null, pricePerCard: p.pricePerCard || 0 }]
                 })),
                 addOns: design.addOns || [],
+                materials: design.materials?.map((m: any) => ({ materialId: m.materialId?._id || m.materialId, quantityPerCard: m.quantityPerCard })) || [],
                 isTrending: design.isTrending || false,
                 isFeatured: design.isFeatured || false,
                 isActive: design.isActive !== undefined ? design.isActive : true,
@@ -308,6 +319,7 @@ export default function DesignsPage() {
                     priceTiers: [{ minQty: 100, maxQty: null, pricePerCard: 0 }]
                 }],
                 addOns: [],
+                materials: [],
                 isTrending: false,
                 isFeatured: false,
                 isActive: true,
@@ -670,13 +682,65 @@ export default function DesignsPage() {
                                                 <div className="pt-2">
                                                     <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-1.5 block">Minimum Order Quantity</label>
                                                     <input
-                                                        type="number" required value={formData.minQuantity ?? ''}
-                                                        onChange={e => setFormData({ ...formData, minQuantity: e.target.value === '' ? '' : parseInt(e.target.value) })}
+                                                        type="number" required value={formData.minQuantity === 0 ? '' : formData.minQuantity}
+                                                        onChange={e => setFormData({ ...formData, minQuantity: e.target.value === '' ? 0 : parseInt(e.target.value) })}
                                                         onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                         className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-black text-charcoal"
                                                     />
                                                 </div>
                                             </div>
+                                        </section>
+
+                                        <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
+                                            <div className="flex items-center justify-between">
+                                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                                    <PackageIcon size={14} /> Materials Mapping
+                                                </h3>
+                                                <select 
+                                                    onChange={(e) => { 
+                                                        if(e.target.value) {
+                                                            setFormData({ ...formData, materials: [...formData.materials, { materialId: e.target.value, quantityPerCard: 1 }] });
+                                                            e.target.value=''; 
+                                                        }
+                                                    }}
+                                                    className="px-2 py-1 text-[10px] font-bold bg-lavender/10 text-lavender rounded outline-none cursor-pointer tracking-widest uppercase"
+                                                >
+                                                    <option value="">+ Add</option>
+                                                    {inventory.map((inv: any) => <option key={inv._id} value={inv._id}>{inv.name}</option>)}
+                                                </select>
+                                            </div>
+
+                                            {formData.materials.length === 0 ? (
+                                                <p className="text-[10px] text-gray-400 italic">No materials mapped for automated subtraction.</p>
+                                            ) : (
+                                                <div className="space-y-3">
+                                                    {formData.materials.map((m: any, idx: number) => {
+                                                        const invItem = inventory.find(i => i._id === m.materialId);
+                                                        return (
+                                                            <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-100 group/mat">
+                                                                <div className="flex-1">
+                                                                    <p className="text-xs font-bold text-charcoal">{invItem?.name || 'Unknown Material'}</p>
+                                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Rate: ₹{invItem?.defaultPrice || 0}/{invItem?.unit || 'pc'}</p>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Qty/Card:</span>
+                                                                    <input type="number" step="0.01" value={m.quantityPerCard === 0 ? '' : m.quantityPerCard} onChange={e => {
+                                                                        const copy = [...formData.materials];
+                                                                        copy[idx].quantityPerCard = e.target.value === '' ? 0 : Number(e.target.value);
+                                                                        setFormData({...formData, materials: copy});
+                                                                    }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 p-1.5 text-center text-xs font-bold bg-white border border-gray-200 rounded-lg outline-none focus:border-lavender"/>
+                                                                </div>
+                                                                <button type="button" onClick={() => {
+                                                                    const copy = formData.materials.filter((_, i) => i !== idx);
+                                                                    setFormData({...formData, materials: copy});
+                                                                }} className="text-red-300 hover:text-red-500 p-1.5">
+                                                                    <Trash2 size={14}/>
+                                                                </button>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
                                         </section>
                                     </div>
 
@@ -775,8 +839,8 @@ export default function DesignsPage() {
                                                                                 <div className="space-y-1">
                                                                                     <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Min Qty</label>
                                                                                     <input
-                                                                                        type="number" placeholder="Min" value={tier.minQty ?? ''}
-                                                                                        onChange={e => updateTier(idx, tIdx, 'minQty', e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                                                        type="number" placeholder="Min" value={tier.minQty === 0 ? '' : tier.minQty}
+                                                                                        onChange={e => updateTier(idx, tIdx, 'minQty', e.target.value === '' ? 0 : parseInt(e.target.value))}
                                                                                         onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                         className="w-full sm:w-[100px] px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
                                                                                     />
@@ -784,8 +848,8 @@ export default function DesignsPage() {
                                                                                 <div className="space-y-1">
                                                                                     <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Max Qty</label>
                                                                                     <input
-                                                                                        type="number" placeholder="Max" value={tier.maxQty ?? ''}
-                                                                                        onChange={e => updateTier(idx, tIdx, 'maxQty', e.target.value === '' ? '' : parseInt(e.target.value))}
+                                                                                        type="number" placeholder="Max" value={tier.maxQty === 0 ? '' : tier.maxQty}
+                                                                                        onChange={e => updateTier(idx, tIdx, 'maxQty', e.target.value === '' ? 0 : parseInt(e.target.value))}
                                                                                         onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                         className="w-full sm:w-[100px] px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
                                                                                     />
@@ -855,8 +919,9 @@ export default function DesignsPage() {
                                                                     <div className="relative">
                                                                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">₹</span>
                                                                         <input
-                                                                            type="number" placeholder="0" value={addOn.pricePerCard}
-                                                                            onChange={e => updateAddOn(idx, 'pricePerCard', parseFloat(e.target.value) || 0)}
+                                                                            type="number" placeholder="0" value={addOn.pricePerCard === 0 ? '' : addOn.pricePerCard}
+                                                                            onChange={e => updateAddOn(idx, 'pricePerCard', e.target.value === '' ? 0 : parseFloat(e.target.value))}
+                                                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                             className="w-full px-8 py-2 bg-white border border-transparent rounded-xl text-xs font-black text-charcoal outline-none focus:border-lavender transition-all"
                                                                         />
                                                                     </div>

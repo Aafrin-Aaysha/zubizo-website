@@ -10,7 +10,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         if (!admin) return unauthorizedResponse();
 
         const body = await req.json();
-        const { name, category, usageType, usageValue, currentStock, unit, defaultPrice, lowStockThreshold, isActive, restockAmount, syncToAll } = body;
+        const { 
+            name, category, usageType, usageValue, currentStock, unit, 
+            defaultPrice, lowStockThreshold, isActive, restockAmount, 
+            syncToAll, size, gsm, trackInventory 
+        } = body;
 
         await dbConnect();
 
@@ -37,9 +41,12 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         if (defaultPrice !== undefined) updates.defaultPrice = defaultPrice;
         if (lowStockThreshold !== undefined) updates.lowStockThreshold = lowStockThreshold;
         if (isActive !== undefined) updates.isActive = isActive;
+        if (size !== undefined) updates.size = size;
+        if (gsm !== undefined) updates.gsm = gsm;
+        if (trackInventory !== undefined) updates.trackInventory = trackInventory;
 
         // Special handling for restocking or stock adjustment
-        if (restockAmount !== undefined) {
+        if (restockAmount !== undefined && (trackInventory || material.trackInventory)) {
              updates.currentStock = material.currentStock + restockAmount;
              updates.lastRestockedAt = new Date();
         } else if (currentStock !== undefined) {
@@ -61,6 +68,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             if (defaultPrice !== undefined) globalUpdates.defaultPrice = defaultPrice;
             if (lowStockThreshold !== undefined) globalUpdates.lowStockThreshold = lowStockThreshold;
             if (isActive !== undefined) globalUpdates.isActive = isActive;
+            if (size !== undefined) globalUpdates.size = size;
+            if (gsm !== undefined) globalUpdates.gsm = gsm;
+            if (trackInventory !== undefined) globalUpdates.trackInventory = trackInventory;
 
             if (Object.keys(globalUpdates).length > 0) {
                 await Material.updateMany({ name: originalName, _id: { $ne: id } }, { $set: globalUpdates });

@@ -3,10 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 import dbConnect from '@/lib/db';
 import Design from '@/models/Design';
-import Category from '@/models/Category';
-import Inquiry from '@/models/Inquiry';
-import Admin from '@/models/Admin';
-import Employee from '@/models/Employee'; // Needed for population
+import Invoice from '@/models/Invoice';
 import { getAdminFromRequest, unauthorizedResponse } from '@/lib/api-auth';
 
 export async function GET(req: NextRequest) {
@@ -16,45 +13,50 @@ export async function GET(req: NextRequest) {
 
         await dbConnect();
 
-        const now = new Date();
-        const fortyEightHoursAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
-        const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+        const { searchParams } = new URL(req.url);
+        const startDate = searchParams.get('startDate');
+        const endDate = searchParams.get('endDate');
 
-        // Core filter for all stats
-        const adminDoc = await Admin.findById(admin.id);
+        // Core filter for invoices
         let query: any = {};
-        if (!adminDoc || !adminDoc.showGlobalData) {
-            query.assignedAdmin = admin.id;
+        if (admin.role !== 'super-admin') {
+            query.adminId = admin.id;
         }
 
-        const [totalDesigns, totalCategories, overdueDesign, upcomingDeadlines, allInquiries] = await Promise.all([
-            Design.countDocuments({ isDeleted: false }), // Designs are global
-            Category.countDocuments({ isActive: true }), // Categories are global
-            Inquiry.countDocuments({ 
-                ...query,
-                status: 'Designing', 
-                'timeline.designStartedAt': { $lt: fortyEightHoursAgo } 
-            }),
-            Inquiry.countDocuments({ 
-                ...query,
-                status: { $nin: ['Delivered', 'Completed'] },
-                deliveryDeadline: { $lte: twoDaysFromNow, $gt: now } 
-            }),
-            Inquiry.find(query)
-                .sort({ createdAt: -1 })
-                .limit(10)
-                .populate('designId')
-                .populate('assignedTo', 'name'),
+        if (startDate && endDate) {
+            query.createdAt = {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate)
+            };
+        }
+
+        const [totalDesigns, allInvoices] = await Promise.all([
+            Design.countDocuments({ isDeleted: false }),
+            Invoice.find(query).sort({ createdAt: -1 }).lean()
         ]);
+
+        let totalRevenue = 0;
+        let totalProfit = 0;
+        let totalMaterialsUsed = 0; // Just counting quantity of units deducted
+
+        for (const inv of allInvoices) {
+            totalRevenue += inv.grandTotal || 0;
+            totalProfit += inv.profit || 0;
+            if (inv.materialsUsed && Array.isArray(inv.materialsUsed)) {
+                for (const mat of inv.materialsUsed) {
+                    totalMaterialsUsed += mat.quantityUsed || 0;
+                }
+            }
+        }
 
         return NextResponse.json({
             stats: [
-                { label: 'Total Catalog', value: totalDesigns, trend: 'Premium', color: '#ae7fcb' },
-                { label: 'Active Pipeline', value: allInquiries.length, trend: 'Live', color: '#10b981' },
-                { label: 'Design Overdue', value: overdueDesign, trend: '>48h Limit', color: '#ef4444' },
-                { label: 'Upcoming Delivery', value: upcomingDeadlines, trend: '<2d Alert', color: '#f59e0b' },
+                { label: 'Total Orders', value: allInvoices.length, trend: 'Generated', color: '#ae7fcb' },
+                { label: 'Total Revenue', value: '₹' + totalRevenue.toFixed(0), trend: 'Processed', color: '#10b981' },
+                { label: 'Net Profit', value: '₹' + totalProfit.toFixed(0), trend: 'Margin', color: '#059669' },
+                { label: 'Materials Used', value: totalMaterialsUsed, trend: 'Units', color: '#f59e0b' },
             ],
-            recentInquiries: allInquiries,
+            recentInvoices: allInvoices.slice(0, 10), // only return top 10 for recent
         }, { status: 200 });
     } catch (error) {
         console.error("Dashboard Stats Error:", error);

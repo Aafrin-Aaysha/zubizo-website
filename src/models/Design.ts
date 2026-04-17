@@ -12,6 +12,19 @@ const AddOnSchema = new mongoose.Schema({
     note: { type: String, default: '' } // e.g. "Free", "₹6 extra"
 }, { _id: false });
 
+const DesignMaterialSchema = new mongoose.Schema({
+    materialId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Material',
+        required: true
+    },
+    quantityPerCard: {
+        type: Number,
+        required: true,
+        default: 1
+    }
+}, { _id: false });
+
 const PackageSchema = new mongoose.Schema({
     title: { type: String, required: true },
     inclusions: {
@@ -60,6 +73,10 @@ const DesignSchema = new mongoose.Schema({
     },
     addOns: {
         type: [AddOnSchema],
+        default: []
+    },
+    materials: {
+        type: [DesignMaterialSchema],
         default: []
     },
     images: [String],

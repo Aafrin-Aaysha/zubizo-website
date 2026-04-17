@@ -501,7 +501,7 @@ export default function DigitalInvitesAdminPage() {
                                                     </div>
                                                     <div>
                                                         <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Price (₹)</label>
-                                                        <input type="number" required value={formData.basePrice} onChange={e => setFormData({ ...formData, basePrice: parseFloat(e.target.value) || 0 })} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender font-black" />
+                                                        <input type="number" required value={formData.basePrice === 0 ? '' : formData.basePrice} onChange={e => setFormData({ ...formData, basePrice: e.target.value === '' ? 0 : parseFloat(e.target.value) })} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender font-black" />
                                                     </div>
                                                 </div>
                                                 

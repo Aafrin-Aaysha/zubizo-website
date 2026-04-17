@@ -2,10 +2,11 @@ import mongoose from 'mongoose';
 import Category from '@/models/Category';
 import Design from '@/models/Design';
 import SiteSettings from '@/models/SiteSettings';
-import Inquiry from '@/models/Inquiry';
+import Invoice from '@/models/Invoice';
 import Admin from '@/models/Admin';
 import Employee from '@/models/Employee';
 import Material from '@/models/Material';
+import Inquiry from '@/models/Inquiry';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -40,10 +41,11 @@ async function dbConnect() {
             const _c = Category;
             const _d = Design;
             const _s = SiteSettings;
-            const _i = Inquiry;
+            const _i = Invoice;
             const _a = Admin;
             const _e = Employee;
             const _m = Material;
+            const _inq = Inquiry;
             return mongoose;
         });
     }

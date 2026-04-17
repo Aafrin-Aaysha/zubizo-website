@@ -17,7 +17,9 @@ import {
     ChevronRight,
     Zap,
     Database,
-    BarChart
+    BarChart,
+    FileText,
+    History
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LogoIcon } from '@/components/ui/logo-icon';
@@ -31,9 +33,9 @@ const sidebarItems = [
     { name: 'Bulk Import', href: '/admin/bulk-import', icon: Zap },
     { name: 'Team Management', href: '/admin/employees', icon: User },
     { name: 'Categories', href: '/admin/categories', icon: FolderTree },
-    { name: 'Inquiry Logs', href: '/admin/inquiries', icon: MessageSquare },
+    { name: 'Invoice Generator', href: '/admin/invoices/new', icon: FileText },
+    { name: 'Invoice History', href: '/admin/invoices', icon: History },
     { name: 'Inventory', href: '/admin/inventory', icon: Database },
-    { name: 'Analytics', href: '/admin/analytics', icon: BarChart },
     { name: 'Website Settings', href: '/admin/settings', icon: Settings },
     { name: 'Account', href: '/admin/account', icon: User },
 ];
