@@ -17,6 +17,7 @@ interface WhatsAppButtonProps {
     selectedPackage?: string;
     quantity?: number;
     estimatedTotal?: number;
+    imageUrl?: string;
 }
 
 export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
@@ -28,7 +29,8 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
     source,
     selectedPackage,
     quantity,
-    estimatedTotal
+    estimatedTotal,
+    imageUrl
 }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,7 +75,7 @@ My contact number is ${data.phone}.
 
 I am interested in:
 *Design:* ${designName}
-*SKU:* ${sku}
+*SKU:* ${sku}${imageUrl ? `\n*View Design:* ${imageUrl}` : ''}
 ${selectedPackage ? `*Package:* ${selectedPackage}` : ''}
 ${quantity ? `*Quantity:* ${quantity} cards` : ''}
 
