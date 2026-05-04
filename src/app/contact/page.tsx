@@ -29,7 +29,7 @@ export default function ContactPage() {
             .finally(() => setIsLoading(false));
     }, []);
 
-    const waNumber = settings?.whatsappNumber || "7639390868";
+    const waNumber = settings?.whatsappNumber || "8124548133";
     
     const handleModalSubmit = async (data: LeadData) => {
         try {

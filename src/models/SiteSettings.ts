@@ -20,7 +20,7 @@ const SiteSettingsSchema = new mongoose.Schema({
     email: String,
     whatsappNumber: {
         type: String,
-        default: '7639390868'
+        default: '8124548133'
     },
     logoUrl: String,
     faviconUrl: String,

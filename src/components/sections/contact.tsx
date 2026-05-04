@@ -19,7 +19,7 @@ const DEFAULT_CONTACT = {
         mapsLink: "https://maps.app.goo.gl/KAcz1CHJkVSq5iEA7"
     },
     phone: "+91 81245 48133",
-    whatsapp: "9092981748",
+    whatsapp: "8124548133",
     instagram: "@zubizo.art",
     workingHours: [
         { day: "Monday – Saturday", time: "10:00 AM – 7:00 PM" },

@@ -18,7 +18,7 @@ export async function GET() {
                 address: 'Your Store Address Here',
                 phone: '+91 0000000000',
                 email: 'contact@zubizo.com',
-                whatsappNumber: '7639390868',
+                whatsappNumber: '8124548133',
                 heroSlides: [],
                 defaultMaterials: [
                     { name: 'Wax', cost: 2 },

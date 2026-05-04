@@ -110,7 +110,7 @@ I would like to inquire about your services.`;
                                     <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-[#25D366] group-hover:bg-[#25D366] group-hover:text-white transition-all">
                                         <WhatsAppIcon size={14} />
                                     </div>
-                                    +91 90929 81748
+                                    +91 81245 48133
                                 </button>
                             </li>
                             <li>

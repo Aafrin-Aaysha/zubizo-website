@@ -10,7 +10,7 @@ export function sanitizeWhatsAppNumber(number: string) {
 }
 
 export function getWhatsAppNumber() {
-    const numbers = ["8124548133", "9092981748"];
+    const numbers = ["8124548133"];
     // Simple random selection for load balancing
     // Alternatively, we could use localStorage to persist for a user, 
     // but random is sufficient for distribution across many users.

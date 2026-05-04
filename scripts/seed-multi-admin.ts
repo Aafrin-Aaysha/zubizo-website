@@ -63,7 +63,7 @@ async function seedMultiAdmin() {
 
         console.log('✅ Multi-Admin accounts seeded successfully!');
         console.log('Afrose S (Super Admin) - Ph: 8124548133');
-        console.log('Ashika Parveen K (Admin) - Ph: 9092981748');
+        console.log('Ashika Parveen K (Admin)');
         console.log(`Shared Password: ${password}`);
 
     } catch (error) {
