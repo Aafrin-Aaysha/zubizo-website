@@ -250,10 +250,8 @@ export function DesignDetailClient({ design }: { design: Design }) {
             ? `\n*Price Per Card:* ₹${activeTier.pricePerCard} (for ${q} cards)`
             : '';
 
-        const imageText = design.images && design.images.length > 0 
-            ? `\n*View Design:* ${design.images[0]}`
-            : '';
-            
+        const pageUrl = window.location.href;
+        
         const message = `*Inquiry from Website*
   
 Hello Zubizo,
@@ -263,7 +261,8 @@ My contact number is ${data.phone}.
   
 I'm interested in:
 *Design:* ${design.name}
-*SKU:* ${design.sku}${imageText}
+*SKU:* ${design.sku}
+*Link:* ${pageUrl}
 *Package:* ${selectedPackage.title}
 *Quantity:* ${q} cards${tierText}${addOnText}
   
