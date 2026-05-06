@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import {
     Plus,
     Search,
@@ -21,7 +21,10 @@ import {
     Settings,
     Package as PackageIcon,
     AlertCircle,
-    Zap
+    Zap,
+    Star,
+    ArrowLeft,
+    ArrowRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn, getStartingPrice } from '@/lib/utils';
@@ -848,7 +851,7 @@ export default function DesignsPage() {
                                                                                 <div className="space-y-1">
                                                                                     <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Max Qty</label>
                                                                                     <input
-                                                                                        type="number" placeholder="Max" value={tier.maxQty === 0 ? '' : tier.maxQty}
+                                                                                        type="number" placeholder="Max" value={tier.maxQty === 0 || tier.maxQty === null ? '' : tier.maxQty}
                                                                                         onChange={e => updateTier(idx, tIdx, 'maxQty', e.target.value === '' ? 0 : parseInt(e.target.value))}
                                                                                         onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                         className="w-full sm:w-[100px] px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
@@ -953,29 +956,70 @@ export default function DesignsPage() {
                                                 <Upload size={14} /> Design Gallery
                                             </h3>
 
-                                            <div className="grid grid-cols-3 gap-4">
-                                                {formData.images.map((img, idx) => (
-                                                    <div key={idx} className="aspect-[3/4] rounded-2xl overflow-hidden relative group border border-gray-100">
-                                                        <img src={img} alt="" className="w-full h-full object-cover" />
-                                                        <div className="absolute inset-0 bg-charcoal/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <button
-                                                                type="button" onClick={() => {
-                                                                    const images = [...formData.images];
-                                                                    images.splice(idx, 1);
-                                                                    setFormData({ ...formData, images });
-                                                                }}
-                                                                className="w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                                                            >
-                                                                <Trash2 size={18} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                                <label className="aspect-[3/4] rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center gap-3 text-gray-300 hover:border-lavender hover:text-lavender transition-all cursor-pointer bg-gray-50/50">
-                                                    <input type="file" multiple className="hidden" onChange={(e) => handleMediaUpload(e, 'image')} accept="image/*" />
-                                                    <Upload size={24} strokeWidth={1.5} />
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-center">Add Images</span>
-                                                </label>
+                                            <div className="space-y-4">
+                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">Tip: Drag images to reorder. The first image will be the primary thumbnail.</p>
+                                                
+                                                <Reorder.Group 
+                                                    axis="x" 
+                                                    values={formData.images} 
+                                                    onReorder={(newImages) => setFormData({ ...formData, images: newImages })}
+                                                    className="grid grid-cols-2 sm:grid-cols-3 gap-4"
+                                                >
+                                                    {formData.images.map((img, idx) => (
+                                                        <Reorder.Item 
+                                                            key={img} 
+                                                            value={img}
+                                                            className="aspect-[3/4] rounded-2xl overflow-hidden relative group border border-gray-100 bg-white cursor-grab active:cursor-grabbing touch-none"
+                                                        >
+                                                            <img src={img} alt="" className="w-full h-full object-cover pointer-events-none" />
+                                                            
+                                                            {/* Index Badge */}
+                                                            <div className="absolute top-2 left-2 w-6 h-6 rounded-lg bg-black/40 backdrop-blur-md text-white text-[10px] font-black flex items-center justify-center z-10">
+                                                                {idx + 1}
+                                                            </div>
+
+                                                            {idx === 0 && (
+                                                                <div className="absolute top-2 right-2 bg-lavender text-white px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest z-10 shadow-lg flex items-center gap-1">
+                                                                    <Star size={8} fill="currentColor" /> Primary
+                                                                </div>
+                                                            )}
+
+                                                            <div className="absolute inset-0 bg-charcoal/60 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                                                                {idx > 0 && (
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            const images = [...formData.images];
+                                                                            const [moved] = images.splice(idx, 1);
+                                                                            images.unshift(moved);
+                                                                            setFormData({ ...formData, images });
+                                                                            toast.success('Moved to front');
+                                                                        }}
+                                                                        className="px-3 py-1.5 bg-white text-charcoal rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 hover:bg-lavender hover:text-white transition-all"
+                                                                    >
+                                                                        <Star size={12} /> Make First
+                                                                    </button>
+                                                                )}
+                                                                <button
+                                                                    type="button" onClick={() => {
+                                                                        const images = [...formData.images];
+                                                                        images.splice(idx, 1);
+                                                                        setFormData({ ...formData, images });
+                                                                    }}
+                                                                    className="w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
+                                                                >
+                                                                    <Trash2 size={18} />
+                                                                </button>
+                                                            </div>
+                                                        </Reorder.Item>
+                                                    ))}
+                                                    
+                                                    <label className="aspect-[3/4] rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center gap-3 text-gray-300 hover:border-lavender hover:text-lavender transition-all cursor-pointer bg-gray-50/50">
+                                                        <input type="file" multiple className="hidden" onChange={(e) => handleMediaUpload(e, 'image')} accept="image/*" />
+                                                        <Upload size={24} strokeWidth={1.5} />
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-center">Add Images</span>
+                                                    </label>
+                                                </Reorder.Group>
                                             </div>
 
                                             <div className="pt-6 border-t border-gray-50">

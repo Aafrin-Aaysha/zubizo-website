@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import {
     Upload,
     Trash2,
@@ -20,7 +20,8 @@ import {
     Package as PackageIcon,
     Plus,
     X,
-    AlertCircle
+    AlertCircle,
+    Star
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
@@ -126,12 +127,19 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
                 continue;
             }
 
-            // 3. Skip noise lines like "(Including Printing)" or "(FIXED PRICE)"
+            // 3. Parse Category
+            const categoryMatch = line.match(/^(?:Category|Type)\s*[:：]?\s*(.+)/i);
+            if (categoryMatch) {
+                design.categoryId = categoryMatch[1].trim();
+                continue;
+            }
+
+            // 4. Skip noise lines like "(Including Printing)" or "(FIXED PRICE)"
             if (line.match(/^\(Including.*Print/i) || line.match(/^\(FIXED PRICE\)/i)) {
                 continue;
             }
 
-            // 4. Parse Package title / Start of new section
+            // 5. Parse Package title / Start of new section
             const pkgMatch = line.match(/^(?:Package|📩\s*INVITATIONS INCLUDE)\s*[:：]?\s*(.+)?/i);
             if (pkgMatch) {
                 if (currentPackage) {
@@ -146,7 +154,7 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
                 continue;
             }
 
-            // 5. Detect major board types as new packages if no explicit package title exists
+            // 6. Detect major board types as new packages if no explicit package title exists
             const boardMatch = line.match(/^(?:🌿|✨)?\s*(MAT FINISHING|PREMIUM BOARDS|ACRYLIC|GLASS|VELLUM).*?-\s*(.*)/i) || 
                                line.match(/^(?:🌿|✨)\s*(.+)/i) ||
                                line.match(/^(MAT FINISHING|PREMIUM BOARDS).*?(?:\d+ GSM)/i);
@@ -199,7 +207,7 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
                 continue;
             }
 
-            // 6. Parse Inclusions explicitly
+            // 7. Parse Inclusions explicitly
             const incMatch = line.match(/^(?:Included|Includes|What's Included)\s*[:：]?\s*(.+)/i);
             if (incMatch) {
                 if (!currentPackage) {
@@ -216,7 +224,7 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
                  continue;
             }
 
-            // 7. Parse price tiers
+            // 8. Parse price tiers
             const singleQtyMatch = line.match(/^(\d+)\s*(?:Cards?|Pcs|Pieces)?\s*[-–—:]+\s*(?:₹?\s*)?(?:Rs\.?)?\s*(\d+(?:\.\d+)?)\s*(?:\/?\s*card)?/i);
             const rangeQtyMatch = line.match(/^(\d+)\s*[-–—to]+\s*(\d+)\s*(?:Cards?|Pcs)?\s*(?:➝|→|[-–—>:]+)\s*(?:₹?\s*)?(?:Rs\.?)?\s*(\d+(?:\.\d+)?)\s*(?:\/?\s*card)?/i);
 
@@ -972,7 +980,7 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                                                             />
                                                                             <span className="text-gray-300 text-xs">→</span>
                                                                             <input
-                                                                                type="number" value={tier.maxQty === 0 ? '' : tier.maxQty} placeholder="Max"
+                                                                                type="number" value={tier.maxQty === 0 || tier.maxQty === null ? '' : tier.maxQty} placeholder="Max"
                                                                                 onChange={e => updateTier(dIdx, pIdx, tIdx, 'maxQty', e.target.value === '' ? 0 : parseInt(e.target.value))}
                                                                                 onWheel={(e) => (e.target as HTMLInputElement).blur()}
                                                                                 disabled={design._status === 'success'}
@@ -1016,43 +1024,106 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                                         <ImageIcon size={12} /> Design Images
                                                     </label>
                                                     <div className="flex flex-wrap gap-3">
-                                                        {/* Already uploaded images */}
-                                                        {design.images.map((img, imgIdx) => (
-                                                            <div key={`uploaded-${imgIdx}`} className="w-20 h-20 rounded-xl overflow-hidden relative group border border-gray-100">
-                                                                <img src={img} alt="" className="w-full h-full object-cover" />
-                                                                {design._status !== 'success' && (
-                                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                        <button onClick={() => removeUploadedImage(dIdx, imgIdx)} className="text-white">
-                                                                            <Trash2 size={14} />
-                                                                        </button>
+                                                        {/* Reorderable Uploaded Images */}
+                                                        <Reorder.Group 
+                                                            axis="x" 
+                                                            values={design.images} 
+                                                            onReorder={(newImages) => updateDesign(dIdx, { images: newImages })}
+                                                            className="flex flex-wrap gap-3"
+                                                        >
+                                                            {design.images.map((img, imgIdx) => (
+                                                                <Reorder.Item 
+                                                                    key={img} 
+                                                                    value={img}
+                                                                    className="w-20 h-24 rounded-xl overflow-hidden relative group border border-gray-100 cursor-grab active:cursor-grabbing touch-none"
+                                                                >
+                                                                    <img src={img} alt="" className="w-full h-full object-cover pointer-events-none" />
+                                                                    {imgIdx === 0 && (
+                                                                        <div className="absolute top-1 left-1 bg-lavender text-white px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-widest z-10">
+                                                                            Primary
+                                                                        </div>
+                                                                    )}
+                                                                    {design._status !== 'success' && (
+                                                                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                                                                            {imgIdx > 0 && (
+                                                                                <button 
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation();
+                                                                                        const imgs = [...design.images];
+                                                                                        const [moved] = imgs.splice(imgIdx, 1);
+                                                                                        imgs.unshift(moved);
+                                                                                        updateDesign(dIdx, { images: imgs });
+                                                                                    }}
+                                                                                    className="text-[8px] font-black text-white bg-lavender px-1.5 py-0.5 rounded uppercase"
+                                                                                >
+                                                                                    First
+                                                                                </button>
+                                                                            )}
+                                                                            <button onClick={() => removeUploadedImage(dIdx, imgIdx)} className="text-white hover:text-red-400">
+                                                                                <Trash2 size={14} />
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
+                                                                    <div className="absolute bottom-1 right-1">
+                                                                        <CheckCircle2 size={14} className="text-green-400 drop-shadow" />
                                                                     </div>
-                                                                )}
-                                                                <div className="absolute top-1 left-1">
-                                                                    <CheckCircle2 size={14} className="text-green-400 drop-shadow" />
-                                                                </div>
-                                                            </div>
-                                                        ))}
+                                                                </Reorder.Item>
+                                                            ))}
+                                                        </Reorder.Group>
 
-                                                        {/* Local files (not yet uploaded) */}
-                                                        {design._localFiles.map((file, fIdx) => (
-                                                            <div key={`local-${fIdx}`} className="w-20 h-20 rounded-xl overflow-hidden relative group border border-lavender/20 bg-lavender/5">
-                                                                <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
-                                                                {design._status !== 'success' && (
-                                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                        <button onClick={() => removeLocalFile(dIdx, fIdx)} className="text-white">
-                                                                            <Trash2 size={14} />
-                                                                        </button>
+                                                        {/* Reorderable Local Files */}
+                                                        <Reorder.Group 
+                                                            axis="x" 
+                                                            values={design._localFiles} 
+                                                            onReorder={(newFiles) => updateDesign(dIdx, { _localFiles: newFiles })}
+                                                            className="flex flex-wrap gap-3"
+                                                        >
+                                                            {design._localFiles.map((file, fIdx) => (
+                                                                <Reorder.Item 
+                                                                    key={file.name + file.lastModified} 
+                                                                    value={file}
+                                                                    className="w-20 h-24 rounded-xl overflow-hidden relative group border border-lavender/20 bg-lavender/5 cursor-grab active:cursor-grabbing touch-none"
+                                                                >
+                                                                    <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover pointer-events-none" />
+                                                                    
+                                                                    {/* Show primary badge if it's the absolute first among all images */}
+                                                                    {design.images.length === 0 && fIdx === 0 && (
+                                                                        <div className="absolute top-1 left-1 bg-lavender text-white px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-widest z-10">
+                                                                            Primary
+                                                                        </div>
+                                                                    )}
+
+                                                                    {design._status !== 'success' && (
+                                                                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                                                                            { (design.images.length > 0 || fIdx > 0) && (
+                                                                                <button 
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation();
+                                                                                        const files = [...design._localFiles];
+                                                                                        const [moved] = files.splice(fIdx, 1);
+                                                                                        files.unshift(moved);
+                                                                                        updateDesign(dIdx, { _localFiles: files });
+                                                                                    }}
+                                                                                    className="text-[8px] font-black text-white bg-lavender px-1.5 py-0.5 rounded uppercase"
+                                                                                >
+                                                                                    First
+                                                                                </button>
+                                                                            )}
+                                                                            <button onClick={() => removeLocalFile(dIdx, fIdx)} className="text-white hover:text-red-400">
+                                                                                <Trash2 size={14} />
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
+                                                                    <div className="absolute bottom-1 left-1 text-[7px] font-bold bg-lavender/80 text-white px-1.5 py-0.5 rounded backdrop-blur-sm">
+                                                                        Pending
                                                                     </div>
-                                                                )}
-                                                                <div className="absolute bottom-1 left-1 text-[8px] font-bold bg-lavender text-white px-1.5 py-0.5 rounded">
-                                                                    Pending
-                                                                </div>
-                                                            </div>
-                                                        ))}
+                                                                </Reorder.Item>
+                                                            ))}
+                                                        </Reorder.Group>
 
                                                         {/* Add more images */}
                                                         {design._status !== 'success' && (
-                                                            <label className="w-20 h-20 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-1 text-gray-300 hover:border-lavender hover:text-lavender cursor-pointer transition-all bg-gray-50/50">
+                                                            <label className="w-20 h-24 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-1 text-gray-300 hover:border-lavender hover:text-lavender cursor-pointer transition-all bg-gray-50/50">
                                                                 <input
                                                                     ref={el => { fileInputRefs.current[dIdx] = el; }}
                                                                     type="file"

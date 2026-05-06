@@ -218,7 +218,20 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                     <div className="flex items-end gap-2">
                         <div className="flex-1 space-y-2">
                             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Design Code (SKU) *</label>
-                            <input required value={designCode} onChange={e => setDesignCode(e.target.value)} type="text" className="w-full p-3 bg-gray-50 border-gray-100 border rounded-xl focus:bg-white outline-none transition-all font-bold tracking-widest text-sm uppercase" placeholder="ZB_1031" />
+                            <input 
+                                required 
+                                value={designCode} 
+                                onChange={e => setDesignCode(e.target.value)} 
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleFetchDesign();
+                                    }
+                                }}
+                                type="text" 
+                                className="w-full p-3 bg-gray-50 border-gray-100 border rounded-xl focus:bg-white outline-none transition-all font-bold tracking-widest text-sm uppercase" 
+                                placeholder="ZB_1031" 
+                            />
                         </div>
                         <button type="button" onClick={handleFetchDesign} disabled={isSearching} className="p-3 bg-purple-100 hover:bg-purple-200 text-purple-600 rounded-xl transition-colors font-bold flex items-center justify-center">
                             {isSearching ? <Loader2 className="animate-spin" size={20} /> : <ArrowRight size={20} />}
