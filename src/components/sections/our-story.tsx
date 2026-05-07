@@ -140,40 +140,41 @@ export const OurStory = ({ data, styling, title, subtitle, siteSettings }: any) 
                 </motion.div>
 
                 {/* Two-Column Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-[1fr_1px_1fr] gap-0 items-center">
                     {/* Left: Story Text */}
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="space-y-6"
+                        className="space-y-6 pr-0 lg:pr-12"
                     >
                         {paragraphs.map((p: any, idx: number) => (
                             p.isHtml ? (
                                 <p
                                     key={idx}
-                                    className="text-lg text-charcoal/70 font-medium leading-relaxed"
+                                    className="text-[17px] text-[#6B6B6B] font-medium leading-[1.9]"
                                     dangerouslySetInnerHTML={{ __html: p.text }}
                                 />
                             ) : (
-                                <p key={idx} className="text-lg text-gray-600 leading-relaxed">
+                                <p key={idx} className="text-[17px] text-[#6B6B6B] leading-[1.9]">
                                     {p.text}
                                 </p>
                             )
                         ))}
                     </motion.div>
 
+                    {/* Vertical Gold Divider */}
+                    <div className="hidden lg:block w-[1px] self-stretch bg-gradient-to-b from-transparent via-[#D6BFA3]/50 to-transparent mx-8" />
+
                     {/* Right: Brand Image / Logo */}
                     <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="flex justify-center items-center lg:justify-end h-full w-full relative"
+                        className="flex justify-center items-center lg:justify-end h-full w-full relative pl-0 lg:pl-12"
                     >
-                        <div className="relative w-full max-w-[450px] aspect-square flex items-center justify-center p-12 bg-white/40 rounded-[3rem] border border-[#ae7fcb]/10 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_-15px_rgba(174,127,203,0.15)] transition-all duration-700 group hover:-translate-y-2">
-                            <div className="absolute inset-0 bg-gradient-to-br from-[#ae7fcb]/5 to-transparent rounded-[3rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                            <div className="absolute -top-4 -right-4 w-24 h-24 bg-[#ae7fcb]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100" />
-                            <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-[#ae7fcb]/5 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100" />
+                        <div className="relative w-full max-w-[420px] aspect-square flex items-center justify-center p-12 bg-white/50 rounded-[2.5rem] border border-[#D6BFA3]/20 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_40px_-15px_rgba(214,191,163,0.18)] transition-all duration-700 group hover:-translate-y-1">
+                            <div className="absolute inset-0 bg-gradient-to-br from-[#D6BFA3]/8 to-transparent rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                             <img
                                 src={data?.imageUrl || siteSettings?.aboutImageUrl || siteSettings?.logoUrl || '/brand.png'}
                                 alt="Zubizo Brand Logo"

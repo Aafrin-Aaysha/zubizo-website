@@ -180,7 +180,7 @@ export default function DigitalInvitesAdminPage() {
 
         // Validate categoryId is set
         if (!formData.categoryId) {
-            toast.error('Category not loaded yet. Please wait and try again.');
+            toast.error('The required categories (Digital E-Invite / Premium E-Website) are missing from the database. Please ensure they exist in Categories management.');
             return;
         }
 

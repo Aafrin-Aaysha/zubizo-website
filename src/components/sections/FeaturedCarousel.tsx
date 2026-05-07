@@ -77,7 +77,7 @@ export const FeaturedCarousel = ({ styling, title, subtitle, description, data }
                                     className="group flex flex-col"
                                 >
                                     {/* Image Container */}
-                                    <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[1.5rem] shadow-sm group-hover:shadow-premium transition-shadow duration-500 bg-gray-50 mb-5">
+                                    <div className="relative w-full aspect-[3/4] overflow-hidden rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] group-hover:shadow-[0_14px_48px_rgba(0,0,0,0.13)] transition-all duration-500 bg-gray-50 mb-5 group-hover:scale-[1.02]">
                                         <img
                                             src={design.images?.[0] || "/placeholder.jpg"}
                                             alt={design.name}

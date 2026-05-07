@@ -182,7 +182,7 @@ export default function DesignsPage() {
         e.preventDefault();
 
         if (!formData.categoryId) {
-            toast.error('Category not loaded yet. Please wait and try again.');
+            toast.error('No categories found. Please create at least one category in Categories management before adding designs.');
             return;
         }
 

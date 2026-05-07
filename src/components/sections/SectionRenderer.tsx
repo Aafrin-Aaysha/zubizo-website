@@ -8,6 +8,9 @@ import { OurStory } from './our-story';
 import { Testimonials } from './testimonials';
 import { ShopByPrice } from './ShopByPrice';
 import { ContactSection } from './contact';
+import { CinematicHero } from './CinematicHero';
+import { CenteredHero } from './CenteredHero';
+import { WorkflowProcess } from './WorkflowProcess';
 import { SectionDivider } from '../ui/section-divider';
 
 const sectionComponents: Record<string, React.ComponentType<any>> = {
@@ -18,6 +21,8 @@ const sectionComponents: Record<string, React.ComponentType<any>> = {
     testimonials: Testimonials,
     shopByPrice: ShopByPrice,
     contact: ContactSection,
+    cinematicHero: CinematicHero,
+    centeredHero: CenteredHero,
 };
 
 interface SectionProps {
@@ -26,7 +31,10 @@ interface SectionProps {
 }
 
 // Sections that need full-width layouts and manage their own containers/padding
-const FULL_WIDTH_SECTIONS = new Set(['hero', 'trending']);
+const FULL_WIDTH_SECTIONS = new Set(['hero', 'trending', 'cinematicHero', 'centeredHero']);
+
+// Sections after which the Workflow section should be injected (hardcoded, no DB entry needed)
+const INJECT_WORKFLOW_AFTER = 'ourStory';
 
 export const SectionRenderer = ({ sections, siteSettings }: SectionProps) => {
     return (
@@ -86,6 +94,11 @@ export const SectionRenderer = ({ sections, siteSettings }: SectionProps) => {
                                     </Suspense>
                                 </div>
                             </section>
+                        )}
+
+                        {/* Hardcoded Workflow section injected immediately after Our Story */}
+                        {section.sectionType === INJECT_WORKFLOW_AFTER && (
+                            <WorkflowProcess />
                         )}
                     </React.Fragment>
                 );

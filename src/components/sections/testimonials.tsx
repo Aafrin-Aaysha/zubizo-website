@@ -58,7 +58,7 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
             id="testimonials"
             className="relative overflow-hidden"
             style={{
-                backgroundColor: styling?.backgroundColor || 'transparent',
+                backgroundColor: styling?.backgroundColor || '#FAF8F5',
             }}
         >
             <div className="w-full">
@@ -118,32 +118,28 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ delay: Math.min(idx * 0.1, 0.5) }} // Cap delay
-                                className="relative floating-card p-8 flex-none w-[85vw] sm:w-[400px] snap-center"
-                                style={{ borderRadius: styling?.borderRadius }}
+                                transition={{ delay: Math.min(idx * 0.1, 0.5) }}
+                                className="relative bg-white p-8 flex-none w-[85vw] sm:w-[400px] snap-center rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-[#ECE7E1]"
                             >
-                                {/* Lavender Accent Line */}
-                                <div
-                                    className="absolute top-0 left-8 right-8 h-1 bg-lavender rounded-b-full"
-                                    style={{ backgroundColor: styling?.accentColor }}
-                                />
+                                {/* Gold Quote Icon */}
+                                <div className="text-[40px] font-serif leading-none text-[#D6BFA3]/60 mb-2 select-none">&ldquo;</div>
 
                                 {/* Star Rating */}
-                                <div className="flex gap-1 mb-6 mt-4">
+                                <div className="flex gap-1 mb-4 mt-0">
                                     {[...Array(5)].map((_, i) => (
-                                        <Star key={i} size={16} className="fill-lavender text-lavender" style={{ fill: styling?.accentColor, color: styling?.accentColor }} />
+                                        <Star key={i} size={14} className="fill-[#D6BFA3] text-[#D6BFA3]" />
                                     ))}
                                 </div>
 
                                 {/* Review Text */}
-                                <p className="text-charcoal/80 font-serif leading-relaxed mb-6 text-[16px] italic min-h-[100px]">
-                                    "{testimonial.review}"
+                                <p className="text-[#6B6B6B] font-serif leading-[1.8] mb-5 text-[15px] italic min-h-[90px]">
+                                    {testimonial.review}
                                 </p>
 
                                 {/* Client Info */}
-                                <div className="flex items-center gap-3 pt-3 border-t border-gray-50">
+                                <div className="flex items-center gap-3 pt-4 border-t border-[#ECE7E1]">
                                     {/* Avatar */}
-                                    <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-lavender/20 shrink-0 bg-lavender/10 flex items-center justify-center" style={{ borderColor: `${styling?.accentColor}30` }}>
+                                    <div className="w-10 h-10 rounded-full overflow-hidden border border-[#D6BFA3]/30 shrink-0 bg-[#F0EBF8] flex items-center justify-center">
                                         {testimonial.avatarUrl ? (
                                             <img
                                                 src={testimonial.avatarUrl}
@@ -151,14 +147,14 @@ export const Testimonials = ({ data, styling, title, subtitle }: any) => {
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
-                                            <span className="text-lavender font-black text-sm" style={{ color: styling?.accentColor }}>
+                                            <span className="text-[#6E4B8B] font-black text-sm">
                                                 {testimonial.name?.charAt(0) || '?'}
                                             </span>
                                         )}
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-charcoal text-sm">{testimonial.name}</h4>
-                                        <p className="text-[10px] uppercase tracking-widest text-charcoal/40 mt-0.5">
+                                        <h4 className="font-bold text-[#1A1A1A] text-sm">{testimonial.name}</h4>
+                                        <p className="text-[10px] uppercase tracking-widest text-[#6B6B6B]/60 mt-0.5">
                                             {testimonial.location}
                                         </p>
                                     </div>

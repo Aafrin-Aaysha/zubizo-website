@@ -61,7 +61,7 @@ export const TrendingRow = ({ data, styling, title, subtitle }: any) => {
             id="trending"
             className="overflow-hidden relative"
             style={{
-                backgroundColor: styling?.backgroundColor || 'transparent',
+                backgroundColor: styling?.backgroundColor || '#FAF8F5',
                 padding: 'var(--section-spacing) 0',
             }}
         >

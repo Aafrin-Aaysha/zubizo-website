@@ -2,17 +2,20 @@
 
 
 @theme {
-  --color-primary: #ae7fcb;
-  --color-lavender: #ae7fcb;
-  --color-soft-lilac: #e9e2f5;
+  --color-primary: #C6B1E1;
+  --color-lavender: #C6B1E1;
+  --color-royal-purple: #6E4B8B;
+  --color-champagne-gold: #D6BFA3;
+  --color-soft-lilac: #EDE8F6;
   --color-blush-rose: #f5e6eb;
-  --color-champagne-cream: #f8f4ef;
-  --color-pearl-white: #faf9fb;
+  --color-champagne-cream: #F5F0E8;
+  --color-pearl-white: #FAF8F5;
   --color-dusty-mauve: #c8a6c8;
-  --color-soft-gold: #d8c9a6;
+  --color-soft-gold: #D6BFA3;
 
-  --color-soft-white: #faf9fb;
-  --color-charcoal: #2e2e2e;
+  --color-soft-white: #FAF8F5;
+  --color-charcoal: #1A1A1A;
+  --color-muted-gray: #6B6B6B;
 
   --font-serif: var(--font-fraunces);
   --font-sans: var(--font-inter), sans-serif;
@@ -92,33 +95,39 @@
 }
 
 :root {
-  --background: #faf9fb;
-  /* Pearl White */
-  --foreground: #2e2e2e;
-  /* Charcoal */
-  --lavender: #ae7fcb;
-  --charcoal: #2e2e2e;
+  --background: #FAF8F5;
+  /* Warm Off-White */
+  --foreground: #1A1A1A;
+  /* Deep Charcoal */
+  --lavender: #C6B1E1;
+  /* Soft Lavender */
+  --royal-purple: #6E4B8B;
+  /* Deep Royal Purple */
+  --champagne-gold: #D6BFA3;
+  /* Champagne Gold */
+  --charcoal: #1A1A1A;
+  --muted-gray: #6B6B6B;
   scroll-behavior: smooth;
 
-  /* Responsive Section Spacing */
-  --section-spacing: 80px;
+  /* Responsive Section Spacing — kept tight per spec */
+  --section-spacing: 64px;
 }
 
 @media (max-width: 1280px) {
   :root {
-    --section-spacing: 72px;
+    --section-spacing: 56px;
   }
 }
 
 @media (max-width: 1024px) {
   :root {
-    --section-spacing: 60px;
+    --section-spacing: 48px;
   }
 }
 
 @media (max-width: 768px) {
   :root {
-    --section-spacing: 48px;
+    --section-spacing: 40px;
   }
 }
 
