@@ -144,14 +144,14 @@ export const LuxuryNavbar = () => {
                     <div className="flex-1 lg:flex-none flex items-center justify-start gap-12">
                         {/* Mobile Logo Icon */}
                         <Link href="/" className="lg:hidden">
-                            <LogoIcon size={32} className={`transition-colors duration-300 ${!isDarkHeroNavbar ? 'text-[#ae7fcb]' : 'text-white'}`} />
+                            <LogoIcon size={32} className="transition-colors duration-300 text-[#ae7fcb]" />
                         </Link>
 
                         {/* Desktop Logo (Icon + Text) */}
                         <Link href="/" className="hidden lg:flex items-center gap-4 group">
-                            <LogoIcon size={40} className={`transition-all group-hover:scale-110 duration-500 ${!isDarkHeroNavbar ? 'text-[#ae7fcb]' : 'text-white'}`} />
+                            <LogoIcon size={40} className="transition-all group-hover:scale-110 duration-500 text-[#ae7fcb]" />
                             <div className="flex flex-col leading-none pt-1">
-                                <span className={`text-[28px] font-extrabold italic transition-colors duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]' : 'text-white'}`} style={{ fontFamily: 'var(--font-fraunces), serif' }}>
+                                <span className="text-[28px] font-extrabold italic transition-colors duration-300 text-[#ae7fcb]" style={{ fontFamily: 'var(--font-fraunces), serif' }}>
                                     Zubizo
                                 </span>
                             </div>
@@ -175,7 +175,7 @@ export const LuxuryNavbar = () => {
                     {/* 2. Center Brand (Mobile Only) */}
                     <div className="flex-[2] lg:hidden flex justify-center">
                         <Link href="/" className="pt-1">
-                            <span className={`text-[26px] font-extrabold italic transition-colors duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]' : 'text-white'}`} style={{ fontFamily: 'var(--font-fraunces), serif' }}>
+                            <span className="text-[26px] font-extrabold italic transition-colors duration-300 text-[#ae7fcb]" style={{ fontFamily: 'var(--font-fraunces), serif' }}>
                                 Zubizo
                             </span>
                         </Link>
