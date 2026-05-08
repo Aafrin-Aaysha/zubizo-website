@@ -214,7 +214,7 @@ export const LuxuryNavbar = () => {
                         </div>
 
                         {/* Mobile Menu Button */}
-                        <div className={`lg:hidden transition-colors duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]' : 'text-white'}`}>
+                        <div className="lg:hidden transition-colors duration-300 text-[#ae7fcb]">
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
                                 className="p-3 hover:opacity-70 transition-opacity"

@@ -47,6 +47,7 @@ const termsItems = [
         border: "border-violet-100",
         badge: "bg-violet-100 text-violet-700",
         points: [
+            "Upon order confirmation and receipt of the advance payment, the initial design draft will be provided within 48 hours.",
             "A digital design proof will be shared for your review.",
             "Clients must check all details carefully (names, dates, content, etc.).",
             "Once approved, the design is final.",
