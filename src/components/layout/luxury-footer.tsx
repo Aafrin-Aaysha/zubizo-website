@@ -60,7 +60,7 @@ I would like to inquire about your services.`;
                             <div className="p-3 bg-[#D6BFA3]/8 rounded-xl text-[#D6BFA3]">
                                 <LogoIcon size={44} />
                             </div>
-                            <span className="text-[26px] text-[#C6B1E1] font-extrabold italic" style={{ fontFamily: 'var(--font-fraunces), serif' }}>
+                            <span className="text-[26px] text-[#ae7fcb] font-extrabold italic" style={{ fontFamily: 'var(--font-fraunces), serif' }}>
                                 Zubizo
                             </span>
                         </Link>

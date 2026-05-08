@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export const DigitalInvitesHero = () => {
   return (
-    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-gradient-to-br from-soft-lilac via-pearl-white to-blush-rose">
+    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-gradient-to-br from-lavender/10 via-pearl-white to-blush-rose">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
         <motion.div 

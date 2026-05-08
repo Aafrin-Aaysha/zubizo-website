@@ -14,7 +14,7 @@ const features = [
 
 export const WebsiteShowcase = () => {
   return (
-    <section id="website-invites" className="py-24 bg-gradient-to-br from-champagne-cream via-white to-soft-lilac/30 overflow-hidden">
+    <section id="website-invites" className="py-24 bg-gradient-to-br from-champagne-cream via-white to-lavender/10 overflow-hidden">
       <div className="site-container">
         <div className="flex flex-col lg:flex-row items-center gap-16 px-4">
           

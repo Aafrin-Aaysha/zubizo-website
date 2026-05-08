@@ -12,7 +12,7 @@ const categoryCards = [
     description: "High-resolution artisanal designs ready for WhatsApp sharing.",
     icon: Image,
     href: "#pricing",
-    accent: "bg-soft-lilac",
+    accent: "bg-lavender/10",
     textColor: "text-lavender",
     isPremium: false,
     label: null
@@ -24,7 +24,7 @@ const categoryCards = [
     icon: Play,
     href: "#pricing",
     accent: "bg-blush-rose",
-    textColor: "text-dusty-mauve",
+    textColor: "text-lavender",
     isPremium: false,
     label: null
   },

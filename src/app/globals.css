@@ -2,8 +2,9 @@
 
 
 @theme {
-  --color-primary: #C6B1E1;
-  --color-lavender: #C6B1E1;
+  --color-primary: #ae7fcb;
+  --color-lavender: #ae7fcb;
+  --color-lavender-dark: #9f6fc0;
   --color-royal-purple: #6E4B8B;
   --color-champagne-gold: #D6BFA3;
   --color-soft-lilac: #EDE8F6;
@@ -99,8 +100,9 @@
   /* Warm Off-White */
   --foreground: #1A1A1A;
   /* Deep Charcoal */
-  --lavender: #C6B1E1;
+  --lavender: #ae7fcb;
   /* Soft Lavender */
+  --lavender-dark: #9f6fc0;
   --royal-purple: #6E4B8B;
   /* Deep Royal Purple */
   --champagne-gold: #D6BFA3;

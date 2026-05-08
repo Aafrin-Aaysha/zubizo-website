@@ -104,7 +104,7 @@ export const LuxuryHero = ({ data, styling }: any) => {
                             >
                                 <Link
                                     href="/catalog"
-                                    className="w-full sm:w-auto h-14 px-8 bg-lavender text-white rounded-full font-bold text-[15px] hover:bg-lavender/90 transition-all duration-300 flex items-center justify-center gap-2 group shadow-premium hover:shadow-luxury hover:-translate-y-1"
+                                    className="w-full sm:w-auto h-14 px-8 bg-lavender text-white rounded-full font-bold text-[15px] hover:bg-lavender-dark transition-all duration-300 flex items-center justify-center gap-2 group shadow-premium hover:shadow-luxury hover:-translate-y-1"
                                 >
                                     Explore Catalogue
                                     <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />

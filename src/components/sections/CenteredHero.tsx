@@ -76,10 +76,10 @@ export const CenteredHero = ({ data, styling }: any) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.9, delay: 0.18, ease: "easeOut" }}
                     className="font-serif font-semibold leading-tight tracking-tight mb-6 drop-shadow-lg"
-                    style={{ fontSize: 'clamp(2.4rem, 7vw, 5rem)', lineHeight: 1.12, textShadow: '0 2px 12px rgba(0,0,0,0.6)', color: '#C6B1E1' }}
+                    style={{ fontSize: 'clamp(2.4rem, 7vw, 5rem)', lineHeight: 1.12, textShadow: '0 2px 12px rgba(0,0,0,0.6)', color: '#ae7fcb' }}
                 >
                     {data?.titleLine1 || "A Timeless Beginning"}<br />
-                    <span className="text-[#C6B1E1] italic" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>{data?.titleHighlight || "For Your Love"}</span>
+                    <span className="text-[#ae7fcb] italic" style={{ textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>{data?.titleHighlight || "For Your Love"}</span>
                 </motion.h1>
 
                 {/* Description */}
@@ -102,7 +102,7 @@ export const CenteredHero = ({ data, styling }: any) => {
                 >
                     <Link
                         href="/catalog"
-                        className="group flex items-center justify-center gap-2 rounded-full bg-[#C6B1E1] text-[#1A1A1A] px-9 py-4 text-sm font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#b89ed3] hover:scale-[1.03] active:scale-95 shadow-lg shadow-[#C6B1E1]/20"
+                        className="group flex items-center justify-center gap-2 rounded-full bg-[#ae7fcb] text-[#1A1A1A] px-9 py-4 text-sm font-bold uppercase tracking-widest transition-all duration-300 hover:bg-[#9f6fc0] hover:scale-[1.03] active:scale-95 shadow-lg shadow-[#ae7fcb]/20"
                     >
                         Explore Catalogue
                         <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />

@@ -14,13 +14,13 @@ const reasons = [
     title: "Fast Delivery",
     desc: "Experience rapid turnaround times with digital invites delivered with premium speed.",
     icon: Zap,
-    accent: "bg-blush-rose text-dusty-mauve"
+    accent: "bg-blush-rose text-lavender"
   },
   {
     title: "Affordable Luxury",
     desc: "Experience high-end design without the traditional price tag.",
     icon: Scissors,
-    accent: "bg-soft-lilac text-lavender"
+    accent: "bg-lavender/10 text-lavender"
   },
   {
     title: "Personalized Support",

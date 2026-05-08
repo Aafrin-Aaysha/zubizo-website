@@ -12,7 +12,7 @@ interface ButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ({ className, variant = "primary", size = "md", ...props }, ref) => {
         const variants = {
-            primary: "bg-lavender text-white shadow-premium hover:shadow-luxury hover:-translate-y-0.5",
+            primary: "bg-lavender text-white shadow-premium hover:bg-lavender-dark hover:shadow-luxury hover:-translate-y-0.5",
             secondary: "bg-soft-lilac text-lavender hover:bg-lavender hover:text-white hover:-translate-y-0.5 hover:shadow-luxury",
             outline: "border border-lavender/30 text-lavender hover:bg-lavender/5 hover:border-lavender hover:-translate-y-0.5",
             ghost: "text-lavender hover:bg-soft-lilac/40",
