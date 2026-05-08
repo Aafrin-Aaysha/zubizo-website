@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search, Menu, X, ArrowRight } from "lucide-react";
 import { LogoIcon } from "@/components/ui/logo-icon";
 import { cn } from "@/lib/utils";
@@ -14,7 +15,9 @@ export const LuxuryNavbar = () => {
     const [popularDesigns, setPopularDesigns] = React.useState<any[]>([]);
     const [isSearching, setIsSearching] = React.useState(false);
     const [showDesktopResults, setShowDesktopResults] = React.useState(false);
-    const { scrollY } = useScroll();
+    
+    const pathname = usePathname();
+    const isHomePage = pathname === "/";
 
     // Fetch popular designs on mount
     React.useEffect(() => {
@@ -59,16 +62,20 @@ export const LuxuryNavbar = () => {
         return () => clearTimeout(timer);
     }, [searchQuery, popularDesigns]);
 
-    const bgColor = useTransform(scrollY, [0, 50], ["rgba(250, 248, 245, 0)", "rgba(250, 248, 245, 0.92)"]);
-    const backdropBlur = useTransform(scrollY, [0, 50], ["blur(0px)", "blur(12px)"]);
-    const shadow = useTransform(scrollY, [0, 50], ["none", "0 1px 0 0 #EAE6DF"]);
-
     // Track scroll to switch between light (over hero) and dark (scrolled) text
     const [scrolled, setScrolled] = React.useState(false);
+
     React.useEffect(() => {
-        const unsubscribe = scrollY.on("change", (v) => setScrolled(v > 50));
-        return unsubscribe;
-    }, [scrollY]);
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+        };
+        // Initial check
+        handleScroll();
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const isDarkHeroNavbar = isHomePage && !scrolled;
 
     const navLinks = [
         { name: "Home", href: "/" },
@@ -124,12 +131,12 @@ export const LuxuryNavbar = () => {
 
     return (
         <motion.nav
-            style={{
-                backgroundColor: bgColor,
-                backdropFilter: backdropBlur,
-                boxShadow: shadow
-            }}
-            className="fixed top-0 z-50 w-full transition-colors duration-500"
+            className={cn(
+                "fixed top-0 z-50 w-full transition-all duration-300 ease-in-out",
+                isDarkHeroNavbar
+                    ? "bg-transparent text-white"
+                    : "bg-[#FAF9F6]/95 backdrop-blur-md shadow-sm border-b border-black/5"
+            )}
         >
             <div className="site-container">
                 <div className="flex h-24 items-center px-4 lg:px-0">
@@ -137,14 +144,14 @@ export const LuxuryNavbar = () => {
                     <div className="flex-1 lg:flex-none flex items-center justify-start gap-12">
                         {/* Mobile Logo Icon */}
                         <Link href="/" className="lg:hidden">
-                            <LogoIcon size={32} className={`transition-colors duration-300 ${scrolled ? 'text-lavender' : 'text-white'}`} />
+                            <LogoIcon size={32} className={`transition-colors duration-300 ${!isDarkHeroNavbar ? 'text-[#ae7fcb]' : 'text-white'}`} />
                         </Link>
 
                         {/* Desktop Logo (Icon + Text) */}
                         <Link href="/" className="hidden lg:flex items-center gap-4 group">
-                            <LogoIcon size={40} className={`transition-all group-hover:scale-110 duration-500 ${scrolled ? 'text-lavender' : 'text-white'}`} />
+                            <LogoIcon size={40} className={`transition-all group-hover:scale-110 duration-500 ${!isDarkHeroNavbar ? 'text-[#ae7fcb]' : 'text-white'}`} />
                             <div className="flex flex-col leading-none pt-1">
-                                <span className={`text-[28px] font-extrabold italic transition-colors duration-300 ${scrolled ? 'text-lavender' : 'text-white'}`} style={{ fontFamily: 'var(--font-fraunces), serif' }}>
+                                <span className={`text-[28px] font-extrabold italic transition-colors duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]' : 'text-white'}`} style={{ fontFamily: 'var(--font-fraunces), serif' }}>
                                     Zubizo
                                 </span>
                             </div>
@@ -156,10 +163,10 @@ export const LuxuryNavbar = () => {
                                 <Link
                                     key={link.name}
                                     href={link.href}
-                                    className={`font-sans text-[13px] font-medium uppercase tracking-[0.12em] transition-all relative group py-2 duration-300 ${scrolled ? 'text-charcoal/70 hover:text-charcoal' : 'text-white/85 hover:text-white'}`}
+                                    className={`font-sans text-[13px] font-medium uppercase tracking-[0.12em] transition-all relative group py-2 duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]/70 hover:text-[#ae7fcb]' : 'text-white/85 hover:text-white'}`}
                                 >
                                     {link.name}
-                                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1.5px] bg-[#D6BFA3] rounded-full transition-all duration-300 group-hover:w-full" />
+                                    <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1.5px] rounded-full transition-all duration-300 group-hover:w-full ${!isDarkHeroNavbar ? 'bg-[#ae7fcb]' : 'bg-[#D6BFA3]'}`} />
                                 </Link>
                             ))}
                         </div>
@@ -168,7 +175,7 @@ export const LuxuryNavbar = () => {
                     {/* 2. Center Brand (Mobile Only) */}
                     <div className="flex-[2] lg:hidden flex justify-center">
                         <Link href="/" className="pt-1">
-                            <span className={`text-[26px] font-extrabold italic transition-colors duration-300 ${scrolled ? 'text-lavender' : 'text-white'}`} style={{ fontFamily: 'var(--font-fraunces), serif' }}>
+                            <span className={`text-[26px] font-extrabold italic transition-colors duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]' : 'text-white'}`} style={{ fontFamily: 'var(--font-fraunces), serif' }}>
                                 Zubizo
                             </span>
                         </Link>
@@ -186,9 +193,9 @@ export const LuxuryNavbar = () => {
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onFocus={() => setShowDesktopResults(true)}
                                     onBlur={() => setTimeout(() => setShowDesktopResults(false), 200)}
-                                    className={`w-full rounded-full py-3 px-10 text-[13px] font-medium transition-all outline-none duration-300 ${scrolled ? 'bg-charcoal/[0.03] border border-charcoal/5 focus:border-lavender/30 text-charcoal placeholder:text-charcoal/40' : 'bg-white/10 border border-white/15 focus:border-white/30 text-white placeholder:text-white/50'}`}
+                                    className={`w-full rounded-full py-3 px-10 text-[13px] font-medium transition-all outline-none duration-300 ${!isDarkHeroNavbar ? 'bg-[#1A1A1A]/[0.03] border border-[#1A1A1A]/5 focus:border-[#ae7fcb]/30 text-[#1A1A1A] placeholder:text-[#1A1A1A]/40' : 'bg-white/10 border border-white/15 focus:border-white/30 text-white placeholder:text-white/50'}`}
                                 />
-                                <Search size={14} className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${scrolled ? 'text-charcoal/20' : 'text-white/40'}`} />
+                                <Search size={14} className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]/40' : 'text-white/40'}`} />
 
                                 {/* Search Results Dropdown */}
                                 <AnimatePresence>
@@ -207,7 +214,7 @@ export const LuxuryNavbar = () => {
                         </div>
 
                         {/* Mobile Menu Button */}
-                        <div className={`lg:hidden transition-colors duration-300 ${scrolled ? 'text-lavender' : 'text-white'}`}>
+                        <div className={`lg:hidden transition-colors duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]' : 'text-white'}`}>
                             <button
                                 onClick={() => setIsOpen(!isOpen)}
                                 className="p-3 hover:opacity-70 transition-opacity"
