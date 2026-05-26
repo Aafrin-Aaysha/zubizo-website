@@ -40,13 +40,13 @@ const pricingData = {
   websites: [
     {
       name: "Starter",
-      price: "2999",
+      price: "2499",
       description: "Perfect for simple and elegant invites",
       features: [
-        "4 Website Sections (Blocks)",
-        "Basic Design Layout",
-        "Event Details Page",
-        "Mobile Friendly Design"
+        "4 Sections",
+        "Custom Design",
+        "Wedding Timeline",
+        "Google Maps"
       ],
       cta: "Create Starter",
       href: "/digital-invites/website",
@@ -54,13 +54,11 @@ const pricingData = {
     },
     {
       name: "Value",
-      price: "3999",
+      price: "2999",
       description: "A more engaging experience with added personalization",
       features: [
-        "Custom Design Styling",
-        "Event Timeline Section",
-        "Background Music",
-        "Mobile Optimized"
+        "Everything in Starter",
+        "Background Music"
       ],
       cta: "Create Value",
       href: "/digital-invites/website",
@@ -68,30 +66,25 @@ const pricingData = {
     },
     {
       name: "Premium",
-      price: "4999",
+      price: "3999",
       description: "Ideal for detailed and interactive invites",
       features: [
-        "Fully Custom Design",
-        "Event Timeline & Story Section",
-        "RSVP System (Guest Response)",
-        "Google Maps Integration"
+        "Everything in Value",
+        "RSVP System"
       ],
       cta: "Create Premium",
       href: "/digital-invites/website",
       isRecommended: false
     },
     {
-      name: "Ultimate",
-      price: "6999",
-      description: "Complete experience with all essential features",
+      name: "Ultra",
+      price: "4999",
+      description: "Complete experience with all premium features",
       features: [
-        "Advanced Custom Design",
-        "RSVP System",
-        "Photo Gallery + Video Support",
-        "Guest Message Section",
-        "Google Maps Integration"
+        "Everything in Premium",
+        "Photo Gallery"
       ],
-      cta: "Create Ultimate",
+      cta: "Create Ultra",
       href: "/digital-invites/website",
       isRecommended: false
     }
