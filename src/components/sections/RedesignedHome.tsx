@@ -260,7 +260,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                 {isAnnouncementVisible && (
                     <motion.div 
                         exit={{ height: 0, opacity: 0 }}
-                        className="bg-[#7C3AED] h-8 text-white flex items-center justify-center relative z-[60] overflow-hidden"
+                        className="bg-[#6E4B8B] h-8 text-white flex items-center justify-center relative z-[60] overflow-hidden"
                     >
                         <div className="site-container w-full flex items-center justify-center px-8">
                             <AnimatePresence mode="wait">
@@ -287,20 +287,21 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
             </AnimatePresence>
 
             {/* 1. Navbar */}
+            {/* 1. Navbar */}
             <nav
                 className={cn(
-                    "fixed z-50 w-full transition-all duration-300 ease-in-out h-[58px] flex items-center",
-                    isAnnouncementVisible ? "top-8" : "top-0",
-                    scrolled 
-                        ? "bg-[#FAF8F5]/90 backdrop-blur-md shadow-sm border-b border-black/5" 
-                        : "bg-transparent text-white"
+                    "fixed z-50 w-full transition-all duration-300 ease-in-out h-[58px] flex items-center bg-[#FAF8F5]/90 backdrop-blur-md shadow-sm border-b border-black/5 text-slate-800",
+                    isAnnouncementVisible ? "top-8" : "top-0"
                 )}
             >
                 <div className="site-container w-full flex items-center justify-between px-4 lg:px-6">
                     {/* Logo/Brand */}
                     <Link href="/" className="flex items-center gap-3 group">
-                        <LogoIcon size={30} className={cn("transition-all duration-500", scrolled ? "text-[#7C3AED]" : "text-white")} />
-                        <span className={cn("text-xl font-italiana font-bold uppercase tracking-wider transition-colors duration-300", scrolled ? "text-[#7C3AED]" : "text-white")}>
+                        <LogoIcon size={30} className="text-[#ae7fcb]" />
+                        <span 
+                            className="text-[28px] font-extrabold italic text-[#ae7fcb]"
+                            style={{ fontFamily: 'var(--font-fraunces), serif' }}
+                        >
                             Zubizo
                         </span>
                     </Link>
@@ -317,13 +318,10 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                             <Link 
                                 key={link.name} 
                                 href={link.href}
-                                className={cn(
-                                    "text-[12px] font-medium uppercase tracking-[0.1em] py-1.5 transition-colors relative group",
-                                    scrolled ? "text-slate-600 hover:text-[#7C3AED]" : "text-white/80 hover:text-white"
-                                )}
+                                className="text-[12px] font-medium uppercase tracking-[0.1em] py-1.5 transition-colors relative group text-slate-600 hover:text-[#ae7fcb]"
                             >
                                 {link.name}
-                                <span className={cn("absolute bottom-0 left-0 w-0 h-[1.5px] transition-all duration-300 group-hover:w-full", scrolled ? "bg-[#7C3AED]" : "bg-white")} />
+                                <span className="absolute bottom-0 left-0 w-0 h-[1.5px] transition-all duration-300 group-hover:w-full bg-[#ae7fcb]" />
                             </Link>
                         ))}
                     </div>
@@ -338,14 +336,9 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onFocus={() => setShowResultsDropdown(true)}
                                 onBlur={() => setTimeout(() => setShowResultsDropdown(false), 200)}
-                                className={cn(
-                                    "w-full rounded-full py-1.5 pl-8 pr-4 text-[11px] font-medium transition-all outline-none border",
-                                    scrolled 
-                                        ? "bg-slate-100 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#7C3AED]/30" 
-                                        : "bg-white/10 border-white/10 text-white placeholder:text-white/40 focus:border-white/30"
-                                )}
+                                className="w-full rounded-full py-1.5 pl-8 pr-4 text-[11px] font-medium transition-all outline-none border bg-slate-100 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#ae7fcb]/30"
                             />
-                            <Search size={12} className={cn("absolute left-3 top-1/2 -translate-y-1/2", scrolled ? "text-slate-400" : "text-white/40")} />
+                            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-450" />
 
                             {/* Dropdown Results */}
                             <AnimatePresence>
@@ -389,7 +382,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         {/* Mobile Menu Trigger */}
                         <button 
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="lg:hidden p-2 text-inherit hover:opacity-80 transition-opacity"
+                            className="lg:hidden p-2 text-slate-700 hover:opacity-80 transition-opacity"
                         >
                             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                         </button>
@@ -412,7 +405,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 placeholder="Search catalogue..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full rounded-xl py-3 pl-10 pr-4 text-xs font-semibold bg-slate-100 border-none outline-none focus:ring-2 focus:ring-purple-100"
+                                className="w-full rounded-xl py-3 pl-10 pr-4 text-xs font-semibold bg-slate-100 border-none outline-none focus:ring-2 focus:ring-[#ae7fcb]/20"
                             />
                             <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-450" />
                         </div>
@@ -429,7 +422,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                     key={link.name} 
                                     href={link.href}
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="text-slate-700 font-bold uppercase tracking-wider text-xs py-2 hover:bg-purple-50/20 rounded-xl"
+                                    className="text-slate-700 font-bold uppercase tracking-wider text-xs py-2 hover:bg-[#ae7fcb]/10 rounded-xl"
                                 >
                                     {link.name}
                                 </Link>
@@ -438,6 +431,36 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* 3. Category Circles (Centered, Larger, below fixed Navbar) */}
+            <section className={cn(
+                "py-6 bg-white border-b border-slate-100 transition-all duration-300 relative z-30",
+                isAnnouncementVisible ? "mt-[90px]" : "mt-[58px]"
+            )}>
+                <div className="site-container">
+                    <div className="flex items-center justify-start lg:justify-center gap-6 md:gap-10 overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 scrollbar-none snap-x snap-mandatory">
+                        {CATEGORIES.map((cat, idx) => (
+                            <Link 
+                                key={cat.name} 
+                                href={cat.isRoute ? "/digital-invites" : `/catalog?category=${cat.slug}`}
+                                className="flex flex-col items-center shrink-0 snap-center group iz-animate"
+                                style={{ transitionDelay: `${idx * 50}ms` }}
+                            >
+                                <div className="w-[72px] h-[72px] md:w-[92px] md:h-[92px] rounded-full overflow-hidden border-2 border-[#EDE8F6] group-hover:border-[#ae7fcb] transition-all duration-300 shadow-md">
+                                    <img 
+                                        src={cat.img} 
+                                        alt={cat.name} 
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.06]" 
+                                    />
+                                </div>
+                                <span className="text-[12px] md:text-[13px] font-semibold text-slate-700 group-hover:text-[#ae7fcb] mt-3 transition-colors duration-300 text-center max-w-[110px] leading-tight">
+                                    {cat.name}
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
             {/* 2. Hero Slider (Ken Burns effect) */}
             <section className="h-[95vh] md:h-screen w-full relative overflow-hidden bg-slate-900">
@@ -490,7 +513,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                         initial={{ y: 20, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
                                         transition={{ delay: 0.8 }}
-                                        className="text-4xl md:text-6xl text-[#C4A8FF] font-ordinary-serum leading-tight tracking-wide italic font-light"
+                                        className="text-4xl md:text-6xl text-[#D6BFA3] font-ordinary-serum leading-tight tracking-wide italic font-light"
                                     >
                                         {heroSlides[heroIndex].line2}
                                     </motion.h2>
@@ -513,7 +536,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 >
                                     <Link 
                                         href="/catalog"
-                                        className="px-8 py-3.5 bg-[#7C3AED] hover:bg-[#6d28d9] text-white text-xs font-bold rounded-full transition-all shadow-md flex items-center gap-1 active:scale-[0.98]"
+                                        className="px-8 py-3.5 bg-[#ae7fcb] hover:bg-[#9f6fc0] text-white text-xs font-bold rounded-full transition-all shadow-md flex items-center gap-1 active:scale-[0.98]"
                                     >
                                         Explore Catalogue <ArrowRight size={13} />
                                     </Link>
@@ -530,38 +553,13 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                 </AnimatePresence>
             </section>
 
-            {/* 3. Category Circles */}
-            <section className="py-8 bg-white border-b border-slate-100">
-                <div className="site-container">
-                    <div className="flex gap-8 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory">
-                        {CATEGORIES.map((cat, idx) => (
-                            <Link 
-                                key={cat.name} 
-                                href={cat.isRoute ? "/digital-invites" : `/catalog?category=${cat.slug}`}
-                                className="flex flex-col items-center shrink-0 snap-center group iz-animate"
-                                style={{ transitionDelay: `${idx * 50}ms` }}
-                            >
-                                <div className="w-[60px] h-[60px] md:w-[72px] md:h-[72px] rounded-full overflow-hidden border-2 border-[#E8E0F5] group-hover:border-[#7C3AED] transition-all duration-300 shadow-sm">
-                                    <img 
-                                        src={cat.img} 
-                                        alt={cat.name} 
-                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.05]" 
-                                    />
-                                </div>
-                                <span className="text-[11px] font-medium text-slate-500 group-hover:text-[#7C3AED] mt-2.5 transition-colors duration-300 text-center max-w-[90px] leading-tight">
-                                    {cat.name}
-                                </span>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            </section>
+
 
             {/* 4. Best Sellers */}
             <section className="py-16 bg-[#FAF8F5]">
                 <div className="site-container">
                     <div className="text-center mb-10 iz-animate">
-                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#7C3AED] uppercase">OUR BESTSELLERS</span>
+                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#6E4B8B] uppercase">OUR BESTSELLERS</span>
                         <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800 mt-2">Chosen by Thousands of Families</h2>
                     </div>
 
@@ -580,7 +578,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                                     />
                                     {/* Bestseller Badge */}
-                                    <span className="absolute top-3 left-3 bg-[#7C3AED] text-white text-[8px] font-bold uppercase tracking-wider py-1 px-2.5 rounded-full shadow-sm">
+                                    <span className="absolute top-3 left-3 bg-[#ae7fcb] text-white text-[8px] font-bold uppercase tracking-wider py-1 px-2.5 rounded-full shadow-sm">
                                         BESTSELLER
                                     </span>
                                     
@@ -588,7 +586,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                     <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
                                         <Link 
                                             href={`/catalog/${product.slug}`}
-                                            className="px-5 py-2.5 bg-white text-[#7C3AED] font-bold text-[10px] uppercase tracking-wider rounded-full shadow transition-transform duration-300 scale-90 group-hover:scale-100"
+                                            className="px-5 py-2.5 bg-white text-[#ae7fcb] font-bold text-[10px] uppercase tracking-wider rounded-full shadow transition-transform duration-300 scale-90 group-hover:scale-100"
                                         >
                                             Enquire →
                                         </Link>
@@ -597,13 +595,13 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 {/* Info Zone */}
                                 <div className="p-3.5 flex flex-col flex-1 justify-between gap-1">
                                     <div>
-                                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#a855f7]">{product.categoryName || 'Wedding Invitation'}</span>
-                                        <h3 className="font-bold text-slate-800 text-[12px] md:text-[13px] line-clamp-2 mt-0.5 group-hover:text-[#7C3AED] transition-colors leading-tight">
+                                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#ae7fcb]">{product.categoryName || 'Wedding Invitation'}</span>
+                                        <h3 className="font-bold text-slate-800 text-[12px] md:text-[13px] line-clamp-2 mt-0.5 group-hover:text-[#ae7fcb] transition-colors leading-tight">
                                             {product.name}
                                         </h3>
                                         <span className="text-[9px] text-slate-400 font-semibold block mt-0.5">SKU: {product.sku || 'ZBZ-100'}</span>
                                     </div>
-                                    <span className="font-bold text-[#7C3AED] text-xs mt-2 block">from ₹{product.defaultPrice || 50}</span>
+                                    <span className="font-bold text-[#ae7fcb] text-xs mt-2 block">from ₹{product.defaultPrice || 50}</span>
                                 </div>
                             </motion.div>
                         ))}
@@ -614,8 +612,8 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
             {/* 5. New Arrivals with Marquee Strip */}
             <section className="py-16 bg-white">
                 {/* Marquee Strip */}
-                <div className="bg-[#F5F0FF] h-7 flex items-center overflow-hidden w-full select-none mb-10 border-y border-purple-50">
-                    <div className="animate-marquee whitespace-nowrap flex gap-4 text-[#9B5CDE] text-[10px] font-bold uppercase tracking-[0.12em]">
+                <div className="bg-[#EDE8F6] h-7 flex items-center overflow-hidden w-full select-none mb-10 border-y border-[#ae7fcb]/10">
+                    <div className="animate-marquee whitespace-nowrap flex gap-4 text-[#6E4B8B] text-[10px] font-bold uppercase tracking-[0.12em]">
                         <span>NEW · JUST IN · FRESH FROM THE STUDIO · NEW · JUST IN · FRESH FROM THE STUDIO · NEW · JUST IN · FRESH FROM THE STUDIO ·&nbsp;</span>
                         <span>NEW · JUST IN · FRESH FROM THE STUDIO · NEW · JUST IN · FRESH FROM THE STUDIO · NEW · JUST IN · FRESH FROM THE STUDIO ·&nbsp;</span>
                     </div>
@@ -623,7 +621,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
 
                 <div className="site-container">
                     <div className="text-center mb-10 iz-animate">
-                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#7C3AED] uppercase">FRESH FROM THE STUDIO</span>
+                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#6E4B8B] uppercase">FRESH FROM THE STUDIO</span>
                         <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800 mt-2">Just Designed for You</h2>
                     </div>
 
@@ -650,7 +648,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                     <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
                                         <Link 
                                             href={`/catalog/${product.slug}`}
-                                            className="px-5 py-2.5 bg-white text-[#7C3AED] font-bold text-[10px] uppercase tracking-wider rounded-full shadow transition-transform duration-300 scale-90 group-hover:scale-100"
+                                            className="px-5 py-2.5 bg-white text-[#ae7fcb] font-bold text-[10px] uppercase tracking-wider rounded-full shadow transition-transform duration-300 scale-90 group-hover:scale-100"
                                         >
                                             Enquire →
                                         </Link>
@@ -659,13 +657,13 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 {/* Info Zone */}
                                 <div className="p-3.5 flex flex-col flex-1 justify-between gap-1">
                                     <div>
-                                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#a855f7]">{product.categoryName || 'Wedding Invitation'}</span>
-                                        <h3 className="font-bold text-slate-800 text-[12px] md:text-[13px] line-clamp-2 mt-0.5 group-hover:text-[#7C3AED] transition-colors leading-tight">
+                                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#ae7fcb]">{product.categoryName || 'Wedding Invitation'}</span>
+                                        <h3 className="font-bold text-slate-800 text-[12px] md:text-[13px] line-clamp-2 mt-0.5 group-hover:text-[#ae7fcb] transition-colors leading-tight">
                                             {product.name}
                                         </h3>
                                         <span className="text-[9px] text-slate-400 font-semibold block mt-0.5">SKU: {product.sku || 'ZBZ-100'}</span>
                                     </div>
-                                    <span className="font-bold text-[#7C3AED] text-xs mt-2 block">from ₹{product.defaultPrice || 50}</span>
+                                    <span className="font-bold text-[#ae7fcb] text-xs mt-2 block">from ₹{product.defaultPrice || 50}</span>
                                 </div>
                             </motion.div>
                         ))}
@@ -678,10 +676,10 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                 <div className="site-container">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
                         {[
-                            { title: "Artisanal Craft", desc: "Handcrafted with detail and luxury materials", icon: <Award className="text-[#C4A8FF] mx-auto" size={24} /> },
-                            { title: "Worldwide Shipping", desc: "Delivered securely to families across 10 countries", icon: <Globe className="text-[#C4A8FF] mx-auto" size={24} /> },
-                            { title: "Fast Personalisation", desc: "Easy custom tweaks with 24h design approval", icon: <Clock className="text-[#C4A8FF] mx-auto" size={24} /> },
-                            { title: "Trusted Promise", desc: "Quality checks on every card before dispatch", icon: <ShieldCheck className="text-[#C4A8FF] mx-auto" size={24} /> }
+                            { title: "Artisanal Craft", desc: "Handcrafted with detail and luxury materials", icon: <Award className="text-[#D6BFA3] mx-auto" size={24} /> },
+                            { title: "Worldwide Shipping", desc: "Delivered securely to families across 10 countries", icon: <Globe className="text-[#D6BFA3] mx-auto" size={24} /> },
+                            { title: "Fast Personalisation", desc: "Easy custom tweaks with 24h design approval", icon: <Clock className="text-[#D6BFA3] mx-auto" size={24} /> },
+                            { title: "Trusted Promise", desc: "Quality checks on every card before dispatch", icon: <ShieldCheck className="text-[#D6BFA3] mx-auto" size={24} /> }
                         ].map((prop, idx) => (
                             <div key={prop.title} className="space-y-2.5 iz-animate" style={{ transitionDelay: `${idx * 60}ms` }}>
                                 {prop.icon}
@@ -694,12 +692,12 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
             </section>
 
             {/* 7. "Design Your Own" CTA Banner */}
-            <section className="py-16 bg-gradient-to-br from-[#4C1D95] via-[#7C3AED] to-[#9B5CDE] text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(196,168,255,0.15),transparent)] pointer-events-none" />
+            <section className="py-16 bg-gradient-to-br from-[#4c2c62] via-[#6E4B8B] to-[#ae7fcb] text-white relative overflow-hidden">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(174,127,203,0.15),transparent)] pointer-events-none" />
                 <div className="site-container text-center max-w-2xl px-6 relative z-10 space-y-5 iz-animate">
-                    <span className="text-[10px] font-bold tracking-[0.2em] text-purple-200 uppercase">BESPOKE ORDERS</span>
+                    <span className="text-[10px] font-bold tracking-[0.2em] text-[#EDE8F6]/90 uppercase">BESPOKE ORDERS</span>
                     <h2 className="text-3xl md:text-4xl font-italiana font-normal text-white leading-tight">Have a Vision? Let's Craft It Together</h2>
-                    <p className="text-xs md:text-sm text-purple-100 font-light max-w-lg mx-auto leading-relaxed">
+                    <p className="text-xs md:text-sm text-white/80 font-light max-w-lg mx-auto leading-relaxed">
                         Share your ideas on WhatsApp and our team will design something you'll treasure forever.
                     </p>
                     <div className="pt-2">
@@ -707,7 +705,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                             href="https://wa.me/918124548133" 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-8 py-3.5 bg-white hover:bg-slate-100 text-[#7C3AED] font-bold text-xs rounded-full transition-all shadow-lg shadow-purple-950/20 active:scale-[0.98]"
+                            className="inline-flex items-center gap-2 px-8 py-3.5 bg-white hover:bg-slate-100 text-[#ae7fcb] font-bold text-xs rounded-full transition-all shadow-lg shadow-slate-950/20 active:scale-[0.98]"
                         >
                             Chat with Us on WhatsApp →
                         </a>
@@ -719,7 +717,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
             <section className="py-16 bg-[#FAF8F5]">
                 <div className="site-container">
                     <div className="text-center mb-10 iz-animate">
-                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#7C3AED] uppercase">PRICE RANGES</span>
+                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#6E4B8B] uppercase">PRICE RANGES</span>
                         <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800 mt-2">Find Your Perfect Range</h2>
                     </div>
 
@@ -732,20 +730,20 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                     "p-6 rounded-2xl border flex flex-col justify-between min-h-[160px] relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group iz-animate",
                                     slab.popular 
                                         ? "bg-slate-900 border-slate-900 text-white shadow-md shadow-slate-950/10" 
-                                        : "bg-white border-purple-50 text-slate-700 hover:border-purple-200"
+                                        : "bg-white border-[#ae7fcb]/10 text-slate-700 hover:border-[#ae7fcb]/40"
                                 )}
                                 style={{ transitionDelay: `${idx * 60}ms` }}
                             >
                                 {slab.popular && (
-                                    <span className="absolute top-3 right-3 bg-[#a855f7] text-white text-[8px] font-bold uppercase tracking-wider py-0.5 px-2 rounded-full">
+                                    <span className="absolute top-3 right-3 bg-[#ae7fcb] text-white text-[8px] font-bold uppercase tracking-wider py-0.5 px-2 rounded-full">
                                         MOST POPULAR
                                     </span>
                                 )}
                                 <div className="space-y-1">
-                                    <h3 className={cn("text-lg font-bold font-sans", slab.popular ? "text-[#C4A8FF]" : "text-slate-800")}>{slab.title}</h3>
+                                    <h3 className={cn("text-lg font-bold font-sans", slab.popular ? "text-[#D6BFA3]" : "text-slate-800")}>{slab.title}</h3>
                                     <p className={cn("text-[10px] font-medium", slab.popular ? "text-slate-400" : "text-slate-500")}>{slab.subtitle}</p>
                                 </div>
-                                <span className={cn("text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 mt-6", slab.popular ? "text-white" : "text-[#7C3AED]")}>
+                                <span className={cn("text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 mt-6", slab.popular ? "text-white" : "text-[#ae7fcb]")}>
                                     Browse Range <ArrowRight size={10} className="transition-transform group-hover:translate-x-1" />
                                 </span>
                             </Link>
@@ -758,15 +756,15 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
             <section className="py-16 bg-white border-y border-slate-100">
                 <div className="site-container">
                     <div className="text-center mb-8 iz-animate">
-                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#7C3AED] uppercase">OUR REACH</span>
+                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#6E4B8B] uppercase">OUR REACH</span>
                         <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800 mt-2">Trusted Across 10 Countries</h2>
                         <p className="text-slate-500 text-xs font-medium mt-1">From Trichy to Toronto — Zubizo invitations have been delivered to families across the world.</p>
                     </div>
 
                     {/* Desktop Map (Hidden on mobile) */}
-                    <div className="hidden lg:block relative max-w-3xl mx-auto mb-10 overflow-hidden bg-[#FAF8F5]/50 border border-slate-50 rounded-3xl p-6 shadow-inner iz-animate">
+                    <div className="hidden lg:block relative max-w-3xl mx-auto mb-10 overflow-hidden bg-[#FAF8F5]/50 border border-[#ae7fcb]/10 rounded-3xl p-6 shadow-inner iz-animate">
                         <svg viewBox="0 0 500 300" className="w-full h-auto text-purple-100 fill-current">
-                            <path d={WORLD_MAP_PATH} stroke="#E8E0F5" strokeWidth="1.5" fill="none" />
+                            <path d={WORLD_MAP_PATH} stroke="#EDE8F6" strokeWidth="1.5" fill="none" />
                             {MAP_DOTS.map((dot, idx) => (
                                 <g key={idx} className="relative cursor-pointer group">
                                     {/* Pulse circle */}
@@ -774,14 +772,14 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                         cx={dot.cx} 
                                         cy={dot.cy} 
                                         r="8" 
-                                        className="fill-[#7C3AED]/20 animate-pulse-dot" 
+                                        className="fill-[#ae7fcb]/20 animate-pulse-dot" 
                                     />
                                     {/* Solid center dot */}
                                     <circle 
                                         cx={dot.cx} 
                                         cy={dot.cy} 
                                         r="3.5" 
-                                        className="fill-[#7C3AED] border border-white" 
+                                        className="fill-[#ae7fcb] border border-white" 
                                     />
                                     {/* Tooltip on hover */}
                                     <text 
@@ -815,7 +813,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
             <section className="py-16 bg-[#FAF8F5]">
                 <div className="site-container">
                     <div className="text-center mb-10 iz-animate">
-                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#7C3AED] uppercase">TRENDING NOW</span>
+                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#6E4B8B] uppercase">TRENDING NOW</span>
                         <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800 mt-2">Invitations Worth Talking About</h2>
                     </div>
 
@@ -846,14 +844,14 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
             <section ref={numbersSectionRef} className="py-16 bg-slate-900 text-white">
                 <div className="site-container">
                     <div className="text-center mb-12">
-                        <span className="text-[10px] font-bold tracking-[0.15em] text-purple-400 uppercase">ZUBIZO IN NUMBERS</span>
+                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#ae7fcb] uppercase">ZUBIZO IN NUMBERS</span>
                         <h2 className="text-2xl md:text-3xl font-italiana font-normal text-white mt-2">Every Number Tells a Story</h2>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-8 text-center">
                         {numbers.map((num, idx) => (
                             <div key={num.label} className="space-y-1.5">
-                                <h3 className="text-3xl md:text-4xl font-extrabold text-[#C4A8FF] font-sans">
+                                <h3 className="text-3xl md:text-4xl font-extrabold text-[#D6BFA3] font-sans">
                                     {num.value.toLocaleString('en-IN')}+
                                 </h3>
                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{num.label}</p>
@@ -867,7 +865,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
             <section className="py-16 bg-white border-b border-slate-100">
                 <div className="site-container">
                     <div className="text-center mb-12 iz-animate">
-                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#7C3AED] uppercase">THE PROCESS</span>
+                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#6E4B8B] uppercase">THE PROCESS</span>
                         <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800 mt-2">Simple. Elegant. Personal.</h2>
                     </div>
 
@@ -885,7 +883,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                             { step: "03", title: "Review & Dispatch", desc: "Approve the digital draft within 24h, and watch us craft and deliver with care." }
                         ].map((item, idx) => (
                             <div key={item.step} className="text-center space-y-4 relative z-10 iz-animate" style={{ transitionDelay: `${idx * 100}ms` }}>
-                                <div className="w-[80px] h-[80px] rounded-full bg-purple-50/70 border border-purple-100/50 flex items-center justify-center text-xl font-bold text-[#7C3AED] mx-auto shadow-sm">
+                                <div className="w-[80px] h-[80px] rounded-full bg-[#EDE8F6]/70 border border-[#ae7fcb]/20 flex items-center justify-center text-xl font-bold text-[#ae7fcb] mx-auto shadow-sm">
                                     {item.step}
                                 </div>
                                 <h3 className="font-bold text-slate-800 text-[13px] uppercase tracking-wider">{item.title}</h3>
@@ -900,7 +898,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
             <section className="py-16 bg-[#FAF8F5]">
                 <div className="site-container">
                     <div className="text-center mb-10 iz-animate">
-                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#7C3AED] uppercase">CLIENT LOVE</span>
+                        <span className="text-[10px] font-bold tracking-[0.15em] text-[#6E4B8B] uppercase">CLIENT LOVE</span>
                         <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800 mt-2">Words from the Families We've Served</h2>
                     </div>
 
@@ -908,7 +906,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         {TESTIMONIALS.map((test, idx) => (
                             <div 
                                 key={test.name}
-                                className="bg-white p-6 rounded-2xl border border-purple-50/50 shadow-sm flex flex-col justify-between space-y-4 iz-animate"
+                                className="bg-white p-6 rounded-2xl border border-[#EDE8F6] shadow-sm flex flex-col justify-between space-y-4 iz-animate"
                                 style={{ transitionDelay: `${idx * 80}ms` }}
                             >
                                 <div className="space-y-2">
@@ -916,13 +914,13 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                     <div className="flex text-amber-400 gap-0.5 text-sm">★★★★★</div>
                                     <p className="text-slate-600 text-xs italic leading-relaxed font-light">"{test.quote}"</p>
                                 </div>
-                                <div className="flex items-center gap-2 border-t border-purple-50/30 pt-3">
-                                    <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center font-bold text-[#7C3AED] text-xs shadow-inner uppercase">
+                                <div className="flex items-center gap-2 border-t border-[#EDE8F6]/30 pt-3">
+                                    <div className="w-8 h-8 rounded-full bg-[#EDE8F6] flex items-center justify-center font-bold text-[#ae7fcb] text-xs shadow-inner uppercase">
                                         {test.name.charAt(0)}
                                     </div>
                                     <div>
                                         <div className="font-extrabold text-slate-800 text-[11px]">{test.name}</div>
-                                        <div className="text-[9px] text-slate-400 font-semibold">{test.location}</div>
+                                        <div className="text-[9px] text-slate-450 font-semibold">{test.location}</div>
                                     </div>
                                 </div>
                             </div>
@@ -939,8 +937,13 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         {/* Col 1 - Brand */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-3">
-                                <LogoIcon size={24} className="text-[#9B5CDE]" />
-                                <span className="text-xl font-italiana font-bold uppercase tracking-wider text-white">Zubizo</span>
+                                <LogoIcon size={24} className="text-[#ae7fcb]" />
+                                <span 
+                                    className="text-2xl font-extrabold italic text-white"
+                                    style={{ fontFamily: 'var(--font-fraunces), serif' }}
+                                >
+                                    Zubizo
+                                </span>
                             </div>
                             <p className="text-[12px] leading-relaxed max-w-[220px] font-light">
                                 Premium handcrafted invitation designs — crafted with love in India.
