@@ -18,7 +18,8 @@ import {
     Award, 
     Clock, 
     Globe, 
-    ShieldCheck
+    ShieldCheck,
+    Gift
 } from 'lucide-react';
 import { LogoIcon } from "@/components/ui/logo-icon";
 import { cn } from "@/lib/utils";
@@ -108,7 +109,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
     const [announcementIndex, setAnnouncementIndex] = useState(0);
     const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(true);
     const announcements = [
-        "✦ Free personalisation on every order",
+        "✦ Personalisation on every order",
         "✦ 2,0,0,000+ invitations delivered across India",
         "✦ WhatsApp us — we respond within 2 hours ✦"
     ];
@@ -182,24 +183,18 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
     const [heroIndex, setHeroIndex] = useState(0);
     const heroSlides = [
         {
-            eyebrow: "BESPOKE INVITATION ATELIER",
-            line1: "Every Invitation,",
-            line2: "A Work of Art",
-            body: "Bespoke designs crafted with artisanal precision and luxury materials.",
+            eyebrow: "Bespoke Invitation Atelier",
+            title: "Crafting Love Stories on Premium Paper",
             bg: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1200&auto=format&fit=crop"
         },
         {
-            eyebrow: "BESPOKE INVITATION ATELIER",
-            line1: "Where Tradition",
-            line2: "Meets Elegance",
-            body: "Exquisite details tailored to reflect the rich heritage of your wedding day.",
+            eyebrow: "Exquisite Craftsmanship",
+            title: "Where Tradition Meets Luxury Design",
             bg: "https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?q=80&w=1200&auto=format&fit=crop"
         },
         {
-            eyebrow: "BESPOKE INVITATION ATELIER",
-            line1: "Your Story,",
-            line2: "Beautifully Told",
-            body: "Capture the start of your journey with custom stationery made just for you.",
+            eyebrow: "Artisanal Wedding Suites",
+            title: "Your Perfect Invitation, Beautifully Made",
             bg: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1200&auto=format&fit=crop"
         }
     ];
@@ -483,74 +478,73 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                             <img 
                                 src={heroSlides[heroIndex].bg} 
                                 alt="luxury backdrop" 
-                                className="w-full h-full object-cover object-center opacity-65"
+                                className="w-full h-full object-cover object-center"
                             />
                         </motion.div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-slate-950/45" />
+                        <div className="absolute inset-0 bg-black/25" />
 
                         {/* Content Container */}
                         <div className="absolute inset-0 flex items-center justify-center text-center px-6">
                             <div className="max-w-3xl space-y-6">
                                 <motion.span 
                                     initial={{ y: 15, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 0.6 }}
+                                    animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 0.4 }}
-                                    className="block text-[10px] font-bold text-white uppercase tracking-[0.2em] font-dmsans"
+                                    className="block text-[11px] font-medium text-white uppercase tracking-[0.22em] font-dmsans"
                                 >
                                     {heroSlides[heroIndex].eyebrow}
                                 </motion.span>
                                 
-                                <div className="space-y-2 select-none">
-                                    <motion.h1 
-                                        initial={{ y: 20, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        transition={{ delay: 0.6 }}
-                                        className="text-4xl md:text-6xl text-white font-ordinary-serum leading-tight tracking-wide font-light"
-                                    >
-                                        {heroSlides[heroIndex].line1}
-                                    </motion.h1>
-                                    <motion.h2 
-                                        initial={{ y: 20, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        transition={{ delay: 0.8 }}
-                                        className="text-4xl md:text-6xl text-[#D6BFA3] font-ordinary-serum leading-tight tracking-wide italic font-light"
-                                    >
-                                        {heroSlides[heroIndex].line2}
-                                    </motion.h2>
-                                </div>
-
-                                <motion.p 
-                                    initial={{ y: 15, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 0.75 }}
-                                    transition={{ delay: 1 }}
-                                    className="text-slate-200 text-xs md:text-sm font-light max-w-lg mx-auto font-dmsans"
+                                <motion.h1 
+                                    initial={{ y: 20, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    transition={{ delay: 0.6 }}
+                                    className="text-4xl md:text-6xl text-white font-italiana font-normal leading-tight tracking-wide max-w-4xl mx-auto"
                                 >
-                                    {heroSlides[heroIndex].body}
-                                </motion.p>
+                                    {heroSlides[heroIndex].title}
+                                </motion.h1>
 
                                 <motion.div 
                                     initial={{ y: 15, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
-                                    transition={{ delay: 1.2 }}
-                                    className="flex flex-wrap items-center justify-center gap-4 pt-4"
+                                    transition={{ delay: 0.8 }}
+                                    className="pt-4"
                                 >
                                     <Link 
                                         href="/catalog"
-                                        className="px-8 py-3.5 bg-[#ae7fcb] hover:bg-[#9f6fc0] text-white text-xs font-bold rounded-full transition-all shadow-md flex items-center gap-1 active:scale-[0.98]"
+                                        className="inline-block px-8 py-3 border border-white text-white text-xs uppercase tracking-[0.15em] font-semibold hover:bg-white hover:text-slate-900 transition-all duration-300 rounded-none"
                                     >
-                                        Explore Catalogue <ArrowRight size={13} />
-                                    </Link>
-                                    <Link 
-                                        href="/catalog?isTrending=true"
-                                        className="px-8 py-3.5 border border-white hover:bg-white/10 text-white text-xs font-bold rounded-full transition-all active:scale-[0.98]"
-                                    >
-                                        View Trending
+                                        Explore Collection
                                     </Link>
                                 </motion.div>
                             </div>
                         </div>
                     </motion.div>
                 </AnimatePresence>
+
+                {/* Pagination Dots */}
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-3 z-30">
+                    {heroSlides.map((_, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setHeroIndex(idx)}
+                            className="relative w-6 h-6 flex items-center justify-center focus:outline-none"
+                            aria-label={`Go to slide ${idx + 1}`}
+                        >
+                            {heroIndex === idx && (
+                                <motion.div 
+                                    layoutId="activeHeroDot"
+                                    className="absolute inset-0 border border-white rounded-full"
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                />
+                            )}
+                            <div className={cn(
+                                "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                                heroIndex === idx ? "bg-white" : "bg-white/40"
+                            )} />
+                        </button>
+                    ))}
+                </div>
             </section>
 
 
@@ -1010,6 +1004,29 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                     </div>
                 </div>
             </footer>
+            {/* Floating Action Buttons */}
+            <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+                {/* Gift/Rewards Button */}
+                <button 
+                    onClick={() => alert("Special Offer: Get 10% off on your first order! Chat with us on WhatsApp to redeem.")}
+                    className="w-12 h-12 rounded-full bg-[#6E4B8B] text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all group"
+                    aria-label="Rewards Offer"
+                >
+                    <Gift size={20} className="group-hover:animate-bounce" />
+                </button>
+                {/* WhatsApp Button */}
+                <a 
+                    href="https://wa.me/918124548133" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-12 h-12 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all"
+                    aria-label="Chat on WhatsApp"
+                >
+                    <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.742.002-2.602-1.005-5.05-2.839-6.89C16.656 2.132 14.21 1.123 11.609 1.123c-5.445 0-9.873 4.37-9.877 9.745-.002 1.83.483 3.61 1.405 5.178l-.924 3.376 3.444-.903zm12.351-6.938c-.3-.15-1.777-.878-2.047-.976-.27-.099-.467-.149-.662.15-.195.298-.755.951-.926 1.149-.17.198-.34.223-.64.073-.3-.15-1.268-.467-2.414-1.49-1.037-.925-1.737-2.068-1.94-2.418-.204-.35-.022-.539.128-.688.135-.135.3-.35.45-.525.15-.175.2-.299.3-.499.1-.2.05-.375-.025-.525-.075-.15-.662-1.597-.907-2.192-.239-.574-.482-.496-.662-.505-.17-.009-.365-.011-.56-.011-.196 0-.515.073-.784.37-.27.299-1.03 1.008-1.03 2.458s1.05 2.846 1.196 3.045c.148.197 2.066 3.156 5.007 4.43.699.303 1.245.484 1.671.62.704.224 1.346.193 1.853.117.564-.084 1.777-.726 2.027-1.427.25-.701.25-1.302.175-1.428-.075-.125-.269-.199-.57-.349z"/>
+                    </svg>
+                </a>
+            </div>
         </div>
     );
 }
