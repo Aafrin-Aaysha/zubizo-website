@@ -21,7 +21,7 @@ export default function InviteCard({ design, showVideoIcon }: InviteCardProps) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="group relative flex flex-col h-full bg-white rounded-none overflow-hidden border border-charcoal/5 transition-all duration-500 hover:shadow-2xl hover:shadow-lavender/10 hover:-translate-y-1"
+            className="group relative flex flex-col h-full bg-white rounded-2xl overflow-hidden border border-charcoal/5 transition-all duration-500 hover:shadow-2xl hover:shadow-lavender/10 hover:-translate-y-1"
         >
             {/* Image Container */}
             <Link href={`/catalog/${design.slug}`} className="relative aspect-square overflow-hidden block">
@@ -38,7 +38,7 @@ export default function InviteCard({ design, showVideoIcon }: InviteCardProps) {
 
                 {showVideoIcon && (
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-10 h-10 rounded-none bg-white/90 backdrop-blur-md flex items-center justify-center text-lavender shadow-lg group-hover:scale-110 transition-transform duration-500">
+                        <div className="w-10 h-10 rounded-md bg-white/90 backdrop-blur-md flex items-center justify-center text-lavender shadow-lg group-hover:scale-110 transition-transform duration-500">
                             <Play size={16} fill="currentColor" />
                         </div>
                     </div>
@@ -70,7 +70,7 @@ export default function InviteCard({ design, showVideoIcon }: InviteCardProps) {
 
                     <Link
                         href={`/catalog/${design.slug}`}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-lavender/5 text-lavender rounded-none text-[9px] font-bold uppercase tracking-wider hover:bg-lavender hover:text-white transition-all duration-300 border border-lavender/10"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-lavender/5 text-lavender rounded-md text-[9px] font-bold uppercase tracking-wider hover:bg-lavender hover:text-white transition-all duration-300 border border-lavender/10"
                     >
                         Customize
                         <ArrowRight size={12} />

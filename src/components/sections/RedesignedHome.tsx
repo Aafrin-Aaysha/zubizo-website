@@ -443,7 +443,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 href={cat.isRoute ? "/digital-invites" : `/catalog?category=${cat.slug}`}
                                 className="flex flex-col items-center shrink-0 snap-center group"
                             >
-                                <div className="w-[72px] h-[72px] md:w-[92px] md:h-[92px] rounded-none overflow-hidden border-2 border-[#EDE8F6] group-hover:border-[#ae7fcb] transition-all duration-300 shadow-md">
+                                <div className="w-[72px] h-[72px] md:w-[92px] md:h-[92px] rounded-full overflow-hidden border-2 border-[#EDE8F6] group-hover:border-[#ae7fcb] transition-all duration-300 shadow-md">
                                     <img 
                                         src={cat.img} 
                                         alt={cat.name} 
@@ -563,7 +563,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         {bestSellers.map((product, idx) => (
                             <motion.div 
                                 key={product._id}
-                                className="bg-white border border-slate-100 rounded-none overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
+                                className="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
                                 style={{ transitionDelay: `${idx * 60}ms` }}
                             >
                                 {/* Image Zone */}
@@ -625,7 +625,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         {newArrivals.map((product, idx) => (
                             <motion.div 
                                 key={product._id}
-                                className="bg-white border border-slate-100 rounded-none overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
+                                className="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
                                 style={{ transitionDelay: `${idx * 60}ms` }}
                             >
                                 {/* Image Zone */}
@@ -723,7 +723,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 key={slab.title} 
                                 href={slab.link}
                                 className={cn(
-                                    "p-6 rounded-none border flex flex-col justify-between min-h-[160px] relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group iz-animate",
+                                    "p-6 rounded-2xl border flex flex-col justify-between min-h-[160px] relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group iz-animate",
                                     slab.popular 
                                         ? "bg-slate-900 border-slate-900 text-white shadow-md shadow-slate-950/10" 
                                         : "bg-white border-[#ae7fcb]/10 text-slate-700 hover:border-[#ae7fcb]/40"
@@ -829,7 +829,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 href={post.link} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="aspect-square bg-slate-100 rounded-none overflow-hidden relative border border-slate-100 group shadow-sm hover:shadow-md transition-all duration-300 iz-animate"
+                                className="aspect-square bg-slate-100 rounded-xl overflow-hidden relative border border-slate-100 group shadow-sm hover:shadow-md transition-all duration-300 iz-animate"
                                 style={{ transitionDelay: `${idx * 60}ms` }}
                             >
                                 <img src={post.url} alt="instagram preview" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-103" />
@@ -911,7 +911,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         {TESTIMONIALS.map((test, idx) => (
                             <div 
                                 key={test.name}
-                                className="bg-white p-6 rounded-none border border-[#EDE8F6] shadow-sm flex flex-col justify-between space-y-4 iz-animate"
+                                className="bg-white p-6 rounded-2xl border border-[#EDE8F6] shadow-sm flex flex-col justify-between space-y-4 iz-animate"
                                 style={{ transitionDelay: `${idx * 80}ms` }}
                             >
                                 <div className="space-y-2">
@@ -920,7 +920,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                     <p className="text-slate-600 text-[11px] italic leading-relaxed font-light">"{test.quote}"</p>
                                 </div>
                                 <div className="flex items-center gap-2 border-t border-[#EDE8F6]/30 pt-3">
-                                    <div className="w-8 h-8 rounded-none bg-[#EDE8F6] flex items-center justify-center font-bold text-[#ae7fcb] text-xs shadow-inner uppercase">
+                                    <div className="w-8 h-8 rounded-full bg-[#EDE8F6] flex items-center justify-center font-bold text-[#ae7fcb] text-xs shadow-inner uppercase">
                                         {test.name.charAt(0)}
                                     </div>
                                     <div>

@@ -11,7 +11,7 @@ export default function DesignCard({ design }: { design: any }) {
     const firstImage = design.images?.[0] || '/placeholder.png';
 
     return (
-        <div className="group floating-card rounded-none overflow-hidden flex flex-col h-full">
+        <div className="group floating-card rounded-2xl overflow-hidden flex flex-col h-full">
             {/* Image Container */}
             <Link href={`/catalog/${design.slug}`} className="relative aspect-square overflow-hidden block">
                 <Image
@@ -53,7 +53,7 @@ export default function DesignCard({ design }: { design: any }) {
                     <div className="flex items-center gap-2">
                         <Link
                             href={`/catalog/${design.slug}`}
-                            className="w-7 h-7 rounded-none border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-lavender hover:border-lavender transition-all group/btn"
+                            className="w-7 h-7 rounded-md border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-lavender hover:border-lavender transition-all group/btn"
                         >
                             <ArrowRight size={14} className="group-hover/btn:translate-x-0.5 transition-transform" />
                         </Link>
