@@ -21,10 +21,10 @@ export default function InviteCard({ design, showVideoIcon }: InviteCardProps) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="group relative flex flex-col h-full bg-white rounded-[32px] overflow-hidden border border-charcoal/5 transition-all duration-500 hover:shadow-2xl hover:shadow-lavender/10 hover:-translate-y-1"
+            className="group relative flex flex-col h-full bg-white rounded-none overflow-hidden border border-charcoal/5 transition-all duration-500 hover:shadow-2xl hover:shadow-lavender/10 hover:-translate-y-1"
         >
             {/* Image Container */}
-            <Link href={`/catalog/${design.slug}`} className="relative aspect-[3/4] overflow-hidden block">
+            <Link href={`/catalog/${design.slug}`} className="relative aspect-square overflow-hidden block">
                 <Image
                     src={firstImage}
                     alt={design.name}
@@ -38,25 +38,25 @@ export default function InviteCard({ design, showVideoIcon }: InviteCardProps) {
 
                 {showVideoIcon && (
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-12 h-12 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-lavender shadow-lg group-hover:scale-110 transition-transform duration-500">
-                            <Play size={20} fill="currentColor" />
+                        <div className="w-10 h-10 rounded-none bg-white/90 backdrop-blur-md flex items-center justify-center text-lavender shadow-lg group-hover:scale-110 transition-transform duration-500">
+                            <Play size={16} fill="currentColor" />
                         </div>
                     </div>
                 )}
 
                 {design.isTrending && (
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-charcoal text-[9px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-sm border border-charcoal/5">
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-charcoal text-[8px] font-black px-2.5 py-1.5 rounded-full uppercase tracking-widest shadow-sm border border-charcoal/5">
                         🔥 Trending
                     </div>
                 )}
             </Link>
 
             {/* Content */}
-            <div className="p-6 md:p-8 flex flex-col flex-grow">
-                <div className="mb-6">
-                    <p className="text-[10px] font-black text-lavender/40 uppercase tracking-[0.2em] mb-2">{design.sku}</p>
+            <div className="p-4 flex flex-col flex-grow">
+                <div className="mb-4">
+                    <p className="text-[8px] font-bold text-lavender/60 uppercase tracking-widest mb-1">{design.sku}</p>
                     <Link href={`/catalog/${design.slug}`}>
-                        <h3 className="text-xl font-serif text-charcoal line-clamp-1 group-hover:text-lavender transition-colors duration-300">
+                        <h3 className="text-[10px] md:text-[11px] font-bold text-charcoal line-clamp-1 group-hover:text-lavender transition-colors duration-300 font-sans">
                             {design.name}
                         </h3>
                     </Link>
@@ -64,16 +64,16 @@ export default function InviteCard({ design, showVideoIcon }: InviteCardProps) {
 
                 <div className="mt-auto flex items-center justify-between gap-4">
                     <div>
-                        <span className="text-[10px] font-black text-charcoal/30 uppercase tracking-widest block mb-1">Pricing</span>
-                        <span className="text-lg font-bold text-charcoal">₹{startingPrice}</span>
+                        <span className="text-[9px] text-neutral-400 block mb-0.5">Starting from</span>
+                        <span className="text-xs font-bold text-[#ae7fcb]">₹{startingPrice}</span>
                     </div>
 
                     <Link
                         href={`/catalog/${design.slug}`}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-lavender/5 text-lavender rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-lavender hover:text-white transition-all duration-300 border border-lavender/10"
+                        className="flex items-center gap-1 px-3 py-1.5 bg-lavender/5 text-lavender rounded-none text-[9px] font-bold uppercase tracking-wider hover:bg-lavender hover:text-white transition-all duration-300 border border-lavender/10"
                     >
                         Customize
-                        <ArrowRight size={14} />
+                        <ArrowRight size={12} />
                     </Link>
                 </div>
             </div>

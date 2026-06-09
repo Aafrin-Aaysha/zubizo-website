@@ -301,86 +301,89 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         </span>
                     </Link>
 
-                    {/* Nav Links */}
-                    <div className="hidden lg:flex items-center space-x-8">
-                        {[
-                            { name: "Home", href: "/" },
-                            { name: "Catalogue", href: "/catalog" },
-                            { name: "Digital Invites", href: "/digital-invites" },
-                            { name: "Our Story", href: "/about" },
-                            { name: "Policies", href: "/policies" }
-                        ].map((link) => (
-                            <Link 
-                                key={link.name} 
-                                href={link.href}
-                                className="text-[12px] font-medium uppercase tracking-[0.1em] py-1.5 transition-colors relative group text-slate-600 hover:text-[#ae7fcb]"
-                            >
-                                {link.name}
-                                <span className="absolute bottom-0 left-0 w-0 h-[1.5px] transition-all duration-300 group-hover:w-full bg-[#ae7fcb]" />
-                            </Link>
-                        ))}
-                    </div>
-
-                    {/* Search & Actions */}
-                    <div className="flex items-center gap-4 relative">
-                        <div className="relative hidden md:block w-60">
-                            <input 
-                                type="text"
-                                placeholder="Search catalogue..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onFocus={() => setShowResultsDropdown(true)}
-                                onBlur={() => setTimeout(() => setShowResultsDropdown(false), 200)}
-                                className="w-full rounded-full py-1.5 pl-8 pr-4 text-[11px] font-medium transition-all outline-none border bg-slate-100 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#ae7fcb]/30"
-                            />
-                            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-450" />
-
-                            {/* Dropdown Results */}
-                            <AnimatePresence>
-                                {showResultsDropdown && searchQuery.length >= 2 && (
-                                    <motion.div 
-                                        initial={{ opacity: 0, y: 8 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 8 }}
-                                        className="absolute top-full right-0 mt-3 w-[280px] bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden p-2 z-50 text-slate-800"
-                                    >
-                                        {isSearching ? (
-                                            <div className="p-6 text-center text-slate-400 text-[10px] uppercase font-bold tracking-wider">
-                                                Searching...
-                                            </div>
-                                        ) : searchResults.length > 0 ? (
-                                            <div className="space-y-1">
-                                                {searchResults.map(p => (
-                                                    <Link 
-                                                        key={p._id} 
-                                                        href={`/catalog/${p.slug}`}
-                                                        className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors"
-                                                    >
-                                                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-50 border border-slate-100">
-                                                            <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
-                                                        </div>
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="text-[11px] font-bold text-slate-700 truncate">{p.name}</div>
-                                                            <div className="text-[9px] text-slate-400">from ₹{p.defaultPrice}</div>
-                                                        </div>
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div className="p-6 text-center text-slate-400 text-[10px]">No results found</div>
-                                        )}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                    {/* Navigation links and Search/Actions grouped to the right */}
+                    <div className="flex items-center gap-8">
+                        {/* Nav Links */}
+                        <div className="hidden lg:flex items-center space-x-8">
+                            {[
+                                { name: "Home", href: "/" },
+                                { name: "Catalogue", href: "/catalog" },
+                                { name: "Digital Invites", href: "/digital-invites" },
+                                { name: "Our Story", href: "/about" },
+                                { name: "Policies", href: "/policies" }
+                            ].map((link) => (
+                                <Link 
+                                    key={link.name} 
+                                    href={link.href}
+                                    className="text-[12px] font-medium uppercase tracking-[0.1em] py-1.5 transition-colors relative group text-slate-600 hover:text-[#ae7fcb]"
+                                >
+                                    {link.name}
+                                    <span className="absolute bottom-0 left-0 w-0 h-[1.5px] transition-all duration-300 group-hover:w-full bg-[#ae7fcb]" />
+                                </Link>
+                            ))}
                         </div>
 
-                        {/* Mobile Menu Trigger */}
-                        <button 
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="lg:hidden p-2 text-slate-700 hover:opacity-80 transition-opacity"
-                        >
-                            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                        </button>
+                        {/* Search & Actions */}
+                        <div className="flex items-center gap-4 relative">
+                            <div className="relative hidden md:block w-60">
+                                <input 
+                                    type="text"
+                                    placeholder="Search catalogue..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onFocus={() => setShowResultsDropdown(true)}
+                                    onBlur={() => setTimeout(() => setShowResultsDropdown(false), 200)}
+                                    className="w-full rounded-full py-1.5 pl-8 pr-4 text-[11px] font-medium transition-all outline-none border bg-slate-100 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#ae7fcb]/30"
+                                />
+                                <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-450" />
+
+                                {/* Dropdown Results */}
+                                <AnimatePresence>
+                                    {showResultsDropdown && searchQuery.length >= 2 && (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: 8 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 8 }}
+                                            className="absolute top-full right-0 mt-3 w-[280px] bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden p-2 z-50 text-slate-800"
+                                        >
+                                            {isSearching ? (
+                                                <div className="p-6 text-center text-slate-400 text-[10px] uppercase font-bold tracking-wider">
+                                                    Searching...
+                                                </div>
+                                            ) : searchResults.length > 0 ? (
+                                                <div className="space-y-1">
+                                                    {searchResults.map(p => (
+                                                        <Link 
+                                                            key={p._id} 
+                                                            href={`/catalog/${p.slug}`}
+                                                            className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors"
+                                                        >
+                                                            <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-50 border border-slate-100">
+                                                                <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="text-[11px] font-bold text-slate-700 truncate">{p.name}</div>
+                                                                <div className="text-[9px] text-slate-400">from ₹{p.defaultPrice}</div>
+                                                            </div>
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="p-6 text-center text-slate-400 text-[10px]">No results found</div>
+                                            )}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            {/* Mobile Menu Trigger */}
+                            <button 
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                className="lg:hidden p-2 text-slate-700 hover:opacity-80 transition-opacity"
+                            >
+                                {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -440,14 +443,14 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 href={cat.isRoute ? "/digital-invites" : `/catalog?category=${cat.slug}`}
                                 className="flex flex-col items-center shrink-0 snap-center group"
                             >
-                                <div className="w-[72px] h-[72px] md:w-[92px] md:h-[92px] rounded-full overflow-hidden border-2 border-[#EDE8F6] group-hover:border-[#ae7fcb] transition-all duration-300 shadow-md">
+                                <div className="w-[72px] h-[72px] md:w-[92px] md:h-[92px] rounded-none overflow-hidden border-2 border-[#EDE8F6] group-hover:border-[#ae7fcb] transition-all duration-300 shadow-md">
                                     <img 
                                         src={cat.img} 
                                         alt={cat.name} 
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.06]" 
                                     />
                                 </div>
-                                <span className="text-[12px] md:text-[13px] font-semibold text-slate-700 group-hover:text-[#ae7fcb] mt-3 transition-colors duration-300 text-center max-w-[110px] leading-tight">
+                                <span className="text-[10px] md:text-[11px] font-semibold text-slate-700 group-hover:text-[#ae7fcb] mt-3 transition-colors duration-300 text-center max-w-[110px] leading-tight">
                                     {cat.name}
                                 </span>
                             </Link>
@@ -560,11 +563,11 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         {bestSellers.map((product, idx) => (
                             <motion.div 
                                 key={product._id}
-                                className="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
+                                className="bg-white border border-slate-100 rounded-none overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
                                 style={{ transitionDelay: `${idx * 60}ms` }}
                             >
                                 {/* Image Zone */}
-                                <div className="aspect-[3/4] w-full overflow-hidden relative bg-slate-50">
+                                <div className="aspect-square w-full overflow-hidden relative bg-slate-50">
                                     <img 
                                         src={product.images[0]} 
                                         alt={product.name} 
@@ -588,13 +591,13 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 {/* Info Zone */}
                                 <div className="p-3.5 flex flex-col flex-1 justify-between gap-1">
                                     <div>
-                                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#ae7fcb]">{product.categoryName || 'Wedding Invitation'}</span>
-                                        <h3 className="font-bold text-slate-800 text-[12px] md:text-[13px] line-clamp-2 mt-0.5 group-hover:text-[#ae7fcb] transition-colors leading-tight">
+                                        <span className="text-[8px] font-bold uppercase tracking-widest text-[#ae7fcb]">{product.categoryName || 'Wedding Invitation'}</span>
+                                        <h3 className="font-bold text-slate-800 text-[10px] md:text-[11px] line-clamp-2 mt-0.5 group-hover:text-[#ae7fcb] transition-colors leading-tight font-sans">
                                             {product.name}
                                         </h3>
-                                        <span className="text-[9px] text-slate-400 font-semibold block mt-0.5">SKU: {product.sku || 'ZBZ-100'}</span>
+                                        <span className="text-[8px] text-slate-400 font-semibold block mt-0.5">SKU: {product.sku || 'ZBZ-100'}</span>
                                     </div>
-                                    <span className="font-bold text-[#ae7fcb] text-xs mt-2 block">from ₹{product.defaultPrice || 50}</span>
+                                    <span className="font-bold text-[#ae7fcb] text-[10px] mt-2 block">from ₹{product.defaultPrice || 50}</span>
                                 </div>
                             </motion.div>
                         ))}
@@ -622,11 +625,11 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         {newArrivals.map((product, idx) => (
                             <motion.div 
                                 key={product._id}
-                                className="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
+                                className="bg-white border border-slate-100 rounded-none overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
                                 style={{ transitionDelay: `${idx * 60}ms` }}
                             >
                                 {/* Image Zone */}
-                                <div className="aspect-[3/4] w-full overflow-hidden relative bg-slate-50">
+                                <div className="aspect-square w-full overflow-hidden relative bg-slate-50">
                                     <img 
                                         src={product.images[0]} 
                                         alt={product.name} 
@@ -650,13 +653,13 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 {/* Info Zone */}
                                 <div className="p-3.5 flex flex-col flex-1 justify-between gap-1">
                                     <div>
-                                        <span className="text-[9px] font-bold uppercase tracking-widest text-[#ae7fcb]">{product.categoryName || 'Wedding Invitation'}</span>
-                                        <h3 className="font-bold text-slate-800 text-[12px] md:text-[13px] line-clamp-2 mt-0.5 group-hover:text-[#ae7fcb] transition-colors leading-tight">
+                                        <span className="text-[8px] font-bold uppercase tracking-widest text-[#ae7fcb]">{product.categoryName || 'Wedding Invitation'}</span>
+                                        <h3 className="font-bold text-slate-800 text-[10px] md:text-[11px] line-clamp-2 mt-0.5 group-hover:text-[#ae7fcb] transition-colors leading-tight font-sans">
                                             {product.name}
                                         </h3>
-                                        <span className="text-[9px] text-slate-400 font-semibold block mt-0.5">SKU: {product.sku || 'ZBZ-100'}</span>
+                                        <span className="text-[8px] text-slate-400 font-semibold block mt-0.5">SKU: {product.sku || 'ZBZ-100'}</span>
                                     </div>
-                                    <span className="font-bold text-[#ae7fcb] text-xs mt-2 block">from ₹{product.defaultPrice || 50}</span>
+                                    <span className="font-bold text-[#ae7fcb] text-[10px] mt-2 block">from ₹{product.defaultPrice || 50}</span>
                                 </div>
                             </motion.div>
                         ))}
@@ -720,7 +723,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 key={slab.title} 
                                 href={slab.link}
                                 className={cn(
-                                    "p-6 rounded-2xl border flex flex-col justify-between min-h-[160px] relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group iz-animate",
+                                    "p-6 rounded-none border flex flex-col justify-between min-h-[160px] relative transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group iz-animate",
                                     slab.popular 
                                         ? "bg-slate-900 border-slate-900 text-white shadow-md shadow-slate-950/10" 
                                         : "bg-white border-[#ae7fcb]/10 text-slate-700 hover:border-[#ae7fcb]/40"
@@ -733,8 +736,8 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                     </span>
                                 )}
                                 <div className="space-y-1">
-                                    <h3 className={cn("text-lg font-bold font-sans", slab.popular ? "text-[#D6BFA3]" : "text-slate-800")}>{slab.title}</h3>
-                                    <p className={cn("text-[10px] font-medium", slab.popular ? "text-slate-400" : "text-slate-500")}>{slab.subtitle}</p>
+                                    <h3 className={cn("text-[13px] font-bold font-sans", slab.popular ? "text-[#D6BFA3]" : "text-slate-800")}>{slab.title}</h3>
+                                    <p className={cn("text-[9px] font-medium", slab.popular ? "text-slate-400" : "text-slate-500")}>{slab.subtitle}</p>
                                 </div>
                                 <span className={cn("text-[9px] font-bold uppercase tracking-wider flex items-center gap-1 mt-6", slab.popular ? "text-white" : "text-[#ae7fcb]")}>
                                     Browse Range <ArrowRight size={10} className="transition-transform group-hover:translate-x-1" />
@@ -826,7 +829,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 href={post.link} 
                                 target="_blank" 
                                 rel="noopener noreferrer"
-                                className="aspect-square bg-slate-100 rounded-xl overflow-hidden relative border border-slate-100 group shadow-sm hover:shadow-md transition-all duration-300 iz-animate"
+                                className="aspect-square bg-slate-100 rounded-none overflow-hidden relative border border-slate-100 group shadow-sm hover:shadow-md transition-all duration-300 iz-animate"
                                 style={{ transitionDelay: `${idx * 60}ms` }}
                             >
                                 <img src={post.url} alt="instagram preview" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-103" />
@@ -908,21 +911,21 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         {TESTIMONIALS.map((test, idx) => (
                             <div 
                                 key={test.name}
-                                className="bg-white p-6 rounded-2xl border border-[#EDE8F6] shadow-sm flex flex-col justify-between space-y-4 iz-animate"
+                                className="bg-white p-6 rounded-none border border-[#EDE8F6] shadow-sm flex flex-col justify-between space-y-4 iz-animate"
                                 style={{ transitionDelay: `${idx * 80}ms` }}
                             >
                                 <div className="space-y-2">
                                     {/* Star rating placeholder */}
                                     <div className="flex text-amber-400 gap-0.5 text-sm">★★★★★</div>
-                                    <p className="text-slate-600 text-xs italic leading-relaxed font-light">"{test.quote}"</p>
+                                    <p className="text-slate-600 text-[11px] italic leading-relaxed font-light">"{test.quote}"</p>
                                 </div>
                                 <div className="flex items-center gap-2 border-t border-[#EDE8F6]/30 pt-3">
-                                    <div className="w-8 h-8 rounded-full bg-[#EDE8F6] flex items-center justify-center font-bold text-[#ae7fcb] text-xs shadow-inner uppercase">
+                                    <div className="w-8 h-8 rounded-none bg-[#EDE8F6] flex items-center justify-center font-bold text-[#ae7fcb] text-xs shadow-inner uppercase">
                                         {test.name.charAt(0)}
                                     </div>
                                     <div>
-                                        <div className="font-extrabold text-slate-800 text-[11px]">{test.name}</div>
-                                        <div className="text-[9px] text-slate-450 font-semibold">{test.location}</div>
+                                        <div className="font-extrabold text-slate-800 text-[10px]">{test.name}</div>
+                                        <div className="text-[8px] text-slate-450 font-semibold">{test.location}</div>
                                     </div>
                                 </div>
                             </div>

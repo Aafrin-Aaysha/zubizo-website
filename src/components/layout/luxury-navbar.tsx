@@ -140,8 +140,8 @@ export const LuxuryNavbar = () => {
         >
             <div className="site-container">
                 <div className="flex h-24 items-center px-4 lg:px-0">
-                    {/* 1. Brand Group (Desktop: Logo + Nav | Mobile: Icon Only) */}
-                    <div className="flex-1 lg:flex-none flex items-center justify-start gap-12">
+                    {/* 1. Brand Group (Desktop: Logo Only | Mobile: Icon Only) */}
+                    <div className="flex-1 lg:flex-none flex items-center justify-start">
                         {/* Mobile Logo Icon */}
                         <Link href="/" className="lg:hidden">
                             <LogoIcon size={32} className="transition-colors duration-300 text-[#ae7fcb]" />
@@ -156,20 +156,6 @@ export const LuxuryNavbar = () => {
                                 </span>
                             </div>
                         </Link>
-
-                        {/* Navigation Links (Desktop Only) */}
-                        <div className="hidden xl:flex items-center space-x-10">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.name}
-                                    href={link.href}
-                                    className={`font-sans text-[13px] font-medium uppercase tracking-[0.12em] transition-all relative group py-2 duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]/70 hover:text-[#ae7fcb]' : 'text-white/85 hover:text-white'}`}
-                                >
-                                    {link.name}
-                                    <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1.5px] rounded-full transition-all duration-300 group-hover:w-full ${!isDarkHeroNavbar ? 'bg-[#ae7fcb]' : 'bg-[#D6BFA3]'}`} />
-                                </Link>
-                            ))}
-                        </div>
                     </div>
 
                     {/* 2. Center Brand (Mobile Only) */}
@@ -181,11 +167,25 @@ export const LuxuryNavbar = () => {
                         </Link>
                     </div>
 
-                    {/* 3. Global Actions (Search Desktop / Menu Mobile) */}
-                    <div className="flex-1 flex items-center justify-end lg:ml-32 gap-4 min-w-[32px] lg:min-w-[320px]">
+                    {/* 3. Global Actions (Nav Links & Search Desktop / Menu Mobile) */}
+                    <div className="flex-1 flex items-center justify-end gap-8 min-w-[32px]">
+                        {/* Navigation Links (Desktop Only) */}
+                        <div className="hidden lg:flex items-center space-x-8">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.name}
+                                    href={link.href}
+                                    className={`font-sans text-[13px] font-medium uppercase tracking-[0.12em] transition-all relative group py-2 duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]/70 hover:text-[#ae7fcb]' : 'text-white/85 hover:text-white'}`}
+                                >
+                                    {link.name}
+                                    <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1.5px] rounded-full transition-all duration-300 group-hover:w-full ${!isDarkHeroNavbar ? 'bg-[#ae7fcb]' : 'bg-[#D6BFA3]'}`} />
+                                </Link>
+                            ))}
+                        </div>
+
                         {/* Search (Desktop Only) */}
-                        <div className="hidden lg:flex items-center gap-4 flex-1 justify-end">
-                            <div className="relative w-full max-w-md">
+                        <div className="hidden lg:flex items-center gap-4 justify-end w-full max-w-xs">
+                            <div className="relative w-full">
                                 <input
                                     type="text"
                                     placeholder="Search by design name or SKU..."
@@ -204,7 +204,7 @@ export const LuxuryNavbar = () => {
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 10 }}
-                                            className="absolute top-full mt-4 w-full bg-pearl-white rounded-3xl shadow-luxury border border-charcoal/5 overflow-hidden p-2 z-50"
+                                            className="absolute top-full mt-4 w-[320px] right-0 bg-pearl-white rounded-3xl shadow-luxury border border-charcoal/5 overflow-hidden p-2 z-50"
                                         >
                                             {renderSearchResults(() => setShowDesktopResults(false))}
                                         </motion.div>
