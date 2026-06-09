@@ -99,7 +99,6 @@ export async function generateMetadata(): Promise<Metadata> {
 import { CartProvider } from "@/context/cart-context";
 import { Toaster } from "react-hot-toast";
 import GoogleAnalytics from "@/components/layout/GoogleAnalytics";
-import { CustomCursor } from "@/components/ui/custom-cursor";
 import ReactQueryProvider from "@/lib/react-query-provider";
 
 export default function RootLayout({
@@ -117,7 +116,6 @@ export default function RootLayout({
       <body
         className={`${cormorantGaramond.variable} ${parisienne.variable} ${inter.variable} ${fraunces.variable} ${italiana.variable} ${dmSans.variable} antialiased`}
       >
-        <CustomCursor />
         <GoogleAnalytics GA_MEASUREMENT_ID={gaId} />
         <ReactQueryProvider>
           <CartProvider>

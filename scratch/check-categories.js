@@ -1,4 +1,3 @@
-
 require('dotenv').config({ path: '.env.local' });
 const mongoose = require('mongoose');
 
@@ -8,7 +7,9 @@ async function check() {
         const db = mongoose.connection.db;
         const categories = await db.collection('categories').find({ isDeleted: false }).toArray();
         console.log('--- CATEGORIES ---');
-        categories.forEach(c => console.log(`- ${c.name} (${c._id})`));
+        categories.forEach(c => {
+            console.log(`- Name: "${c.name}" | Slug: "${c.slug}" | Image: "${c.imageUrl || c.image || ''}"`);
+        });
         console.log('------------------');
         process.exit(0);
     } catch (err) {

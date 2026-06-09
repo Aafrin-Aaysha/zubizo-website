@@ -438,8 +438,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                             <Link 
                                 key={cat.name} 
                                 href={cat.isRoute ? "/digital-invites" : `/catalog?category=${cat.slug}`}
-                                className="flex flex-col items-center shrink-0 snap-center group iz-animate"
-                                style={{ transitionDelay: `${idx * 50}ms` }}
+                                className="flex flex-col items-center shrink-0 snap-center group"
                             >
                                 <div className="w-[72px] h-[72px] md:w-[92px] md:h-[92px] rounded-full overflow-hidden border-2 border-[#EDE8F6] group-hover:border-[#ae7fcb] transition-all duration-300 shadow-md">
                                     <img 
@@ -512,7 +511,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 >
                                     <Link 
                                         href="/catalog"
-                                        className="inline-block px-8 py-3 border border-white text-white text-xs uppercase tracking-[0.15em] font-semibold hover:bg-white hover:text-slate-900 transition-all duration-300 rounded-none"
+                                        className="inline-block px-8 py-3 border border-white text-white text-xs uppercase tracking-[0.15em] font-semibold hover:bg-white hover:text-slate-900 transition-all duration-300 rounded-full"
                                     >
                                         Explore Collection
                                     </Link>
@@ -756,9 +755,18 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                     </div>
 
                     {/* Desktop Map (Hidden on mobile) */}
-                    <div className="hidden lg:block relative max-w-3xl mx-auto mb-10 overflow-hidden bg-[#FAF8F5]/50 border border-[#ae7fcb]/10 rounded-3xl p-6 shadow-inner iz-animate">
+                    <div className="hidden lg:block relative max-w-3xl mx-auto mb-10 overflow-hidden bg-[#FAF8F5]/50 border border-[#ae7fcb]/10 rounded-3xl p-6 shadow-inner">
                         <svg viewBox="0 0 500 300" className="w-full h-auto text-purple-100 fill-current">
-                            <path d={WORLD_MAP_PATH} stroke="#EDE8F6" strokeWidth="1.5" fill="none" />
+                            {/* Detailed World Map Silhouette from Wikimedia */}
+                            <image 
+                                href="https://upload.wikimedia.org/wikipedia/commons/e/ec/World_map_blank_without_borders.svg" 
+                                x="0" 
+                                y="0" 
+                                width="500" 
+                                height="300" 
+                                opacity="0.12" 
+                                preserveAspectRatio="none"
+                            />
                             {MAP_DOTS.map((dot, idx) => (
                                 <g key={idx} className="relative cursor-pointer group">
                                     {/* Pulse circle */}
@@ -1006,14 +1014,6 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
             </footer>
             {/* Floating Action Buttons */}
             <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
-                {/* Gift/Rewards Button */}
-                <button 
-                    onClick={() => alert("Special Offer: Get 10% off on your first order! Chat with us on WhatsApp to redeem.")}
-                    className="w-12 h-12 rounded-full bg-[#6E4B8B] text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all group"
-                    aria-label="Rewards Offer"
-                >
-                    <Gift size={20} className="group-hover:animate-bounce" />
-                </button>
                 {/* WhatsApp Button */}
                 <a 
                     href="https://wa.me/918124548133" 
