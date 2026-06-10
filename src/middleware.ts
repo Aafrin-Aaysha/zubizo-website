@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
     const adminToken = request.cookies.get('admin-token')?.value;
     const employeeToken = request.cookies.get('employee-token')?.value;
 
-    // Admin Route Protection
+    // 1. Admin Route Protection
     if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
         if (!adminToken) {
             const url = request.nextUrl.clone();
@@ -14,7 +14,7 @@ export function middleware(request: NextRequest) {
         }
     }
 
-    // Employee Route Protection
+    // 2. Employee Route Protection
     if (pathname.startsWith('/employee') && pathname !== '/employee/login') {
         if (!employeeToken) {
             const url = request.nextUrl.clone();
@@ -23,23 +23,50 @@ export function middleware(request: NextRequest) {
         }
     }
 
-    // Prevent logged in admins from visiting admin login
+    // 3. Prevent logged in admins from visiting admin login
     if (pathname === '/admin/login' && adminToken) {
         const url = request.nextUrl.clone();
         url.pathname = '/admin/dashboard';
         return NextResponse.redirect(url);
     }
 
-    // Prevent logged in employees from visiting employee login
+    // 4. Prevent logged in employees from visiting employee login
     if (pathname === '/employee/login' && employeeToken) {
         const url = request.nextUrl.clone();
         url.pathname = '/employee/dashboard';
         return NextResponse.redirect(url);
     }
 
+    // 5. Coming Soon / Developing Stage Maintenance Mode for Public Pages
+    const isPublicPage = 
+        !pathname.startsWith('/admin') &&
+        !pathname.startsWith('/employee') &&
+        !pathname.startsWith('/api') &&
+        !pathname.startsWith('/coming-soon') &&
+        !pathname.includes('.') && 
+        !pathname.startsWith('/_next');
+
+    // MAINTENANCE_MODE defaults to false on the design-review branch to allow client previews
+    const isMaintenanceMode = process.env.MAINTENANCE_MODE === 'true';
+
+    if (isMaintenanceMode && isPublicPage) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/coming-soon';
+        return NextResponse.rewrite(url);
+    }
+
     return NextResponse.next();
 }
 
 export const config = {
-    matcher: ['/admin/:path*', '/employee/:path*'],
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - api (API routes)
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         */
+        '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    ],
 };

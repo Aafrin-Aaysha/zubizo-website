@@ -24,7 +24,8 @@ import {
     Zap,
     Star,
     ArrowLeft,
-    ArrowRight
+    ArrowRight,
+    Sliders
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn, getStartingPrice } from '@/lib/utils';
@@ -57,7 +58,18 @@ export default function DesignsPage() {
         isActive: true,
         images: [] as string[],
         videoUrl: '',
-        demoUrl: ''
+        demoUrl: '',
+        options: {
+            hasEnvelope: false,
+            hasRibbon: false,
+            hasWaxSeal: false,
+            hasChart: false,
+            displayModelColours: '',
+            envelopeTierBSurcharge: 3,
+            envelopeTierCSurcharge: 6,
+            ribbonPremiumSurcharge: 2,
+            images: {} as { [key: string]: string }
+        }
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -304,7 +316,18 @@ export default function DesignsPage() {
                 isActive: design.isActive !== undefined ? design.isActive : true,
                 images: design.images || [],
                 videoUrl: design.videoUrl || '',
-                demoUrl: design.demoUrl || ''
+                demoUrl: design.demoUrl || '',
+                options: {
+                    hasEnvelope: design.options?.hasEnvelope || false,
+                    hasRibbon: design.options?.hasRibbon || false,
+                    hasWaxSeal: design.options?.hasWaxSeal || false,
+                    hasChart: design.options?.hasChart || false,
+                    displayModelColours: design.options?.displayModelColours || '',
+                    envelopeTierBSurcharge: design.options?.envelopeTierBSurcharge !== undefined ? design.options.envelopeTierBSurcharge : 3,
+                    envelopeTierCSurcharge: design.options?.envelopeTierCSurcharge !== undefined ? design.options.envelopeTierCSurcharge : 6,
+                    ribbonPremiumSurcharge: design.options?.ribbonPremiumSurcharge !== undefined ? design.options.ribbonPremiumSurcharge : 2,
+                    images: design.options?.images || {}
+                }
             });
         } else {
             setEditingDesign(null);
@@ -328,7 +351,18 @@ export default function DesignsPage() {
                 isActive: true,
                 images: [],
                 videoUrl: '',
-                demoUrl: ''
+                demoUrl: '',
+                options: {
+                    hasEnvelope: false,
+                    hasRibbon: false,
+                    hasWaxSeal: false,
+                    hasChart: false,
+                    displayModelColours: '',
+                    envelopeTierBSurcharge: 3,
+                    envelopeTierCSurcharge: 6,
+                    ribbonPremiumSurcharge: 2,
+                    images: {}
+                }
             });
         }
         setIsModalOpen(true);
@@ -744,6 +778,241 @@ export default function DesignsPage() {
                                                     })}
                                                 </div>
                                             )}
+                                        </section>
+
+                                        <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+                                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                                <Sliders size={14} /> Customization Options
+                                            </h3>
+
+                                            <div className="space-y-4">
+                                                {/* Toggles */}
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-transparent hover:border-[#ae7fcb]/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ 
+                                                            ...formData, 
+                                                            options: { ...formData.options, hasEnvelope: !formData.options.hasEnvelope } 
+                                                        })}>
+                                                        <span className="font-bold text-xs text-slate-700">Has Envelope</span>
+                                                        <div className={cn("w-8 h-5 rounded-full relative transition-all", formData.options.hasEnvelope ? "bg-[#ae7fcb]" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all", formData.options.hasEnvelope ? "left-3.5" : "left-0.5")} />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-transparent hover:border-[#ae7fcb]/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ 
+                                                            ...formData, 
+                                                            options: { ...formData.options, hasRibbon: !formData.options.hasRibbon } 
+                                                        })}>
+                                                        <span className="font-bold text-xs text-slate-700">Has Ribbon</span>
+                                                        <div className={cn("w-8 h-5 rounded-full relative transition-all", formData.options.hasRibbon ? "bg-[#ae7fcb]" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all", formData.options.hasRibbon ? "left-3.5" : "left-0.5")} />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-transparent hover:border-[#ae7fcb]/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ 
+                                                            ...formData, 
+                                                            options: { ...formData.options, hasWaxSeal: !formData.options.hasWaxSeal } 
+                                                        })}>
+                                                        <span className="font-bold text-xs text-slate-700">Has Wax Seal</span>
+                                                        <div className={cn("w-8 h-5 rounded-full relative transition-all", formData.options.hasWaxSeal ? "bg-[#ae7fcb]" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all", formData.options.hasWaxSeal ? "left-3.5" : "left-0.5")} />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-transparent hover:border-[#ae7fcb]/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ 
+                                                            ...formData, 
+                                                            options: { ...formData.options, hasChart: !formData.options.hasChart } 
+                                                        })}>
+                                                        <span className="font-bold text-xs text-slate-700">Has Card/Chart Types</span>
+                                                        <div className={cn("w-8 h-5 rounded-full relative transition-all", formData.options.hasChart ? "bg-[#ae7fcb]" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all", formData.options.hasChart ? "left-3.5" : "left-0.5")} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Display Model Colours Text */}
+                                                <div>
+                                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5 block">Display Model Colours Notice</label>
+                                                    <input
+                                                        type="text"
+                                                        value={formData.options.displayModelColours}
+                                                        onChange={e => setFormData({
+                                                            ...formData,
+                                                            options: { ...formData.options, displayModelColours: e.target.value }
+                                                        })}
+                                                        placeholder="e.g. Navy envelope, Ivory Satin ribbon"
+                                                        className="w-full px-4 py-2.5 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-[#ae7fcb] outline-none transition-all text-xs font-bold text-slate-700"
+                                                    />
+                                                </div>
+
+                                                {/* Surcharges Section */}
+                                                <div className="grid grid-cols-3 gap-3">
+                                                    <div>
+                                                        <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 block">Env Tier B (+)</label>
+                                                        <input
+                                                            type="number"
+                                                            value={formData.options.envelopeTierBSurcharge}
+                                                            onChange={e => setFormData({
+                                                                ...formData,
+                                                                options: { ...formData.options, envelopeTierBSurcharge: e.target.value === '' ? 0 : parseInt(e.target.value) }
+                                                            })}
+                                                            className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-[#ae7fcb]"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 block">Env Tier C (+)</label>
+                                                        <input
+                                                            type="number"
+                                                            value={formData.options.envelopeTierCSurcharge}
+                                                            onChange={e => setFormData({
+                                                                ...formData,
+                                                                options: { ...formData.options, envelopeTierCSurcharge: e.target.value === '' ? 0 : parseInt(e.target.value) }
+                                                            })}
+                                                            className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-[#ae7fcb]"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 block">Ribbon Prem (+)</label>
+                                                        <input
+                                                            type="number"
+                                                            value={formData.options.ribbonPremiumSurcharge}
+                                                            onChange={e => setFormData({
+                                                                ...formData,
+                                                                options: { ...formData.options, ribbonPremiumSurcharge: e.target.value === '' ? 0 : parseInt(e.target.value) }
+                                                            })}
+                                                            className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-[#ae7fcb]"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Image Overrides Manager */}
+                                                <div className="space-y-4 pt-4 border-t border-gray-100">
+                                                    <h4 className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Design-Specific Option Image Overrides</h4>
+                                                    <div className="max-h-[220px] overflow-y-auto space-y-2 pr-1 scrollbar-thin">
+                                                        {(() => {
+                                                            const keys: { label: string; key: string }[] = [];
+                                                            if (formData.options.hasEnvelope) {
+                                                                keys.push(
+                                                                    { label: 'Envelope Type: Landscape', key: 'envelope_type_landscape' },
+                                                                    { label: 'Envelope Type: Portrait', key: 'envelope_type_portrait' },
+                                                                    { label: 'Envelope Type: Pouch', key: 'envelope_type_pouch' }
+                                                                );
+                                                                const colors = [
+                                                                    'Ivory', 'Champagne', 'White', 'Blush', 'Charcoal', 'Black', 'Sage',
+                                                                    'Navy', 'Forest Green', 'Burgundy', 'Royal Blue', 'Lavender', 'Rose Gold',
+                                                                    'Gold', 'Silver', 'Coral', 'Teal'
+                                                                ];
+                                                                colors.forEach(col => {
+                                                                    keys.push({ label: `Envelope Color: ${col}`, key: `envelope_colour_${col.toLowerCase().replace(/\s+/g, '_')}` });
+                                                                });
+                                                            }
+                                                            if (formData.options.hasRibbon) {
+                                                                keys.push(
+                                                                    { label: 'Ribbon Material: Satin', key: 'ribbon_material_satin' },
+                                                                    { label: 'Ribbon Material: Organza', key: 'ribbon_material_organza' },
+                                                                    { label: 'Ribbon Width: 6mm Narrow', key: 'ribbon_width_6mm' },
+                                                                    { label: 'Ribbon Width: 15mm Medium', key: 'ribbon_width_15mm' },
+                                                                    { label: 'Ribbon Width: 25mm Wide', key: 'ribbon_width_25mm' }
+                                                                );
+                                                                const colors = ['Ivory', 'White', 'Blush', 'Sage', 'Navy', 'Gold', 'Burgundy'];
+                                                                colors.forEach(col => {
+                                                                    keys.push({ label: `Ribbon Color: ${col}`, key: `ribbon_colour_${col.toLowerCase().replace(/\s+/g, '_')}` });
+                                                                });
+                                                            }
+                                                            if (formData.options.hasWaxSeal) {
+                                                                keys.push(
+                                                                    { label: 'Wax Seal: Bronze Round', key: 'wax_seal_bronze_round' },
+                                                                    { label: 'Wax Seal: Gold Round', key: 'wax_seal_gold_round' },
+                                                                    { label: 'Wax Seal: Custom Shape', key: 'wax_seal_custom' }
+                                                                );
+                                                            }
+                                                            if (formData.options.hasChart) {
+                                                                keys.push(
+                                                                    { label: 'Chart Type: Single Card', key: 'chart_single_card' },
+                                                                    { label: 'Chart Type: Tri-fold', key: 'chart_tri_fold' },
+                                                                    { label: 'Chart Type: Booklet', key: 'chart_booklet' }
+                                                                );
+                                                            }
+
+                                                            if (keys.length === 0) {
+                                                                return <p className="text-[10px] text-slate-400 italic">Enable envelope, ribbon, wax seal, or chart to upload overrides.</p>;
+                                                            }
+
+                                                            return keys.map(({ label, key }) => {
+                                                                const value = formData.options.images?.[key] || '';
+                                                                return (
+                                                                    <div key={key} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-100 justify-between">
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <p className="text-[10px] font-bold text-slate-700 truncate">{label}</p>
+                                                                            <p className="text-[8px] text-slate-400 truncate">{value ? 'Design-specific override active' : 'Using global/default image'}</p>
+                                                                        </div>
+                                                                        <div className="flex items-center gap-2">
+                                                                            {value && (
+                                                                                <img src={value} alt="" className="w-8 h-8 object-cover rounded border border-gray-200 shrink-0" />
+                                                                            )}
+                                                                            <label className="px-2 py-1 bg-white border border-gray-200 rounded text-[9px] font-bold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer shrink-0">
+                                                                                Upload
+                                                                                <input
+                                                                                    type="file"
+                                                                                    accept="image/*"
+                                                                                    className="hidden"
+                                                                                    onChange={async (e) => {
+                                                                                        const file = e.target.files?.[0];
+                                                                                        if (!file) return;
+                                                                                        const data = new FormData();
+                                                                                        data.append('file', file);
+                                                                                        try {
+                                                                                            const res = await fetch('/api/upload', {
+                                                                                                method: 'POST',
+                                                                                                body: data
+                                                                                            });
+                                                                                            const result = await res.json();
+                                                                                            if (result.url) {
+                                                                                                setFormData(prev => ({
+                                                                                                    ...prev,
+                                                                                                    options: {
+                                                                                                        ...prev.options,
+                                                                                                        images: {
+                                                                                                            ...prev.options.images,
+                                                                                                            [key]: result.url
+                                                                                                        }
+                                                                                                    }
+                                                                                                }));
+                                                                                                toast.success('Override uploaded');
+                                                                                            }
+                                                                                        } catch (err) {
+                                                                                            toast.error('Upload failed');
+                                                                                        }
+                                                                                    }}
+                                                                                />
+                                                                            </label>
+                                                                            {value && (
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => {
+                                                                                        const copy = { ...formData.options.images };
+                                                                                        delete copy[key];
+                                                                                        setFormData({
+                                                                                            ...formData,
+                                                                                            options: { ...formData.options, images: copy }
+                                                                                        });
+                                                                                    }}
+                                                                                    className="p-1 hover:bg-red-50 text-red-400 hover:text-red-500 rounded shrink-0"
+                                                                                >
+                                                                                    <X size={12} />
+                                                                                </button>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            });
+                                                        })()}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </section>
                                     </div>
 

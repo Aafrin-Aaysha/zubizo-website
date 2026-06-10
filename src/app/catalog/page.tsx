@@ -119,25 +119,25 @@ export default async function CatalogPage({
     const serializedCategories = JSON.parse(JSON.stringify(categories));
 
     return (
-        <main className="min-h-screen bg-white">
+        <main className="min-h-screen bg-[#FAF8F5] font-dmsans">
             <LuxuryNavbar />
 
             {/* Page Header */}
-            <section className="pt-28 pb-0 bg-white border-b border-neutral-100">
+            <section className="pt-28 pb-0 bg-transparent border-b border-[#ae7fcb]/10">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     {/* Breadcrumb */}
-                    <nav className="flex items-center gap-2 pt-4 pb-2 text-[10px] font-bold uppercase tracking-widest text-lavender">
+                    <nav className="flex items-center gap-2 pt-4 pb-2 text-[10px] font-bold uppercase tracking-widest text-[#6E4B8B]">
                         <Link href="/" className="hover:opacity-60 transition-opacity">Home</Link>
                         <span className="text-neutral-300">›</span>
-                        <span className="text-neutral-400">Catalogue</span>
+                        <span className="text-slate-400">Catalogue</span>
                     </nav>
 
                     <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 pt-4 pb-8">
                         <div>
-                            <h1 className="text-3xl sm:text-5xl font-black text-neutral-900 tracking-tight font-serif">
+                            <h1 className="text-3xl sm:text-5xl font-normal text-slate-800 tracking-tight font-italiana">
                                 Our Catalogue
                             </h1>
-                            <p className="text-neutral-400 mt-2 text-sm font-medium">
+                            <p className="text-slate-400 mt-2 text-sm font-light">
                                 {serializedDesigns.length} exquisite designs found
                             </p>
                         </div>

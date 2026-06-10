@@ -49,23 +49,23 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ s
     const serialized = JSON.parse(JSON.stringify(design));
 
     return (
-        <main className="min-h-screen bg-white">
+        <main className="min-h-screen bg-[#FAF8F5] font-dmsans">
             <LuxuryNavbar />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20">
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-2 mb-6 text-[11px] font-bold uppercase tracking-widest">
-                    <Link href="/catalog" className="text-lavender hover:opacity-70 transition-opacity">Catalogue</Link>
+                    <Link href="/catalog" className="text-[#6E4B8B] hover:opacity-70 transition-opacity">Catalogue</Link>
                     <span className="text-gray-300">›</span>
-                    <span className="text-gray-400">{categoryName}</span>
+                    <span className="text-slate-400">{categoryName}</span>
                     <span className="text-gray-300">›</span>
-                    <span className="text-gray-500 truncate max-w-[180px]">{design.name}</span>
+                    <span className="text-slate-500 truncate max-w-[180px]">{design.name}</span>
                 </nav>
 
                 {/* Back Button */}
                 <Link
                     href="/catalog"
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-lavender transition-colors mb-8 group"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-550 hover:text-[#ae7fcb] transition-colors mb-8 group"
                 >
                     <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                     Back to Catalogue

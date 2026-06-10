@@ -85,6 +85,21 @@ const DesignSchema = new mongoose.Schema({
         ref: "Category",
         required: true
     },
+    options: {
+        hasEnvelope: { type: Boolean, default: false },
+        hasRibbon: { type: Boolean, default: false },
+        hasWaxSeal: { type: Boolean, default: false },
+        hasChart: { type: Boolean, default: false },
+        displayModelColours: { type: String, default: "" },
+        envelopeTierBSurcharge: { type: Number, default: 3 },
+        envelopeTierCSurcharge: { type: Number, default: 6 },
+        ribbonPremiumSurcharge: { type: Number, default: 2 },
+        images: {
+            type: Map,
+            of: String,
+            default: {}
+        }
+    },
     isTrending: {
         type: Boolean,
         default: false

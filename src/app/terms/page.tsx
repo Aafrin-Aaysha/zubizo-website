@@ -239,7 +239,7 @@ const refundPoints = [
 function SectionNav({ sections }: { sections: PolicySection[] }) {
     return (
         <nav className="hidden lg:flex flex-col gap-1 sticky top-32 self-start w-56 shrink-0">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 mb-3 px-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-3 px-3">
                 On this page
             </p>
             {[
@@ -250,7 +250,7 @@ function SectionNav({ sections }: { sections: PolicySection[] }) {
                 <a
                     key={item.id}
                     href={`#${item.id}`}
-                    className="text-sm text-neutral-500 hover:text-charcoal font-medium px-3 py-2 rounded-xl hover:bg-neutral-50 transition-all"
+                    className="text-xs text-slate-500 hover:text-[#ae7fcb] font-medium px-3 py-2 rounded-xl hover:bg-[#ae7fcb]/5 transition-all"
                 >
                     {item.label}
                 </a>
@@ -261,30 +261,30 @@ function SectionNav({ sections }: { sections: PolicySection[] }) {
 
 export default function TermsPage() {
     return (
-        <main className="min-h-screen bg-[#fafafa]">
+        <main className="min-h-screen bg-[#FAF8F5] font-dmsans">
             <LuxuryNavbar />
 
             {/* Hero */}
-            <section className="pt-40 pb-20 bg-white border-b border-charcoal/5">
+            <section className="pt-40 pb-20 bg-transparent border-b border-[#ae7fcb]/10">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7 }}
                     >
-                        <span className="inline-flex items-center gap-2 text-lavender font-black uppercase tracking-[0.4em] text-[10px] mb-5">
+                        <span className="inline-flex items-center gap-2 text-[#6E4B8B] tracking-[0.15em] font-bold uppercase text-[10px] mb-5">
                             <FileText size={12} />
                             Legal &amp; Compliance
                         </span>
-                        <h1 className="text-5xl md:text-7xl font-black font-serif text-charcoal mb-6 tracking-tight">
+                        <h1 className="text-5xl md:text-7xl font-italiana font-normal text-slate-800 mb-6">
                             Terms &amp; Conditions
                         </h1>
-                        <p className="text-neutral-500 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-slate-550 text-sm md:text-base max-w-2xl mx-auto leading-relaxed font-light">
                             Please read these policies carefully before placing
                             your order with Zubizo. By proceeding, you agree to
                             the terms outlined below.
                         </p>
-                        <p className="mt-4 text-xs text-neutral-400 font-medium">
+                        <p className="mt-4 text-xs text-slate-400 font-medium">
                             Effective from the date of your order
                         </p>
                     </motion.div>
@@ -306,14 +306,14 @@ export default function TermsPage() {
                             viewport={{ once: true }}
                             className="flex items-center gap-4 mb-12"
                         >
-                            <div className="w-12 h-12 rounded-2xl bg-lavender/10 flex items-center justify-center text-lavender border border-lavender/20">
+                            <div className="w-12 h-12 rounded-2xl bg-[#EDE8F6] flex items-center justify-center text-[#6E4B8B] border border-[#ae7fcb]/10">
                                 <FileText size={22} />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black font-serif text-charcoal">
+                                <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800">
                                     Terms &amp; Conditions
                                 </h2>
-                                <p className="text-xs text-neutral-400 font-medium mt-0.5 uppercase tracking-wider">
+                                <p className="text-[10px] text-slate-455 font-bold mt-0.5 uppercase tracking-[0.15em]">
                                     Governing your orders with Zubizo
                                 </p>
                             </div>
@@ -330,7 +330,7 @@ export default function TermsPage() {
                                         whileInView="visible"
                                         viewport={{ once: true }}
                                         variants={fadeUp}
-                                        className="bg-white rounded-3xl border border-neutral-100 shadow-sm overflow-hidden"
+                                        className="bg-white rounded-3xl border border-[#ae7fcb]/10 shadow-sm overflow-hidden"
                                     >
                                         <div className="p-6 md:p-8">
                                             <div className="flex items-start gap-4">
@@ -343,7 +343,7 @@ export default function TermsPage() {
                                                     />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <h3 className="text-base font-black text-charcoal mb-3 uppercase tracking-wide">
+                                                    <h3 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider">
                                                         {section.heading}
                                                     </h3>
                                                     <ul className="space-y-2">
@@ -351,9 +351,9 @@ export default function TermsPage() {
                                                             (point, j) => (
                                                                 <li
                                                                     key={j}
-                                                                    className="flex items-start gap-3 text-sm text-neutral-600 leading-relaxed"
+                                                                    className="flex items-start gap-3 text-xs text-slate-600 leading-relaxed font-light"
                                                                 >
-                                                                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-neutral-300 shrink-0" />
+                                                                    <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#ae7fcb] shrink-0" />
                                                                     {point}
                                                                 </li>
                                                             )
@@ -376,14 +376,14 @@ export default function TermsPage() {
                             viewport={{ once: true }}
                             className="flex items-center gap-4 mb-12"
                         >
-                            <div className="w-12 h-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600 border border-teal-100">
+                            <div className="w-12 h-12 rounded-2xl bg-[#EDE8F6] flex items-center justify-center text-[#6E4B8B] border border-[#ae7fcb]/10">
                                 <Truck size={22} />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black font-serif text-charcoal">
+                                <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800">
                                     Shipping Policy
                                 </h2>
-                                <p className="text-xs text-neutral-400 font-medium mt-0.5 uppercase tracking-wider">
+                                <p className="text-[10px] text-slate-455 font-bold mt-0.5 uppercase tracking-[0.15em]">
                                     Delivery timelines &amp; logistics
                                 </p>
                             </div>
@@ -398,13 +398,13 @@ export default function TermsPage() {
                                     whileInView="visible"
                                     viewport={{ once: true }}
                                     variants={fadeUp}
-                                    className="bg-white rounded-3xl border border-neutral-100 shadow-sm overflow-hidden"
+                                    className="bg-white rounded-3xl border border-[#ae7fcb]/10 shadow-sm overflow-hidden"
                                 >
                                     <div className="p-6 md:p-8">
                                         <div className="flex items-start gap-4">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-teal-200 mt-2.5 shrink-0" />
+                                            <div className="w-1.5 h-1.5 rounded-full bg-[#ae7fcb] mt-2.5 shrink-0" />
                                             <div className="flex-1">
-                                                <h3 className="text-base font-black text-charcoal mb-3 uppercase tracking-wide">
+                                                <h3 className="text-xs font-bold text-slate-800 mb-3 uppercase tracking-wider">
                                                     {item.title.replace(
                                                         /^\d+\.\s/,
                                                         ""
@@ -415,9 +415,9 @@ export default function TermsPage() {
                                                         (point, j) => (
                                                             <li
                                                                 key={j}
-                                                                className="flex items-start gap-3 text-sm text-neutral-600 leading-relaxed"
+                                                                className="flex items-start gap-3 text-xs text-slate-600 leading-relaxed font-light"
                                                             >
-                                                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-neutral-300 shrink-0" />
+                                                                <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#ae7fcb] shrink-0" />
                                                                 {point}
                                                             </li>
                                                         )
@@ -439,14 +439,14 @@ export default function TermsPage() {
                             viewport={{ once: true }}
                             className="flex items-center gap-4 mb-12"
                         >
-                            <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-600 border border-rose-100">
+                            <div className="w-12 h-12 rounded-2xl bg-[#EDE8F6] flex items-center justify-center text-[#6E4B8B] border border-[#ae7fcb]/10">
                                 <RefreshCcw size={22} />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black font-serif text-charcoal">
+                                <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800">
                                     Refund Policy
                                 </h2>
-                                <p className="text-xs text-neutral-400 font-medium mt-0.5 uppercase tracking-wider">
+                                <p className="text-[10px] text-slate-455 font-bold mt-0.5 uppercase tracking-[0.15em]">
                                     Cancellations &amp; returns
                                 </p>
                             </div>
@@ -456,23 +456,23 @@ export default function TermsPage() {
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="bg-white rounded-3xl border border-neutral-100 shadow-sm overflow-hidden"
+                            className="bg-white rounded-3xl border border-[#ae7fcb]/10 shadow-sm overflow-hidden"
                         >
                             <div className="p-6 md:p-8">
                                 <div className="flex items-start gap-4">
                                     <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center shrink-0 mt-0.5">
                                         <RefreshCcw
                                             size={18}
-                                            className="text-rose-500"
+                                            className="text-[#6E4B8B]"
                                         />
                                     </div>
                                     <ul className="flex-1 space-y-3">
                                         {refundPoints.map((point, i) => (
                                             <li
                                                 key={i}
-                                                className="flex items-start gap-3 text-sm text-neutral-600 leading-relaxed"
+                                                className="flex items-start gap-3 text-xs text-slate-600 leading-relaxed font-light"
                                             >
-                                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-rose-300 shrink-0" />
+                                                <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#ae7fcb] shrink-0" />
                                                 {point}
                                             </li>
                                         ))}
@@ -487,14 +487,14 @@ export default function TermsPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="mt-6 bg-amber-50 border border-amber-100 rounded-3xl p-6 flex items-start gap-4"
+                            className="mt-6 bg-[#EDE8F6]/50 border border-[#ae7fcb]/15 rounded-3xl p-6 flex items-start gap-4"
                         >
                             <AlertTriangle
                                 size={20}
-                                className="text-amber-500 shrink-0 mt-0.5"
+                                className="text-[#6E4B8B] shrink-0 mt-0.5"
                             />
-                            <p className="text-sm text-amber-800 leading-relaxed">
-                                <strong>Important:</strong> Once a design is
+                            <p className="text-xs text-slate-600 leading-relaxed font-light">
+                                <strong className="text-slate-800 font-bold">Important:</strong> Once a design is
                                 approved and production has begun, no
                                 cancellations or refunds are possible. Please
                                 review all details thoroughly before giving your
@@ -508,16 +508,16 @@ export default function TermsPage() {
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
-                        className="border-t border-neutral-100 pt-12 text-center"
+                        className="border-t border-[#ae7fcb]/10 pt-12 text-center"
                     >
-                        <p className="text-sm text-neutral-400 leading-relaxed max-w-lg mx-auto">
+                        <p className="text-xs text-slate-455 leading-relaxed max-w-lg mx-auto font-light">
                             If you have any questions about these policies,
                             please reach out to us before placing your order.
                             We&apos;re happy to clarify anything.
                         </p>
                         <a
                             href="/contact"
-                            className="inline-flex items-center gap-2 mt-4 text-sm font-bold text-lavender hover:underline underline-offset-4"
+                            className="inline-flex items-center gap-2 mt-4 text-xs font-bold text-[#6E4B8B] hover:text-[#ae7fcb] transition-all"
                         >
                             Contact us →
                         </a>

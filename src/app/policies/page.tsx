@@ -245,13 +245,13 @@ function SectionHeading({
             className="flex items-center gap-4 mb-10"
         >
             <div
-                className={`w-12 h-12 rounded-2xl ${iconBg} flex items-center justify-center ${iconCls} border border-white shadow-sm shrink-0`}
+                className={`w-12 h-12 rounded-2xl ${iconBg} flex items-center justify-center ${iconCls} border border-[#ae7fcb]/10 shadow-sm shrink-0`}
             >
                 <Icon size={22} />
             </div>
             <div>
-                <h2 className="text-3xl font-black font-serif text-charcoal">{title}</h2>
-                <p className="text-xs text-neutral-400 font-semibold uppercase tracking-widest mt-0.5">
+                <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800">{title}</h2>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.15em] mt-0.5">
                     {subtitle}
                 </p>
             </div>
@@ -268,20 +268,20 @@ export default function PoliciesPage() {
             <LuxuryNavbar />
 
             {/* ── Hero ── */}
-            <section className="pt-40 pb-20 bg-white border-b border-charcoal/5">
+            <section className="pt-40 pb-20 bg-transparent border-b border-[#ae7fcb]/10">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 28 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7 }}
                     >
-                        <span className="text-lavender font-black uppercase tracking-[0.4em] text-[10px] mb-4 block">
+                        <span className="text-[#6E4B8B] tracking-[0.15em] font-bold uppercase text-[10px] mb-4 block">
                             LEGAL &amp; TRUST
                         </span>
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-charcoal font-serif mb-6 italic">
+                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-italiana font-normal text-slate-800 mb-6">
                             Our Policies
                         </h1>
-                        <p className="text-neutral-500 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-slate-550 text-sm md:text-base max-w-2xl mx-auto leading-relaxed font-light">
                             Transparency and trust at the heart of Zubizo. Please read
                             these policies carefully before placing your order.
                         </p>
@@ -302,7 +302,7 @@ export default function PoliciesPage() {
                             <a
                                 key={item.href}
                                 href={item.href}
-                                className="text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-full border border-neutral-200 text-neutral-500 hover:border-lavender hover:text-lavender bg-white transition-all"
+                                className="text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-full border border-[#ae7fcb]/20 text-slate-600 hover:border-[#ae7fcb] hover:text-[#ae7fcb] bg-white transition-all"
                             >
                                 {item.label}
                             </a>
@@ -335,7 +335,7 @@ export default function PoliciesPage() {
                                     whileInView="visible"
                                     viewport={{ once: true }}
                                     variants={fadeUp}
-                                    className={`bg-white rounded-3xl border ${item.border} shadow-sm overflow-hidden`}
+                                    className={`bg-white rounded-3xl border border-[#ae7fcb]/10 shadow-sm overflow-hidden`}
                                 >
                                     <div className="p-6 md:p-8">
                                         {/* Card header */}
@@ -346,18 +346,18 @@ export default function PoliciesPage() {
                                                 <Icon size={20} />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                    <h3 className="text-base font-black text-charcoal uppercase tracking-wide">
-                                                        {item.title}
-                                                    </h3>
+                                                <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">
+                                                    {item.title}
+                                                </h3>
 
                                                 {/* Points */}
                                                 <ul className="space-y-2.5">
                                                     {item.points.map((point, j) => (
                                                         <li
                                                             key={j}
-                                                            className="flex items-start gap-3 text-sm text-neutral-600 leading-relaxed"
+                                                            className="flex items-start gap-3 text-xs text-slate-600 leading-relaxed font-light"
                                                         >
-                                                            <span className={`mt-2 w-1.5 h-1.5 rounded-full ${item.bg} ring-1 ring-offset-1 ${item.color.replace("text-", "ring-")} shrink-0`} />
+                                                            <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#ae7fcb] shrink-0" />
                                                             {point}
                                                         </li>
                                                     ))}
@@ -402,21 +402,21 @@ export default function PoliciesPage() {
                                     whileInView="visible"
                                     viewport={{ once: true }}
                                     variants={fadeUp}
-                                    className="bg-white rounded-3xl border border-neutral-100 shadow-sm p-6"
+                                    className="bg-white rounded-3xl border border-[#ae7fcb]/10 shadow-sm p-6"
                                 >
                                     <div className={`w-10 h-10 rounded-xl ${item.bg} flex items-center justify-center ${item.color} mb-4`}>
                                         <Icon size={18} />
                                     </div>
-                                    <h3 className="text-sm font-black text-charcoal uppercase tracking-wide mb-3">
+                                    <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">
                                         {item.title}
                                     </h3>
                                     <ul className="space-y-2">
                                         {item.points.map((point, j) => (
                                             <li
                                                 key={j}
-                                                className="flex items-start gap-2.5 text-sm text-neutral-600 leading-relaxed"
+                                                className="flex items-start gap-2.5 text-xs text-slate-600 leading-relaxed font-light"
                                             >
-                                                <span className="mt-2 w-1.5 h-1.5 rounded-full bg-neutral-300 shrink-0" />
+                                                <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#ae7fcb] shrink-0" />
                                                 {point}
                                             </li>
                                         ))}
@@ -441,7 +441,7 @@ export default function PoliciesPage() {
                         initial={{ opacity: 0, y: 18 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="bg-white rounded-3xl border border-rose-100 shadow-sm p-6 md:p-8"
+                        className="bg-white rounded-3xl border border-[#ae7fcb]/10 shadow-sm p-6 md:p-8"
                     >
                         <ul className="space-y-4">
                             {refundPoints.map((point, i) => (
@@ -449,8 +449,8 @@ export default function PoliciesPage() {
                                     key={i}
                                     className="flex items-start gap-4"
                                 >
-                                    <div className="w-1.5 h-1.5 rounded-full bg-rose-200 mt-2.5 shrink-0" />
-                                    <p className="text-sm text-neutral-700 leading-relaxed">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#ae7fcb] mt-2.5 shrink-0" />
+                                    <p className="text-xs text-slate-600 leading-relaxed font-light">
                                         {point}
                                     </p>
                                 </li>
@@ -464,11 +464,11 @@ export default function PoliciesPage() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.15 }}
-                        className="mt-5 bg-amber-50 border border-amber-100 rounded-3xl p-5 flex items-start gap-4"
+                        className="mt-5 bg-[#EDE8F6]/50 border border-[#ae7fcb]/15 rounded-3xl p-5 flex items-start gap-4"
                     >
-                        <AlertTriangle size={20} className="text-amber-500 shrink-0 mt-0.5" />
-                        <p className="text-sm text-amber-800 leading-relaxed">
-                            <strong>Important:</strong> Once a design is approved and production
+                        <AlertTriangle size={20} className="text-[#6E4B8B] shrink-0 mt-0.5" />
+                        <p className="text-xs text-slate-600 leading-relaxed font-light">
+                            <strong className="text-slate-800 font-bold">Important:</strong> Once a design is approved and production
                             has begun, no cancellations or refunds are possible. Please review
                             all details thoroughly before giving your approval.
                         </p>
@@ -480,15 +480,15 @@ export default function PoliciesPage() {
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    className="border-t border-neutral-100 pt-12 text-center"
+                    className="border-t border-[#ae7fcb]/10 pt-12 text-center"
                 >
-                    <p className="text-sm text-neutral-400 leading-relaxed max-w-lg mx-auto">
+                    <p className="text-xs text-slate-450 leading-relaxed max-w-lg mx-auto font-light">
                         Have questions about any of these policies? Reach out to us before
                         placing your order — we&apos;re happy to clarify anything.
                     </p>
                     <a
                         href="/contact"
-                        className="inline-flex items-center gap-2 mt-4 text-sm font-bold text-lavender hover:underline underline-offset-4 transition-all"
+                        className="inline-flex items-center gap-2 mt-4 text-xs font-bold text-[#6E4B8B] hover:text-[#ae7fcb] transition-all"
                     >
                         Contact us →
                     </a>

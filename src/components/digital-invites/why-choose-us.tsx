@@ -8,31 +8,31 @@ const reasons = [
     title: "Premium Quality",
     desc: "Artisanal designs crafted by world-class experts with an eye for luxury.",
     icon: ShieldCheck,
-    accent: "bg-lavender/10 text-lavender"
+    accent: "bg-[#EDE8F6] text-[#6E4B8B]"
   },
   {
     title: "Fast Delivery",
     desc: "Experience rapid turnaround times with digital invites delivered with premium speed.",
     icon: Zap,
-    accent: "bg-blush-rose text-lavender"
+    accent: "bg-[#EDE8F6] text-[#6E4B8B]"
   },
   {
     title: "Affordable Luxury",
     desc: "Experience high-end design without the traditional price tag.",
     icon: Scissors,
-    accent: "bg-lavender/10 text-lavender"
+    accent: "bg-[#EDE8F6] text-[#6E4B8B]"
   },
   {
     title: "Personalized Support",
     desc: "Our dedicated designers work with you to ensure every detail is perfect.",
     icon: Users,
-    accent: "bg-champagne-cream text-soft-gold"
+    accent: "bg-[#EDE8F6] text-[#6E4B8B]"
   },
   {
     title: "Mobile First Design",
     desc: "Optimized for all modern smartphones for a seamless guest experience.",
     icon: Smartphone,
-    accent: "bg-pearl-white text-charcoal/50"
+    accent: "bg-[#EDE8F6] text-[#6E4B8B]"
   }
 ];
 
@@ -47,8 +47,8 @@ export const WhyChooseUs = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-serif text-charcoal mb-4 italic">The Zubizo Promise</h2>
-            <p className="text-charcoal/50 font-medium max-w-xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-italiana font-normal text-slate-800 mb-4">The Zubizo Promise</h2>
+            <p className="text-slate-500 font-light max-w-xl mx-auto">
               Everything we do is built around creating an unforgettable first impression.
             </p>
           </motion.div>
@@ -67,8 +67,8 @@ export const WhyChooseUs = () => {
               <div className={`w-20 h-20 rounded-[32px] flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-sm ${reason.accent}`}>
                 <reason.icon size={28} />
               </div>
-              <h4 className="text-lg font-bold text-charcoal mb-2">{reason.title}</h4>
-              <p className="text-xs text-charcoal/40 leading-relaxed font-medium">
+              <h4 className="text-base font-bold text-slate-800 mb-2">{reason.title}</h4>
+              <p className="text-xs text-slate-500 leading-relaxed font-light">
                 {reason.desc}
               </p>
             </motion.div>

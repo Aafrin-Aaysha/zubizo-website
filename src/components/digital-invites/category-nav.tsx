@@ -12,8 +12,8 @@ const categoryCards = [
     description: "High-resolution artisanal designs ready for WhatsApp sharing.",
     icon: Image,
     href: "#pricing",
-    accent: "bg-lavender/10",
-    textColor: "text-lavender",
+    accent: "bg-[#EDE8F6]",
+    textColor: "text-[#6E4B8B]",
     isPremium: false,
     label: null
   },
@@ -23,8 +23,8 @@ const categoryCards = [
     description: "Cinematic animations with custom music for a grand reveal.",
     icon: Play,
     href: "#pricing",
-    accent: "bg-blush-rose",
-    textColor: "text-lavender",
+    accent: "bg-[#EDE8F6]",
+    textColor: "text-[#6E4B8B]",
     isPremium: false,
     label: null
   },
@@ -34,8 +34,8 @@ const categoryCards = [
     description: "Interactive, mobile-first websites with RSVP and more.",
     icon: Layout,
     href: "#pricing",
-    accent: "bg-champagne-cream",
-    textColor: "text-soft-gold",
+    accent: "bg-[#EDE8F6]",
+    textColor: "text-[#6E4B8B]",
     isPremium: true,
     label: null
   }
@@ -52,8 +52,8 @@ export const CategoryNavigation = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-serif text-charcoal mb-4">Choose Your Format</h2>
-            <p className="text-charcoal/50 font-medium max-w-xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-italiana font-normal text-slate-800 mb-4">Choose Your Format</h2>
+            <p className="text-slate-500 font-light max-w-xl mx-auto">
               Select the perfect digital experience for your wedding celebration.
             </p>
           </motion.div>
@@ -71,7 +71,7 @@ export const CategoryNavigation = () => {
             >
               {card.label && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
-                  <span className="px-4 py-1.5 bg-lavender text-white text-[10px] font-black tracking-[0.2em] rounded-full shadow-lg">
+                  <span className="px-4 py-1.5 bg-[#6E4B8B] text-white text-[10px] font-bold tracking-[0.2em] rounded-full shadow-lg">
                     {card.label}
                   </span>
                 </div>
@@ -80,8 +80,8 @@ export const CategoryNavigation = () => {
               <Link 
                 href={card.href}
                 className={cn(
-                  "flex flex-col h-full p-10 rounded-[40px] border border-charcoal/5 transition-all duration-500 hover:shadow-2xl hover:shadow-lavender/10 hover:-translate-y-2",
-                  card.isPremium ? "bg-gradient-to-br from-white to-champagne-cream ring-2 ring-soft-gold/20" : "bg-white"
+                  "flex flex-col h-full p-10 rounded-[40px] border border-charcoal/5 transition-all duration-500 hover:shadow-2xl hover:shadow-[#ae7fcb]/10 hover:-translate-y-2",
+                  card.isPremium ? "bg-gradient-to-br from-white to-[#FAF8F5] ring-2 ring-[#ae7fcb]/20" : "bg-white"
                 )}
               >
                 <div className={cn(
@@ -91,12 +91,12 @@ export const CategoryNavigation = () => {
                   <card.icon size={28} className={card.textColor} />
                 </div>
                 
-                <h3 className="text-2xl font-serif text-charcoal mb-4">{card.title}</h3>
-                <p className="text-charcoal/60 text-sm leading-relaxed mb-10 flex-grow">
+                <h3 className="text-2xl font-italiana font-normal text-slate-800 mb-4">{card.title}</h3>
+                <p className="text-slate-550 text-sm leading-relaxed mb-10 flex-grow font-light">
                   {card.description}
                 </p>
                 
-                <div className="flex items-center gap-2 text-lavender font-bold text-xs uppercase tracking-widest mt-auto">
+                <div className="flex items-center gap-2 text-[#6E4B8B] font-bold text-xs uppercase tracking-widest mt-auto">
                   Explore Now
                   <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                 </div>

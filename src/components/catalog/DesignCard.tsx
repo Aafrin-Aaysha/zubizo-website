@@ -35,7 +35,10 @@ export default function DesignCard({ design }: { design: any }) {
                 <div className="mb-3">
                     <p className="text-[8px] font-semibold text-neutral-400 uppercase tracking-widest mb-1">{design.sku}</p>
                     <Link href={`/catalog/${design.slug}`}>
-                        <h3 className="text-[10px] md:text-[11px] font-bold text-charcoal line-clamp-2 transition-colors duration-300 font-sans">
+                        <h3 
+                            className="font-bold text-charcoal line-clamp-2 transition-colors duration-300 font-sans"
+                            style={{ fontSize: '11px' }}
+                        >
                             {design.name}
                         </h3>
                     </Link>
