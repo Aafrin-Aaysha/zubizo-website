@@ -37,9 +37,36 @@ export function middleware(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
+    // 5. Coming Soon / Developing Stage Maintenance Mode for Public Pages
+    const isPublicPage = 
+        !pathname.startsWith('/admin') &&
+        !pathname.startsWith('/employee') &&
+        !pathname.startsWith('/api') &&
+        !pathname.startsWith('/coming-soon') &&
+        !pathname.includes('.') && 
+        !pathname.startsWith('/_next');
+
+    // MAINTENANCE_MODE defaults to true on master branch unless explicitly configured as 'false'
+    const isMaintenanceMode = process.env.MAINTENANCE_MODE !== 'false';
+
+    if (isMaintenanceMode && isPublicPage) {
+        const url = request.nextUrl.clone();
+        url.pathname = '/coming-soon';
+        return NextResponse.rewrite(url);
+    }
+
     return NextResponse.next();
 }
 
 export const config = {
-    matcher: ['/admin/:path*', '/employee/:path*'],
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - api (API routes)
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         */
+        '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    ],
 };
