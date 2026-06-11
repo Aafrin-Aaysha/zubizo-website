@@ -206,8 +206,9 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
                             <motion.div
                                 key={design._id}
                                 initial={{ opacity: 0, y: 24 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.45, delay: Math.min(i * 0.05, 0.45) }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true, amount: 0.05 }}
+                                transition={{ duration: 0.45, delay: Math.min((i % 4) * 0.05, 0.2) }}
                             >
                                 <DesignCard design={design} />
                             </motion.div>
