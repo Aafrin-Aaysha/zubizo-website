@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { MapPin, Phone, Instagram } from "lucide-react";
+import { MapPin, Phone, Instagram, FileText } from "lucide-react";
 import { LogoIcon } from "@/components/ui/logo-icon";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
@@ -10,7 +11,7 @@ export default function ComingSoonPage() {
     const waNumber = "918124548133";
     const instagramUrl = "https://instagram.com/zubizo.art";
     const phoneNumber = "+91 81245 48133";
-    const addressDetails = "SS Arcade, 3F, Convent Road, Cantonment, Trichy 620001";
+    const addressDetails = "SS Arcade, 3F, 3rd Floor, Convent Road, Cantonment, Trichy 620001.";
 
     const containerVariants = {
         hidden: { opacity: 0, y: 30 },
@@ -96,6 +97,14 @@ export default function ComingSoonPage() {
                             <Instagram size={18} className="text-pink-600" />
                             <span>Visit Instagram</span>
                         </a>
+
+                        <Link
+                            href="/policies"
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-full border border-slate-200 transition-all shadow-md active:scale-98"
+                        >
+                            <FileText size={18} className="text-[#6E4B8B]" />
+                            <span>Our Policies</span>
+                        </Link>
                     </motion.div>
                 </div>
 
@@ -141,6 +150,7 @@ export default function ComingSoonPage() {
                     </motion.div>
                 </div>
             </motion.div>
+
         </main>
     );
 }

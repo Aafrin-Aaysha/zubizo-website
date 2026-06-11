@@ -5,6 +5,13 @@ export function middleware(request: NextRequest) {
     const adminToken = request.cookies.get('admin-token')?.value;
     const employeeToken = request.cookies.get('employee-token')?.value;
 
+    // Redirect /terms to /policies
+    if (pathname === '/terms') {
+        const url = request.nextUrl.clone();
+        url.pathname = '/policies';
+        return NextResponse.redirect(url);
+    }
+
     // Admin Route Protection
     if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
         if (!adminToken) {
@@ -43,6 +50,7 @@ export function middleware(request: NextRequest) {
         !pathname.startsWith('/employee') &&
         !pathname.startsWith('/api') &&
         !pathname.startsWith('/coming-soon') &&
+        !pathname.startsWith('/policies') &&
         !pathname.includes('.') && 
         !pathname.startsWith('/_next');
 

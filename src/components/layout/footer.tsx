@@ -12,7 +12,7 @@ const footerLinks = [
     { name: "Home", href: "/" },
     { name: "Catalogue", href: "/catalog" },
     { name: "About", href: "/#about" },
-    { name: "Terms & Policies", href: "/terms" },
+    { name: "Terms & Policies", href: "/policies" },
     { name: "Contact", href: "/#contact" },
 ];
 
@@ -131,10 +131,10 @@ I would like to inquire about your services.`;
                         © 2026 Zubizo. All Rights Reserved.
                     </p>
                     <div className="flex items-center gap-8">
-                        <Link href="/terms" className="text-[10px] uppercase tracking-widest text-gray-400 hover:text-lavender font-bold transition-colors">
+                        <Link href="/policies" className="text-[10px] uppercase tracking-widest text-gray-400 hover:text-lavender font-bold transition-colors">
                             Privacy Policy
                         </Link>
-                        <Link href="/terms" className="text-[10px] uppercase tracking-widest text-gray-400 hover:text-lavender font-bold transition-colors">
+                        <Link href="/policies" className="text-[10px] uppercase tracking-widest text-gray-400 hover:text-lavender font-bold transition-colors">
                             Cookie Policy
                         </Link>
                     </div>
