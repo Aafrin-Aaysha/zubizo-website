@@ -85,6 +85,17 @@ const ReligiousSymbolsIcon = ({ className, strokeWidth = 1.8 }: { className?: st
     </svg>
 );
 
+const RingsIcon = ({ className, strokeWidth = 1.8 }: { className?: string; strokeWidth?: number | string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>
+        {/* Ring 1 */}
+        <circle cx="8.5" cy="14" r="5" />
+        {/* Ring 2 */}
+        <circle cx="15.5" cy="14" r="5" />
+        {/* Diamond on Ring 2 */}
+        <path d="M15.5 9l1.5-1.5-1.5-1.5-1.5 1.5z" fill="currentColor" stroke="none" />
+    </svg>
+);
+
 const CATEGORIES = [
     { name: "South Indian Traditional", slug: "south-indian-traditional-wedding", img: "https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?q=80&w=300&auto=format&fit=crop" },
     { name: "Modern & Minimal", slug: "modern-minimal", img: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=300&auto=format&fit=crop" },
@@ -102,8 +113,8 @@ const CATEGORY_ICONS: { [key: string]: React.ComponentType<any> } = {
     "south-indian-traditional-wedding": TempleIcon,
     "modern-minimal": Feather,
     "luxury": Gem,
-    "religious-cultural": ReligiousSymbolsIcon,
-    "engagement": HeartHandshake,
+    "religious-cultural": HeartHandshake,
+    "engagement": RingsIcon,
     "image-invite": Image,
     "video-invite": Video,
     "website-invite": Globe,
@@ -227,17 +238,47 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
         {
             eyebrow: "Bespoke Invitation Atelier",
             title: "Crafting Love Stories on Premium Paper",
-            bg: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=1200&auto=format&fit=crop"
+            bg: "/img1.jpg"
         },
         {
             eyebrow: "Exquisite Craftsmanship",
             title: "Where Tradition Meets Luxury Design",
-            bg: "https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?q=80&w=1200&auto=format&fit=crop"
+            bg: "/img2.jpg"
         },
         {
             eyebrow: "Artisanal Wedding Suites",
             title: "Your Perfect Invitation, Beautifully Made",
-            bg: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1200&auto=format&fit=crop"
+            bg: "/img3.jpg"
+        },
+        {
+            eyebrow: "Couture Invitations",
+            title: "Elegance Captured in Every Detail",
+            bg: "/img4.jpg"
+        },
+        {
+            eyebrow: "Luxury Finishes",
+            title: "Handcrafted with Passion & Precision",
+            bg: "/img5.jpg"
+        },
+        {
+            eyebrow: "Timeless Keepsakes",
+            title: "Designed to Tell Your Unique Story",
+            bg: "/img6.jpg"
+        },
+        {
+            eyebrow: "Exclusive Collections",
+            title: "A Perfect Beginning to Your Journey",
+            bg: "/img7.jpg"
+        },
+        {
+            eyebrow: "Fine Art Stationery",
+            title: "Premium Prints & Artisanal Textures",
+            bg: "/img8.jpg"
+        },
+        {
+            eyebrow: "Bespoke Couture",
+            title: "Sophisticated Designs for Every Occasion",
+            bg: "/img9.jpg"
         }
     ];
 
@@ -671,23 +712,21 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                     </div>
 
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        {INSTAGRAM_POSTS.map((post, idx) => (
-                            <a 
-                                key={post.id} 
-                                href={post.link} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="aspect-square bg-slate-100 rounded-xl overflow-hidden relative border border-slate-100 group shadow-sm hover:shadow-md transition-all duration-300 iz-animate"
+                        {bestSellers.map((product, idx) => (
+                            <Link 
+                                key={product._id} 
+                                href={`/catalog/${product.slug}`}
+                                className="aspect-square bg-slate-100 rounded-xl overflow-hidden relative border border-slate-100 group shadow-sm hover:shadow-md transition-all duration-300 iz-animate block"
                                 style={{ transitionDelay: `${idx * 60}ms` }}
                             >
-                                <img src={post.url} alt="instagram preview" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-103" />
-                                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <div className="text-center text-white space-y-1 scale-95 group-hover:scale-100 transition-transform duration-300">
-                                        <Instagram size={20} className="mx-auto" />
-                                        <span className="text-[10px] font-bold tracking-wider uppercase block">@zubizo.art</span>
+                                <img src={product.images[0] || '/placeholder.png'} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-103" />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4 text-center">
+                                    <div className="text-white space-y-1 scale-95 group-hover:scale-100 transition-transform duration-300">
+                                        <span className="text-[11px] font-bold tracking-wider uppercase block leading-tight">{product.name}</span>
+                                        <span className="text-[9px] font-medium tracking-widest uppercase block opacity-85 mt-1">View Design →</span>
                                     </div>
                                 </div>
-                            </a>
+                            </Link>
                         ))}
                     </div>
                 </div>
