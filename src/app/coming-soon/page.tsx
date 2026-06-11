@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { MapPin, Phone, Instagram } from "lucide-react";
 import { LogoIcon } from "@/components/ui/logo-icon";
@@ -140,6 +141,21 @@ export default function ComingSoonPage() {
                         </div>
                     </motion.div>
                 </div>
+            </motion.div>
+
+            {/* Bottom policies link */}
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.6 }}
+                className="absolute bottom-6 left-0 right-0 text-center z-10"
+            >
+                <Link 
+                    href="/policies" 
+                    className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6E4B8B]/60 hover:text-[#6E4B8B] transition-colors border-b border-transparent hover:border-[#6E4B8B]/40 pb-0.5"
+                >
+                    View Our Policies
+                </Link>
             </motion.div>
         </main>
     );
