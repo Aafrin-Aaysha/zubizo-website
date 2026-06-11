@@ -50,7 +50,6 @@ export function middleware(request: NextRequest) {
         !pathname.startsWith('/employee') &&
         !pathname.startsWith('/api') &&
         !pathname.startsWith('/coming-soon') &&
-        !pathname.startsWith('/policies') &&
         !pathname.includes('.') && 
         !pathname.startsWith('/_next');
 
