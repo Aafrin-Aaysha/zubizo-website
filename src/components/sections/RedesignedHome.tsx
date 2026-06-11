@@ -203,6 +203,16 @@ const NUMBER_CARDS_CONFIG = [
 ];
 
 export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: RedesignedHomeProps) {
+    const [isDesktop, setIsDesktop] = useState(true);
+    useEffect(() => {
+        const handleResize = () => {
+            setIsDesktop(window.innerWidth >= 1024);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
     // Scroll tracking for Navbar & Scroll Animations
     const [scrolled, setScrolled] = useState(false);
     useEffect(() => {
@@ -361,49 +371,35 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 >
                                     <motion.div
                                         className="flex flex-col items-center"
-                                        initial={{ y: 40, opacity: 0 }}
-                                        whileInView={{ y: 0, opacity: 1 }}
+                                        initial={isDesktop ? undefined : { y: 35, opacity: 0 }}
+                                        whileInView={isDesktop ? undefined : { y: 0, opacity: 1 }}
                                         viewport={{ once: true, amount: 0.1 }}
                                         transition={{ 
-                                            type: "spring", 
-                                            stiffness: 140, 
-                                            damping: 18, 
-                                            delay: idx * 0.05
+                                            type: "tween", 
+                                            ease: "easeOut",
+                                            duration: 0.45, 
+                                            delay: idx * 0.04
                                         }}
                                     >
-                                        {/* Floating wave animation wrapper */}
-                                        <motion.div
-                                            className="flex flex-col items-center"
-                                            animate={{
-                                                y: [0, -4, 0]
+                                        {/* Icon Circle with Hover Translation */}
+                                        <motion.div 
+                                            className="w-[72px] h-[72px] md:w-[92px] md:h-[92px] rounded-full flex items-center justify-center border-2 category-icon-circle shadow-md"
+                                            whileHover={{ 
+                                                y: -6,
+                                                scale: 1.03
                                             }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                duration: 3.2,
-                                                ease: "easeInOut",
-                                                delay: idx * 0.18
+                                            whileTap={{ scale: 0.97 }}
+                                            transition={{ 
+                                                type: "tween", 
+                                                ease: "easeOut",
+                                                duration: 0.25
                                             }}
                                         >
-                                            {/* Icon Circle with Spring Hover Translation */}
-                                            <motion.div 
-                                                className="w-[72px] h-[72px] md:w-[92px] md:h-[92px] rounded-full flex items-center justify-center border-2 category-icon-circle shadow-md"
-                                                whileHover={{ 
-                                                    y: -8,
-                                                    scale: 1.05
-                                                }}
-                                                whileTap={{ scale: 0.95 }}
-                                                transition={{ 
-                                                    type: "spring", 
-                                                    stiffness: 350, 
-                                                    damping: 15 
-                                                }}
-                                            >
-                                                <IconComponent className="w-7 h-7 md:w-9 md:h-9 transition-transform duration-300" strokeWidth={1.2} />
-                                            </motion.div>
-                                            <span className="text-[10px] md:text-[11px] font-semibold text-slate-700 group-hover:text-[#A38760] mt-3 transition-colors duration-300 text-center max-w-[110px] leading-tight">
-                                                {cat.name}
-                                            </span>
+                                            <IconComponent className="w-7 h-7 md:w-9 md:h-9 transition-transform duration-300" strokeWidth={1.2} />
                                         </motion.div>
+                                        <span className="text-[10px] md:text-[11px] font-semibold text-slate-700 group-hover:text-[#A38760] mt-3 transition-colors duration-300 text-center max-w-[110px] leading-tight">
+                                            {cat.name}
+                                        </span>
                                     </motion.div>
                                 </Link>
                             );
