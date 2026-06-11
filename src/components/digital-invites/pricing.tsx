@@ -96,9 +96,9 @@ export const PricingSection = () => {
     const plans = pricingData[activeCategory];
 
     return (
-        <section id="pricing" className="py-32 bg-white">
+        <section id="pricing" className="py-16 bg-white">
             <div className="site-container">
-                <div className="text-center mb-16 px-4">
+                <div className="text-center mb-10 px-4">
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -106,7 +106,7 @@ export const PricingSection = () => {
                         viewport={{ once: true }}
                     >
                         <h2 className="text-4xl md:text-5xl font-serif text-charcoal mb-4">Timeless Value</h2>
-                        <p className="text-charcoal/50 font-medium max-w-xl mx-auto mb-12">
+                        <p className="text-charcoal/50 font-medium max-w-xl mx-auto mb-8">
                             Luxury digital experiences designed to fit every celebration.
                         </p>
 

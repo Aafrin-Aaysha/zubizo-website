@@ -43,9 +43,9 @@ const categoryCards = [
 
 export const CategoryNavigation = () => {
   return (
-    <section id="categories" className="py-20 bg-white">
+    <section id="categories" className="py-16 bg-white">
       <div className="site-container">
-        <div className="text-center mb-16 px-4">
+        <div className="text-center mb-10 px-4">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}

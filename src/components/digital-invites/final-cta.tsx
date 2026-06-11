@@ -10,14 +10,14 @@ export const FinalCTA = () => {
     const waLink = `https://wa.me/${waNumber}?text=Hi%20Zubizo%2C%20I'm%20interested%20in%20your%20Digital%20Invitations.%20Can%20you%20help%20me%20choose%20the%20best%20one%3F`;
 
   return (
-    <section className="py-24 bg-white overflow-hidden relative">
+    <section className="py-16 bg-white overflow-hidden relative">
       <div className="site-container relative z-10 text-center px-4">
         <motion.div
            initial={{ opacity: 0, y: 20 }}
            whileInView={{ opacity: 1, y: 0 }}
            transition={{ duration: 0.8 }}
            viewport={{ once: true }}
-           className="max-w-4xl mx-auto py-20 px-8 rounded-[60px] bg-gradient-to-br from-[#EDE8F6]/10 via-white to-[#FAF8F5]/10 border border-[#ae7fcb]/10 shadow-sm"
+           className="max-w-4xl mx-auto py-12 md:py-16 px-6 md:px-8 rounded-[60px] bg-gradient-to-br from-[#EDE8F6]/10 via-white to-[#FAF8F5]/10 border border-[#ae7fcb]/10 shadow-sm"
         >
           <span className="inline-block px-4 py-1.5 mb-6 text-[10px] font-bold uppercase tracking-[0.2em] text-[#6E4B8B] bg-white/60 backdrop-blur-sm border border-[#ae7fcb]/10 rounded-full shadow-sm">
             Begin Your Journey
@@ -26,7 +26,7 @@ export const FinalCTA = () => {
             Make your wedding invite <br />
             <span className="italic text-[#ae7fcb]">unforgettable</span>
           </h2>
-          <p className="text-base text-slate-500 font-light mb-12 max-w-xl mx-auto">
+          <p className="text-base text-slate-500 font-light mb-8 max-w-xl mx-auto">
             Choose the perfect digital format and start sharing your beautiful news today.
           </p>
 

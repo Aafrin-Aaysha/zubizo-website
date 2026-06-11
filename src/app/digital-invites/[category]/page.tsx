@@ -102,7 +102,7 @@ export default async function CategoryPage({ params }: Props) {
             <LuxuryNavbar />
 
             {/* Header */}
-            <section className="pt-32 pb-16 bg-transparent border-b border-[#ae7fcb]/10">
+            <section className="pt-28 pb-12 bg-transparent border-b border-[#ae7fcb]/10">
                 <div className="site-container px-4">
                     {/* Breadcrumb */}
                     <nav className="flex items-center gap-2 mb-8 text-[10px] font-bold uppercase tracking-[0.2em] text-[#6E4B8B]/60">
@@ -125,7 +125,7 @@ export default async function CategoryPage({ params }: Props) {
             </section>
 
             {/* Grid */}
-            <section className="py-20">
+            <section className="py-12">
                 <div className="site-container px-4">
                     {designs.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
