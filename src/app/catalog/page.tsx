@@ -34,12 +34,17 @@ export default async function CatalogPage({
     await dbConnect();
 
     // 1. Fetch Categories
-    const categories = await Category.find({ isDeleted: false, isActive: true }).sort({ displayOrder: 1, name: 1 }).lean();
+    const categories = await Category.find({
+        isDeleted: false,
+        isActive: true,
+        name: { $nin: ["Digital E-Invite", "Premium E-Website"] }
+    }).sort({ displayOrder: 1, name: 1 }).lean();
 
     // 2. Build Query
     const query: any = {
         isDeleted: false,
         isActive: true,
+        categoryId: { $in: categories.map(c => c._id) }
     };
 
     if (search) {

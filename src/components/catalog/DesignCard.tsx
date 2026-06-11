@@ -14,10 +14,6 @@ export default function DesignCard({ design }: { design: any }) {
     if (design.isTrending) {
         badges.push({ text: "Trending", emoji: "🔥", color: "bg-amber-50/90 text-amber-700 border-amber-200" });
     }
-    if (design.isFeatured) {
-        badges.push({ text: "Luxury", emoji: "✨", color: "bg-[#EDE8F6]/90 text-[#6E4B8B] border-[#ae7fcb]/30" });
-    }
-    
     // Check if created within last 30 days
     const isRecent = design.createdAt && (new Date().getTime() - new Date(design.createdAt).getTime()) < 30 * 24 * 60 * 60 * 1000;
     if (design.isNew || isRecent) {

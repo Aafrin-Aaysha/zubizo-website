@@ -45,27 +45,18 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
 
     const activeCategory = searchParams.get('category') || "All";
     const sortBy = searchParams.get('sort') || "featured";
-    const activeStyle = searchParams.get('style') || "";
-    const activeOccasion = searchParams.get('occasion') || "";
-    const activeColor = searchParams.get('color') || "";
 
     // Drawer temporary states
     const [tempCategory, setTempCategory] = React.useState(activeCategory);
     const [tempPriceRange, setTempPriceRange] = React.useState(activePriceFilter?.priceRange || "");
-    const [tempStyle, setTempStyle] = React.useState(activeStyle);
-    const [tempOccasion, setTempOccasion] = React.useState(activeOccasion);
-    const [tempColor, setTempColor] = React.useState(activeColor);
 
     // Sync drawer states when drawer opens
     React.useEffect(() => {
         if (isFilterOpen) {
             setTempCategory(activeCategory);
             setTempPriceRange(activePriceFilter?.priceRange || "");
-            setTempStyle(activeStyle);
-            setTempOccasion(activeOccasion);
-            setTempColor(activeColor);
         }
-    }, [isFilterOpen, activeCategory, activePriceFilter, activeStyle, activeOccasion, activeColor]);
+    }, [isFilterOpen, activeCategory, activePriceFilter]);
 
     const toggleSort = (val: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -84,9 +75,6 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
     const applyFilters = (filters: {
         category: string;
         priceRange: string;
-        style: string;
-        occasion: string;
-        color: string;
     }) => {
         const params = new URLSearchParams(searchParams.toString());
         
@@ -96,14 +84,10 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
         if (filters.priceRange) params.set('priceRange', filters.priceRange);
         else params.delete('priceRange');
         
-        if (filters.style) params.set('style', filters.style);
-        else params.delete('style');
-        
-        if (filters.occasion) params.set('occasion', filters.occasion);
-        else params.delete('occasion');
-        
-        if (filters.color) params.set('color', filters.color);
-        else params.delete('color');
+        // Remove style, occasion, color filters from URL if they exist
+        params.delete('style');
+        params.delete('occasion');
+        params.delete('color');
         
         router.push(`${pathname}?${params.toString()}`);
         setIsFilterOpen(false);
@@ -120,35 +104,6 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
         params.delete('price');
         router.push(`${pathname}?${params.toString()}`);
     };
-
-    // Client-side filtering for style, occasion, colors
-    const filteredDesigns = React.useMemo(() => {
-        let list = [...initialDesigns];
-
-        if (activeStyle) {
-            list = list.filter(d => 
-                d.name.toLowerCase().includes(activeStyle.toLowerCase()) || 
-                d.description?.toLowerCase().includes(activeStyle.toLowerCase()) ||
-                d.sku?.toLowerCase().includes(activeStyle.toLowerCase())
-            );
-        }
-        if (activeOccasion) {
-            list = list.filter(d => 
-                d.name.toLowerCase().includes(activeOccasion.toLowerCase()) || 
-                d.description?.toLowerCase().includes(activeOccasion.toLowerCase()) ||
-                d.sku?.toLowerCase().includes(activeOccasion.toLowerCase())
-            );
-        }
-        if (activeColor) {
-            list = list.filter(d => 
-                d.name.toLowerCase().includes(activeColor.toLowerCase()) || 
-                d.description?.toLowerCase().includes(activeColor.toLowerCase()) ||
-                d.sku?.toLowerCase().includes(activeColor.toLowerCase())
-            );
-        }
-
-        return list;
-    }, [initialDesigns, activeStyle, activeOccasion, activeColor]);
 
     return (
         <div className="site-container py-10">
@@ -181,7 +136,7 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
                     >
                         <SlidersHorizontal size={14} className="text-[#6E4B8B]" />
                         <span>Filter ⊞</span>
-                        {(activePriceFilter?.priceRange || activeStyle || activeOccasion || activeColor) && (
+                        {(activePriceFilter?.priceRange) && (
                             <span className="w-2 h-2 rounded-full bg-[#6E4B8B]" />
                         )}
                     </button>
@@ -220,64 +175,26 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
                 </div>
 
                 <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                    {filteredDesigns.length} designs
+                    {initialDesigns.length} designs
                 </div>
             </div>
 
             {/* Active filters badges */}
-            {(priceLabel || activeStyle || activeOccasion || activeColor) && (
+            {priceLabel && (
                 <div className="flex flex-wrap items-center gap-2 mb-8">
                     <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Active Filters:</span>
-                    {priceLabel && (
-                        <span className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-[#6E4B8B]/10 text-[#6E4B8B] text-[10px] font-bold border border-[#ae7fcb]/20">
-                            {priceLabel}
-                            <button onClick={clearPriceFilter} className="hover:opacity-60 transition-opacity cursor-pointer">
-                                <X size={10} />
-                            </button>
-                        </span>
-                    )}
-                    {activeStyle && (
-                        <span className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-[#6E4B8B]/10 text-[#6E4B8B] text-[10px] font-bold border border-[#ae7fcb]/20">
-                            Style: {activeStyle}
-                            <button onClick={() => {
-                                const params = new URLSearchParams(searchParams.toString());
-                                params.delete('style');
-                                router.push(`${pathname}?${params.toString()}`);
-                            }} className="hover:opacity-60 transition-opacity cursor-pointer">
-                                <X size={10} />
-                            </button>
-                        </span>
-                    )}
-                    {activeOccasion && (
-                        <span className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-[#6E4B8B]/10 text-[#6E4B8B] text-[10px] font-bold border border-[#ae7fcb]/20">
-                            Occasion: {activeOccasion}
-                            <button onClick={() => {
-                                const params = new URLSearchParams(searchParams.toString());
-                                params.delete('occasion');
-                                router.push(`${pathname}?${params.toString()}`);
-                            }} className="hover:opacity-60 transition-opacity cursor-pointer">
-                                <X size={10} />
-                            </button>
-                        </span>
-                    )}
-                    {activeColor && (
-                        <span className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-[#6E4B8B]/10 text-[#6E4B8B] text-[10px] font-bold border border-[#ae7fcb]/20">
-                            Color: {activeColor}
-                            <button onClick={() => {
-                                const params = new URLSearchParams(searchParams.toString());
-                                params.delete('color');
-                                router.push(`${pathname}?${params.toString()}`);
-                            }} className="hover:opacity-60 transition-opacity cursor-pointer">
-                                <X size={10} />
-                            </button>
-                        </span>
-                    )}
+                    <span className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-[#6E4B8B]/10 text-[#6E4B8B] text-[10px] font-bold border border-[#ae7fcb]/20">
+                        {priceLabel}
+                        <button onClick={clearPriceFilter} className="hover:opacity-60 transition-opacity cursor-pointer">
+                            <X size={10} />
+                        </button>
+                    </span>
                 </div>
             )}
 
             {/* Grid */}
             <AnimatePresence mode="wait">
-                {filteredDesigns.length > 0 ? (
+                {initialDesigns.length > 0 ? (
                     <motion.div
                         key="grid"
                         initial={{ opacity: 0 }}
@@ -285,7 +202,7 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
                         exit={{ opacity: 0 }}
                         className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
                     >
-                        {filteredDesigns.map((design, i) => (
+                        {initialDesigns.map((design, i) => (
                             <motion.div
                                 key={design._id}
                                 initial={{ opacity: 0, y: 24 }}
@@ -399,72 +316,6 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
                                         ))}
                                     </div>
                                 </div>
-
-                                {/* Style Section */}
-                                <div className="space-y-3">
-                                    <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Style</h4>
-                                    <div className="flex flex-wrap gap-2">
-                                        {["Traditional", "Minimalist", "Luxury"].map(style => (
-                                            <button
-                                                key={style}
-                                                type="button"
-                                                onClick={() => setTempStyle(tempStyle === style ? "" : style)}
-                                                className={cn(
-                                                    "px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer",
-                                                    tempStyle === style
-                                                        ? "bg-[#6E4B8B] text-white border-[#6E4B8B]"
-                                                        : "bg-white text-slate-600 border-slate-200 hover:border-[#ae7fcb]/40 hover:text-[#ae7fcb]"
-                                                )}
-                                            >
-                                                {style}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Occasion Section */}
-                                <div className="space-y-3">
-                                    <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Occasion</h4>
-                                    <div className="flex flex-wrap gap-2">
-                                        {["Wedding", "Engagement", "Baby Shower", "Housewarming"].map(occ => (
-                                            <button
-                                                key={occ}
-                                                type="button"
-                                                onClick={() => setTempOccasion(tempOccasion === occ ? "" : occ)}
-                                                className={cn(
-                                                    "px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer",
-                                                    tempOccasion === occ
-                                                        ? "bg-[#6E4B8B] text-white border-[#6E4B8B]"
-                                                        : "bg-white text-slate-600 border-slate-200 hover:border-[#ae7fcb]/40 hover:text-[#ae7fcb]"
-                                                )}
-                                            >
-                                                {occ}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Colors Section */}
-                                <div className="space-y-3">
-                                    <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Colors</h4>
-                                    <div className="flex flex-wrap gap-2">
-                                        {["Gold", "Rose Gold", "Pastel", "Floral", "Purple"].map(col => (
-                                            <button
-                                                key={col}
-                                                type="button"
-                                                onClick={() => setTempColor(tempColor === col ? "" : col)}
-                                                className={cn(
-                                                    "px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer",
-                                                    tempColor === col
-                                                        ? "bg-[#6E4B8B] text-white border-[#6E4B8B]"
-                                                        : "bg-white text-slate-600 border-slate-200 hover:border-[#ae7fcb]/40 hover:text-[#ae7fcb]"
-                                                )}
-                                            >
-                                                {col}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
                             </div>
 
                             {/* Sticky Footer */}
@@ -474,10 +325,7 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
                                     onClick={() => {
                                         setTempCategory("All");
                                         setTempPriceRange("");
-                                        setTempStyle("");
-                                        setTempOccasion("");
-                                        setTempColor("");
-                                        applyFilters({ category: "All", priceRange: "", style: "", occasion: "", color: "" });
+                                        applyFilters({ category: "All", priceRange: "" });
                                     }}
                                     className="flex-1 h-12 rounded-2xl border border-slate-200 text-slate-750 font-bold text-xs uppercase tracking-wider hover:bg-slate-50 transition-colors cursor-pointer"
                                 >
@@ -487,10 +335,7 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
                                     type="button"
                                     onClick={() => applyFilters({
                                         category: tempCategory,
-                                        priceRange: tempPriceRange,
-                                        style: tempStyle,
-                                        occasion: tempOccasion,
-                                        color: tempColor
+                                        priceRange: tempPriceRange
                                     })}
                                     className="flex-1 h-12 rounded-2xl bg-[#6E4B8B] hover:bg-[#5D3F76] text-white font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
                                 >
