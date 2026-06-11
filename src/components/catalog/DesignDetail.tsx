@@ -433,13 +433,18 @@ const PackageImageCard = React.memo(function PackageImageCard({
     onClick: () => void; 
 }) {
     const titleLower = title.toLowerCase();
+    let imageKey = 'package_texture_matte';
     let subtext = 'Budget Friendly · Smooth matte finish';
     
     if (titleLower.includes('textured') || titleLower.includes('premium')) {
+        imageKey = 'package_texture_textured';
         subtext = 'Artisanal organic textured cardstock';
     } else if (titleLower.includes('luxury') || titleLower.includes('glossy') || titleLower.includes('board') || titleLower.includes('gold') || titleLower.includes('glass')) {
+        imageKey = 'package_texture_glossy';
         subtext = 'Gleaming premium metallic board';
     }
+    
+    const imgUrl = DEFAULT_OPTION_IMAGES[imageKey];
     
     return (
         <button
@@ -452,6 +457,9 @@ const PackageImageCard = React.memo(function PackageImageCard({
                     : "border-slate-200 bg-white hover:bg-slate-50 hover:border-[#ae7fcb]/30"
             )}
         >
+            <div className="hidden lg:block w-[64px] h-[64px] rounded-xl overflow-hidden shrink-0 border border-slate-100">
+                <ShimmerImage src={imgUrl} alt={title} className="w-full h-full object-cover" />
+            </div>
             <div className="flex-1 min-w-0 pr-2">
                 <p className={cn("font-bold text-sm tracking-tight leading-snug", isSelected ? "text-[#7C3AED]" : "text-slate-800")}>
                     {title}
