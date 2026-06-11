@@ -48,7 +48,7 @@ export default function EditInvoicePage() {
                         </Link>
                         <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Invoice Management</span>
                     </div>
-                    <h1 className="text-3xl font-black text-charcoal tracking-tight">Edit Invoice</h1>
+                    <h2 className="text-xl font-black text-charcoal">Edit Invoice</h2>
                     <p className="text-gray-500 mt-1 font-medium">Modify existing order {invoice.orderId} and sync stock.</p>
                 </div>
             </div>

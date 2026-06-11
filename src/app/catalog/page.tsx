@@ -152,7 +152,7 @@ export default async function CatalogPage({
                                 <span className="text-white">Catalogue</span>
                             </nav>
 
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal text-white tracking-tight font-italiana mb-3">
+                            <h1 className="text-2xl md:text-3xl lg:text-4xl font-normal text-white tracking-tight font-italiana mb-3">
                                 Our Catalogue
                             </h1>
                             <p className="text-white/80 text-xs md:text-sm font-light tracking-wide">

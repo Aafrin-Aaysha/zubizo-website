@@ -300,7 +300,7 @@ export default function PoliciesPage() {
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`relative text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-full border transition-all duration-300 outline-none ${
+                                    className={`relative isolate text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-full border transition-all duration-300 outline-none ${
                                         isActive 
                                             ? "border-[#ae7fcb] text-white shadow-md shadow-[#ae7fcb]/15 bg-transparent" 
                                             : "border-[#ae7fcb]/20 text-slate-600 hover:border-[#ae7fcb]/50 bg-white"

@@ -119,7 +119,7 @@ export default function InvoicesHistoryPage() {
         <div className="space-y-8 pb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-charcoal tracking-tight">Invoice History</h1>
+                    <h2 className="text-xl font-black text-charcoal">Invoice History</h2>
                     <p className="text-gray-500 mt-1 font-medium">View and manage all generated invoices.</p>
                 </div>
                 <div className="flex items-center gap-4">

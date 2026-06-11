@@ -594,8 +594,8 @@ export default function BulkImportPage() {
                         <ArrowLeft size={18} />
                     </Link>
                     <div>
-                        <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-                            <Sparkles className="text-lavender" size={28} />
+                        <h1 className="text-xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
+                            <Sparkles className="text-lavender" size={20} />
                             Bulk Import
                         </h1>
                         <p className="text-gray-500 mt-1 font-medium">Paste from WhatsApp → Parse → Upload Images → Import in seconds</p>

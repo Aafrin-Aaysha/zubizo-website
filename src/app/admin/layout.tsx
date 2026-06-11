@@ -27,16 +27,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const sidebarItems = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-    { name: 'Homepage Builder', href: '/admin/builder', icon: FolderTree },
     { name: 'Manage Designs', href: '/admin/designs', icon: ImageIcon },
     { name: 'Digital Invites', href: '/admin/digital-invites', icon: Zap },
     { name: 'Bulk Import', href: '/admin/bulk-import', icon: Zap },
-    { name: 'Team Management', href: '/admin/employees', icon: User },
     { name: 'Categories', href: '/admin/categories', icon: FolderTree },
     { name: 'Invoice Generator', href: '/admin/invoices/new', icon: FileText },
     { name: 'Invoice History', href: '/admin/invoices', icon: History },
     { name: 'Inventory', href: '/admin/inventory', icon: Database },
-    { name: 'Website Settings', href: '/admin/settings', icon: Settings },
     { name: 'Account', href: '/admin/account', icon: User },
 ];
 

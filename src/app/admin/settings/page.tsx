@@ -118,7 +118,7 @@ export default function SettingsPage() {
     return (
         <div className="max-w-4xl mx-auto space-y-8">
             <div>
-                <h1 className="text-3xl font-bold text-gray-900">Website Settings</h1>
+                <h1 className="text-xl font-bold text-gray-900">Website Settings</h1>
                 <p className="text-gray-500 mt-1">Global configuration for Zubizo invitation stationary store.</p>
             </div>
 

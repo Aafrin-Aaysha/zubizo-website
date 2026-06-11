@@ -127,7 +127,7 @@ export default function CategoriesPage() {
         <div className="space-y-10 pb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-charcoal tracking-tight">Category Collections</h1>
+                    <h2 className="text-xl font-black text-charcoal">Category Collections</h2>
                     <p className="text-gray-500 mt-1 font-medium">Organize your designs into beautiful thematic collections.</p>
                 </div>
                 <button

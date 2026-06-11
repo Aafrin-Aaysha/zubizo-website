@@ -134,7 +134,7 @@ export default function EmployeesPage() {
         <div className="space-y-8 pb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-900 tracking-tight">Employee Management</h1>
+                    <h1 className="text-xl font-bold text-gray-900 tracking-tight">Employee Management</h1>
                     <p className="text-gray-500 mt-1 font-medium">Manage team access and production roles.</p>
                 </div>
                 <button

@@ -377,7 +377,7 @@ export default function DesignsPage() {
         <div className="space-y-8 pb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-900 tracking-tight">Design Management</h1>
+                    <h2 className="text-xl font-black text-charcoal">Design Management</h2>
                     <p className="text-gray-500 mt-1 font-medium">Manage your invitation catalogue and package pricing.</p>
                 </div>
                 <div className="flex items-center gap-3">

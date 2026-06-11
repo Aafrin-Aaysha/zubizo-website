@@ -257,6 +257,29 @@ export default function InventoryPage() {
 
     const isActionLoading = restockMutation.isPending || updateMutation.isPending || deleteMutation.isPending || isSubmittingAddFlow;
 
+    const stats = React.useMemo(() => {
+        if (!materials || materials.length === 0) return { totalItems: 0, totalValuation: 0, lowStockCount: 0 };
+        let totalItems = 0;
+        let totalValuation = 0;
+        let lowStockCount = 0;
+
+        materials.forEach(m => {
+            if (m.trackInventory) {
+                totalItems += m.currentStock;
+                totalValuation += m.currentStock * m.defaultPrice;
+                if (m.currentStock <= m.lowStockThreshold) {
+                    lowStockCount++;
+                }
+            }
+        });
+
+        return {
+            totalItems,
+            totalValuation,
+            lowStockCount
+        };
+    }, [materials]);
+
     // Filter & Process Hierarchical Grouping
     const filteredMaterials = materials.filter(m => {
         const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -496,19 +519,19 @@ export default function InventoryPage() {
     };
 
     return (
-        <div className="space-y-6 max-w-[1600px] mx-auto pb-12 text-slate-700 text-sm font-sans">
+        <div className="space-y-8 max-w-[1600px] mx-auto pb-12 text-slate-700 text-sm font-sans">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800 leading-tight">Inventory Management</h1>
-                    <p className="text-slate-400 text-xs mt-0.5 font-medium">Track your luxury studio materials, sheets, and envelopes with premium variants hierarchy.</p>
+                    <h2 className="text-xl font-black text-charcoal">Inventory Management</h2>
+                    <p className="text-slate-400 text-xs mt-1 font-medium">Track your luxury studio materials, sheets, and envelopes with premium variants hierarchy.</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 shrink-0">
                     {adminData?.role === 'super-admin' && (
                         <select 
                             value={adminFilter}
                             onChange={(e) => setAdminFilter(e.target.value)}
-                            className="px-4 py-2.5 bg-white border border-purple-100 rounded-xl text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-purple-100 transition-all cursor-pointer shadow-sm"
+                            className="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-650 outline-none focus:ring-2 focus:ring-[#ae7fcb]/20 focus:border-[#ae7fcb] transition-all cursor-pointer shadow-sm h-11"
                         >
                             <option value="all">All Admin Accounts</option>
                             {uniqueAdmins.map(name => (
@@ -518,7 +541,7 @@ export default function InventoryPage() {
                     )}
                     <button 
                         onClick={() => { setAddFlowStep(1); setIsAddModalOpen(true); }}
-                        className="flex items-center gap-1.5 px-5 py-2.5 bg-[#a855f7] hover:bg-[#9333ea] text-white font-bold rounded-xl text-xs transition-all shadow-sm active:scale-[0.98]"
+                        className="flex items-center gap-1.5 px-5 py-2 bg-[#ae7fcb] hover:bg-[#9a6ab5] text-white font-bold rounded-xl text-xs transition-all shadow-md shadow-lavender/10 active:scale-[0.98] h-11 cursor-pointer"
                     >
                         <Plus size={16} strokeWidth={2.5} />
                         Add Material
@@ -526,390 +549,212 @@ export default function InventoryPage() {
                 </div>
             </div>
 
-            {/* Dashboard Search & Highlights */}
+            {/* Quick Stats Grid */}
+            {!isLoading && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Card 1: Total Valuation */}
+                    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+                        <div className="space-y-1">
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Inventory Value</span>
+                            <span className="text-2xl font-black text-slate-800 tracking-tight block">
+                                ₹{stats.totalValuation.toLocaleString('en-IN')}
+                            </span>
+                            <span className="text-[10px] text-slate-450 font-medium block">Based on current unit prices</span>
+                        </div>
+                        <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center text-[#ae7fcb]">
+                            <ShoppingBag size={22} />
+                        </div>
+                    </div>
+
+                    {/* Card 2: Low Stock Alerts */}
+                    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+                        <div className="space-y-1">
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Low Stock Alerts</span>
+                            <span className={`text-2xl font-black tracking-tight block ${stats.lowStockCount > 0 ? 'text-amber-600' : 'text-slate-800'}`}>
+                                {stats.lowStockCount} Items
+                            </span>
+                            <span className="text-[10px] text-slate-450 font-medium block">
+                                {stats.lowStockCount > 0 ? 'Requires replenishment' : 'All stocks healthy'}
+                            </span>
+                        </div>
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stats.lowStockCount > 0 ? 'bg-amber-50 text-amber-600' : 'bg-slate-50 text-slate-400'}`}>
+                            <AlertTriangle size={22} />
+                        </div>
+                    </div>
+
+                    {/* Card 3: Total Materials Tracked */}
+                    <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] flex items-center justify-between">
+                        <div className="space-y-1">
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Tracked Items</span>
+                            <span className="text-2xl font-black text-slate-800 tracking-tight block">
+                                {materials.length} Variants
+                            </span>
+                            <span className="text-[10px] text-slate-450 font-medium block">Across all categories</span>
+                        </div>
+                        <div className="w-12 h-12 rounded-xl bg-[#EDE8F6] flex items-center justify-center text-[#6E4B8B]">
+                            <Package size={22} />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Search Controls */}
             <div className="relative w-full">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400" size={16} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                 <input 
                     type="text" 
                     placeholder="Search materials, variants, sizes..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-white border border-purple-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-50 focus:border-[#a855f7] transition-all text-xs font-medium shadow-sm placeholder:text-slate-400"
+                    className="w-full pl-11 pr-4 py-3 bg-white border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#ae7fcb]/20 focus:border-[#ae7fcb] transition-all text-xs font-medium shadow-sm placeholder:text-slate-405 h-12"
                 />
             </div>
 
-            {/* Low Stock Separate Alerts */}
-            {lowStockMaterials.length > 0 && (
-                <motion.div 
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-amber-50/50 border border-amber-100/50 rounded-2xl p-5 shadow-sm"
-                >
-                    <h3 className="text-amber-800 text-[10px] font-black flex items-center gap-1.5 mb-3 uppercase tracking-wider">
-                        <AlertTriangle size={14} className="text-amber-500 animate-pulse" />
-                        Low Stock Alert ({lowStockCount})
-                    </h3>
-                    <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-amber-200">
-                        {lowStockMaterials.map(m => (
-                            <div 
-                                key={m._id} 
-                                onClick={() => {
-                                    const { materialName } = parseMaterialName(m.name);
-                                    setActiveCategory(m.category);
-                                    setActiveMaterial(materialName);
-                                }}
-                                className="bg-white border border-amber-100/30 p-3.5 rounded-xl flex items-center justify-between min-w-[240px] shadow-sm hover:shadow cursor-pointer transition-all active:scale-[0.98]"
-                            >
-                                <div>
-                                    <div className="font-bold text-slate-700 text-xs">{m.name}</div>
-                                    <div className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">{m.category}</div>
-                                </div>
-                                <div className="text-right pl-3 shrink-0">
-                                    <div className="text-amber-600 font-extrabold text-xs">{m.currentStock} {m.unit}</div>
-                                    <div className="text-[9px] text-slate-400 font-medium">Thr: {m.lowStockThreshold}</div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </motion.div>
-            )}
-
-            {/* Drill-down Navigation Logic */}
+            {/* Flat Materials List Table */}
             {isLoading ? (
-                <div className="bg-white rounded-[24px] border border-purple-50 p-16 text-center shadow-sm">
-                    <Loader2 className="animate-spin text-[#a855f7] mx-auto" size={32} />
-                    <p className="text-slate-400 mt-3 font-bold text-sm">Loading Inventory Explorer...</p>
+                <div className="bg-white rounded-[24px] border border-slate-100 p-16 text-center shadow-sm">
+                    <Loader2 className="animate-spin text-[#ae7fcb] mx-auto" size={32} />
+                    <p className="text-slate-400 mt-3 font-bold text-sm">Loading Inventory...</p>
                 </div>
             ) : filteredMaterials.length === 0 ? (
-                <div className="bg-white rounded-[24px] border border-purple-50 p-16 text-center shadow-sm">
-                    <ShoppingBag className="text-purple-200 mx-auto mb-3" size={32} />
-                    <p className="text-slate-400 font-bold text-sm">No matching items or categories found.</p>
-                </div>
-            ) : activeCategory === null ? (
-                /* VIEW 1: Categories Grid */
-                <div className="space-y-4">
-                    <h2 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 px-1">Categories</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                        {groupedData.map(cat => (
-                            <motion.div
-                                key={cat.name}
-                                onClick={() => setActiveCategory(cat.name)}
-                                whileHover={{ scale: 1.01, y: -2 }}
-                                className="p-5 bg-white border border-purple-50 rounded-[20px] cursor-pointer transition-all duration-300 shadow-sm hover:border-purple-200 hover:shadow-md flex flex-col justify-between min-h-[140px] relative overflow-hidden"
-                            >
-                                <div className="flex justify-between items-start">
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-2xl bg-purple-50/50 w-10 h-10 flex items-center justify-center rounded-xl border border-purple-50">{cat.icon}</span>
-                                        <div>
-                                            <h3 className="font-bold text-slate-800 text-xs">
-                                                <HighlightText text={cat.label} search={searchQuery} />
-                                            </h3>
-                                            <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block mt-0.5">
-                                                {cat.totalMaterials} materials • {cat.totalVariants} variants
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between items-end border-t border-purple-50/30 pt-3 mt-4 text-[10px]">
-                                    <span className="text-slate-400 font-bold uppercase tracking-wider">Stock Value</span>
-                                    <span className="font-extrabold text-[#a855f7]">₹{cat.totalStockValue.toLocaleString()}</span>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
+                <div className="bg-white rounded-[24px] border border-slate-100 p-16 text-center shadow-sm">
+                    <ShoppingBag className="text-slate-350 mx-auto mb-3" size={32} />
+                    <p className="text-slate-400 font-bold text-sm">No matching items found.</p>
                 </div>
             ) : (
-                /* VIEW 2: Inside Category Detail (Materials & Variants Explorer) */
-                <div className="space-y-5">
-                    {/* Category Detail Navigation Header */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white border border-purple-50 rounded-2xl shadow-sm">
-                        <div className="flex items-center gap-3">
-                            <button 
-                                onClick={() => setActiveCategory(null)}
-                                className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg text-[10px] uppercase tracking-wider transition-all active:scale-[0.98]"
-                            >
-                                ← Categories
-                            </button>
-                            <span className="text-slate-300">|</span>
-                            <div className="flex items-center gap-2">
-                                <span className="text-xl">{activeCatData?.icon}</span>
-                                <h2 className="text-sm font-bold text-slate-800">{activeCatData?.label}</h2>
-                                <span className="text-[9px] font-bold text-[#a855f7] bg-purple-50/50 px-2 py-0.5 rounded-full uppercase">
-                                    ₹{(activeCatData?.totalStockValue || 0).toLocaleString()} Value
-                                </span>
-                            </div>
-                        </div>
-                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                            {(activeCatData?.materials || []).length} materials listed
-                        </span>
-                    </div>
-
-                    {isMobile ? (
-                        /* Mobile View inside Category: Accordion list of materials */
-                        <div className="space-y-3">
-                            {activeCatData?.materials.map(mat => {
-                                const isMatExpanded = mobileExpandedMat === mat.name;
-                                return (
-                                    <div key={mat.name} className="bg-white rounded-xl border border-purple-50/70 overflow-hidden shadow-sm">
-                                        <button 
-                                            onClick={() => setMobileExpandedMat(isMatExpanded ? null : mat.name)}
-                                            className="w-full flex items-center justify-between p-4 hover:bg-purple-50/10 transition-colors text-left"
-                                        >
-                                            <span className="font-bold text-slate-700 text-xs">{mat.name}</span>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[9px] text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">{mat.variants.length} variations</span>
-                                                {isMatExpanded ? <ChevronDown size={14} className="text-slate-400" /> : <ChevronRight size={14} className="text-slate-400" />}
-                                            </div>
-                                        </button>
-
-                                        {isMatExpanded && (
-                                            <div className="border-t border-purple-50/30 bg-purple-50/5 p-3 space-y-2">
-                                                {mat.variants.map(variant => {
-                                                    const colorStyle = getColorStyle(variant.variantName);
-                                                    const isVariantLow = variant.currentStock <= variant.lowStockThreshold;
-                                                    return (
-                                                        <div key={variant._id} className="bg-white border border-purple-50/50 p-3.5 rounded-xl space-y-3">
-                                                            <div className="flex justify-between items-center">
-                                                                <div className="flex items-center gap-2">
-                                                                    {variant.variantName !== 'Default' && (
-                                                                        colorStyle ? (
-                                                                            <span className="w-4 h-4 rounded-full border border-purple-200 shadow-sm shrink-0" style={{ backgroundColor: colorStyle }} />
-                                                                        ) : (
-                                                                            <Tag size={12} className="text-purple-400 shrink-0" />
-                                                                        )
-                                                                    )}
-                                                                    <span className="font-extrabold text-slate-700 text-xs">{variant.variantName}</span>
-                                                                </div>
-                                                                <div className="flex gap-1">
-                                                                    <button 
-                                                                        onClick={() => { setSelectedMaterial(variant); setRestockAmount(0); setIsRestockModalOpen(true); }}
-                                                                        className="p-1 text-emerald-650 bg-emerald-50 rounded hover:bg-emerald-100 transition-colors"
-                                                                    >
-                                                                        <ArrowUpRight size={12} />
-                                                                    </button>
-                                                                    <button 
-                                                                        onClick={() => { 
-                                                                            setSelectedMaterial(variant); 
-                                                                            setEditFormData({
-                                                                                name: variant.name,
-                                                                                category: variant.category,
-                                                                                usageType: variant.usageType,
-                                                                                usageValue: variant.usageValue,
-                                                                                unit: variant.unit,
-                                                                                defaultPrice: variant.defaultPrice,
-                                                                                lowStockThreshold: variant.lowStockThreshold,
-                                                                                size: variant.size || '',
-                                                                                gsm: variant.gsm || '',
-                                                                                trackInventory: variant.trackInventory !== undefined ? variant.trackInventory : true
-                                                                            });
-                                                                            setSyncToAll(false);
-                                                                            setIsEditModalOpen(true); 
-                                                                        }}
-                                                                        className="p-1 text-blue-650 bg-blue-50 rounded hover:bg-blue-100 transition-colors"
-                                                                    >
-                                                                        <Edit size={12} />
-                                                                    </button>
-                                                                    <button 
-                                                                        onClick={() => { setSelectedMaterial(variant); setIsHistoryModalOpen(true); }}
-                                                                        className="p-1 text-purple-650 bg-purple-50 rounded hover:bg-purple-100 transition-colors"
-                                                                    >
-                                                                        <History size={12} />
-                                                                    </button>
-                                                                    <button 
-                                                                        onClick={() => handleDelete(variant._id)}
-                                                                        className="p-1 text-red-500 bg-red-50 rounded hover:bg-red-100 transition-colors"
-                                                                    >
-                                                                        <Trash2 size={12} />
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-purple-50/30 text-[9px]">
-                                                                <div>
-                                                                    <span className="text-slate-400 font-bold block uppercase tracking-wider">Stock</span>
-                                                                    <span className={`font-black ${isVariantLow && variant.trackInventory ? 'text-amber-500' : 'text-slate-700'}`}>
-                                                                        {variant.trackInventory ? `${variant.currentStock} ${variant.unit}` : 'Outsourced'}
-                                                                    </span>
-                                                                </div>
-                                                                <div>
-                                                                    <span className="text-slate-400 font-bold block uppercase tracking-wider">Cost</span>
-                                                                    <span className="font-extrabold text-slate-700">₹{variant.defaultPrice}</span>
-                                                                </div>
-                                                                <div>
-                                                                    <span className="text-slate-400 font-bold block uppercase tracking-wider">Value</span>
-                                                                    <span className="font-extrabold text-slate-700">₹{variant.trackInventory ? (variant.currentStock * variant.defaultPrice).toLocaleString() : '-'}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        /* Desktop Category Explorer: 2-Column (Left: Materials, Right: Variants) */
-                        <div className="grid grid-cols-12 gap-6 items-start">
-                            {/* Column 1: Materials */}
-                            <div className="col-span-5 space-y-3">
-                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-450 px-1">Materials</h3>
-                                <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-1">
-                                    {activeCatData?.materials.map(mat => {
-                                        const isSelected = activeMaterial === mat.name;
-                                        return (
-                                            <div
-                                                key={mat.name}
-                                                onClick={() => setActiveMaterial(mat.name)}
-                                                className={`p-4 rounded-xl cursor-pointer transition-all duration-200 border flex items-center justify-between ${
-                                                    isSelected 
-                                                        ? 'bg-white border-purple-200 shadow-sm shadow-purple-500/5' 
-                                                        : 'bg-white/60 border-purple-50/50 hover:border-purple-200/30'
-                                                }`}
-                                            >
-                                                <div className="flex items-center gap-2.5">
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-[#a855f7]' : 'bg-slate-300'}`} />
-                                                    <div>
-                                                        <h4 className="font-extrabold text-slate-700 text-xs">
-                                                            <HighlightText text={mat.name} search={searchQuery} />
-                                                        </h4>
-                                                        {mat.variants.length > 0 && (
-                                                            <p className="text-[9px] text-slate-400 font-medium uppercase mt-0.5">
-                                                                {mat.variants[0].size || mat.variants[0].gsm ? `${mat.variants[0].size || ''} ${mat.variants[0].gsm ? `• ${mat.variants[0].gsm}gsm` : ''}` : ''}
-                                                            </p>
-                                                        )}
-                                                    </div>
+                <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.01)] overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-slate-50/75 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    <th className="px-6 py-4">Material / Variant Name</th>
+                                    <th className="px-6 py-4">Category</th>
+                                    <th className="px-6 py-4">Specs</th>
+                                    <th className="px-6 py-4">Stock Status</th>
+                                    <th className="px-6 py-4">Unit Cost</th>
+                                    <th className="px-6 py-4">Total Value</th>
+                                    <th className="px-6 py-4">Managed By</th>
+                                    <th className="px-6 py-4">Last Restocked</th>
+                                    <th className="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                                {filteredMaterials.map(m => {
+                                    const isLow = m.currentStock <= m.lowStockThreshold;
+                                    const { materialName, variantName } = parseMaterialName(m.name);
+                                    return (
+                                        <tr key={m._id} className="hover:bg-slate-50/30 transition-colors group">
+                                            <td className="px-6 py-4">
+                                                <div className="flex flex-col gap-0.5">
+                                                    <span className="font-semibold text-slate-800 text-sm">
+                                                        <HighlightText text={materialName} search={searchQuery} />
+                                                    </span>
+                                                    {variantName !== 'Default' && (
+                                                        <span className="text-[11px] text-slate-450 font-medium">
+                                                            Variant: <HighlightText text={variantName} search={searchQuery} />
+                                                        </span>
+                                                    )}
                                                 </div>
-                                                <span className="text-[9px] text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shrink-0">
-                                                    {mat.variants.length} variant{mat.variants.length > 1 ? 's' : ''}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-50/70 text-[#6E4B8B] border border-purple-100/50 rounded-full text-[10px] font-bold">
+                                                    <span>{CATEGORY_META[m.category]?.icon || '📦'}</span>
+                                                    <span>{CATEGORY_META[m.category]?.label || m.category}</span>
                                                 </span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Column 2: Variants & Stock Details */}
-                            <div className="col-span-7 space-y-3">
-                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-slate-450 px-1">Variants & Stock</h3>
-                                
-                                {activeMatData ? (
-                                    <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
-                                        {activeMatData.variants.map(variant => {
-                                            const colorStyle = getColorStyle(variant.variantName);
-                                            const isLow = variant.currentStock <= variant.lowStockThreshold;
-                                            const isDefaultVariant = variant.variantName === 'Default';
-                                            return (
-                                                <div 
-                                                    key={variant._id} 
-                                                    className="bg-white border border-purple-50 p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 space-y-3 relative group"
-                                                >
-                                                    <div className="flex justify-between items-center gap-3">
-                                                        <div className="flex items-center gap-2">
-                                                            {!isDefaultVariant && (
-                                                                colorStyle ? (
-                                                                    <span className="w-4.5 h-4.5 rounded-full border border-purple-200 shadow-sm shrink-0" style={{ backgroundColor: colorStyle }} />
-                                                                ) : (
-                                                                    <Tag size={13} className="text-purple-400 shrink-0" />
-                                                                )
-                                                            )}
-                                                            <div>
-                                                                <div className="font-extrabold text-slate-700 text-xs">
-                                                                    <HighlightText text={variant.variantName} search={searchQuery} />
-                                                                </div>
-                                                                {variant.adminName && (
-                                                                    <div className="text-[8px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Admin: {variant.adminName}</div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Actions Panel */}
-                                                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <button 
-                                                                onClick={() => { setSelectedMaterial(variant); setRestockAmount(0); setIsRestockModalOpen(true); }}
-                                                                className="p-1.5 text-emerald-600 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition-colors"
-                                                                title="Adjust Stock"
-                                                            >
-                                                                <ArrowUpRight size={13} />
-                                                            </button>
-                                                            <button 
-                                                                onClick={() => { 
-                                                                    setSelectedMaterial(variant); 
-                                                                    setEditFormData({
-                                                                        name: variant.name,
-                                                                        category: variant.category,
-                                                                        usageType: variant.usageType,
-                                                                        usageValue: variant.usageValue,
-                                                                        unit: variant.unit,
-                                                                        defaultPrice: variant.defaultPrice,
-                                                                        lowStockThreshold: variant.lowStockThreshold,
-                                                                        size: variant.size || '',
-                                                                        gsm: variant.gsm || '',
-                                                                        trackInventory: variant.trackInventory !== undefined ? variant.trackInventory : true
-                                                                    });
-                                                                    setSyncToAll(false);
-                                                                    setIsEditModalOpen(true); 
-                                                                }}
-                                                                className="p-1.5 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                                                                title="Edit Properties"
-                                                            >
-                                                                <Edit size={13} />
-                                                            </button>
-                                                            <button 
-                                                                onClick={() => { setSelectedMaterial(variant); setIsHistoryModalOpen(true); }}
-                                                                className="p-1.5 text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors"
-                                                                title="Stock History"
-                                                            >
-                                                                <History size={13} />
-                                                            </button>
-                                                            <button 
-                                                                onClick={() => handleDelete(variant._id)}
-                                                                className="p-1.5 text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-                                                                title="Delete variant"
-                                                            >
-                                                                <Trash2 size={13} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Values Grid */}
-                                                    <div className="grid grid-cols-3 gap-3 border-t border-purple-50/30 pt-3 text-[10px] font-semibold">
-                                                        <div>
-                                                            <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Stock</span>
-                                                            {variant.trackInventory !== false ? (
-                                                                <div>
-                                                                    <span className={`font-black ${isLow ? 'text-amber-500' : 'text-slate-700'}`}>
-                                                                        {variant.currentStock}
-                                                                    </span>
-                                                                    <span className="text-slate-400 text-[9px] ml-0.5">{variant.unit}</span>
-                                                                </div>
-                                                            ) : (
-                                                                <span className="text-[8px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full font-black uppercase tracking-widest border border-blue-100">Outsource</span>
-                                                            )}
-                                                        </div>
-                                                        <div>
-                                                            <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Cost</span>
-                                                            <span className="text-slate-700 font-extrabold">₹{variant.defaultPrice}</span>
-                                                        </div>
-                                                        <div>
-                                                            <span className="text-[8px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Stock Value</span>
-                                                            <span className="font-extrabold text-[#a855f7]">
-                                                                {variant.trackInventory !== false ? `₹${(variant.currentStock * variant.defaultPrice).toLocaleString()}` : '—'}
-                                                            </span>
-                                                        </div>
-                                                    </div>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="text-[11px] text-slate-500 font-medium space-y-0.5">
+                                                    {m.size && <div>Size: {m.size}</div>}
+                                                    {m.gsm && <div>GSM: {m.gsm}</div>}
+                                                    {!m.size && !m.gsm && <span className="text-slate-350 italic font-light">N/A</span>}
                                                 </div>
-                                            );
-                                        })}
-                                    </div>
-                                ) : (
-                                    <div className="bg-slate-50 border border-slate-100 rounded-2xl p-8 text-center text-slate-400 text-xs">
-                                        Select a material on the left to review variations.
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {m.trackInventory ? (
+                                                    <div className="flex items-center">
+                                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                                            isLow 
+                                                                ? "bg-amber-50 text-amber-600 border border-amber-200" 
+                                                                : "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                                                        }`}>
+                                                            {isLow && <AlertTriangle size={10} className="animate-pulse" />}
+                                                            {m.currentStock} {m.unit}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-50 text-slate-400 border border-slate-100">
+                                                        Outsourced
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4 font-medium text-slate-600 text-sm">
+                                                ₹{m.defaultPrice}
+                                            </td>
+                                            <td className="px-6 py-4 font-semibold text-slate-800 text-sm">
+                                                {m.trackInventory ? `₹${(m.currentStock * m.defaultPrice).toLocaleString('en-IN')}` : '-'}
+                                            </td>
+                                            <td className="px-6 py-4 text-slate-500 text-xs font-medium">
+                                                {m.adminName || 'System'}
+                                            </td>
+                                            <td className="px-6 py-4 text-slate-400 text-xs font-medium">
+                                                {m.lastRestockedAt 
+                                                    ? new Date(m.lastRestockedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                                                    : 'N/A'}
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button 
+                                                        onClick={() => { setSelectedMaterial(m); setRestockAmount(0); setIsRestockModalOpen(true); }}
+                                                        className="p-2 text-emerald-600 hover:text-white bg-emerald-50 hover:bg-emerald-600 rounded-xl transition-all border border-emerald-100/30 hover:border-emerald-600 cursor-pointer shadow-sm"
+                                                        title="Adjust Stock"
+                                                    >
+                                                        <ArrowUpRight size={14} />
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => { 
+                                                            setSelectedMaterial(m); 
+                                                            setEditFormData({
+                                                                name: m.name,
+                                                                category: m.category,
+                                                                usageType: m.usageType,
+                                                                usageValue: m.usageValue,
+                                                                unit: m.unit,
+                                                                defaultPrice: m.defaultPrice,
+                                                                lowStockThreshold: m.lowStockThreshold,
+                                                                size: m.size || '',
+                                                                gsm: m.gsm || '',
+                                                                trackInventory: m.trackInventory !== undefined ? m.trackInventory : true
+                                                            });
+                                                            setSyncToAll(false);
+                                                            setIsEditModalOpen(true); 
+                                                        }}
+                                                        className="p-2 text-[#6E4B8B] hover:text-white bg-purple-50 hover:bg-[#6E4B8B] rounded-xl transition-all border border-purple-100/30 hover:border-[#6E4B8B] cursor-pointer shadow-sm"
+                                                        title="Edit Material"
+                                                    >
+                                                        <Edit size={14} />
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => { setSelectedMaterial(m); setIsHistoryModalOpen(true); }}
+                                                        className="p-2 text-slate-600 hover:text-white bg-slate-50 hover:bg-slate-600 rounded-xl transition-all border border-slate-200/50 hover:border-slate-600 cursor-pointer shadow-sm"
+                                                        title="View History"
+                                                    >
+                                                        <History size={14} />
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleDelete(m._id)}
+                                                        className="p-2 text-red-650 hover:text-white bg-red-50 hover:bg-red-650 rounded-xl transition-all border border-red-100/30 hover:border-red-650 cursor-pointer shadow-sm"
+                                                        title="Delete"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             )}
 

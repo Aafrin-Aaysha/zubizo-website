@@ -84,7 +84,7 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-charcoal tracking-tight">Business Overview</h1>
+                    <h2 className="text-xl font-black text-charcoal">Business Overview</h2>
                     <p className="text-gray-500 mt-1 font-medium">Insights into your revenue and inventory consumption.</p>
                 </div>
                 <div className="flex items-center gap-4">
@@ -123,8 +123,8 @@ export default function DashboardPage() {
                             <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest mb-1 text-gray-400">
                                 {stat.label}
                             </p>
-                            <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-                                <h3 className="text-xl md:text-3xl font-black text-charcoal">
+                             <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                                <h3 className="text-lg md:text-xl font-bold text-charcoal">
                                     {stat.value}
                                 </h3>
                                 <span className={cn("text-[8px] md:text-[10px] font-bold uppercase", `text-[${stat.color}]`)} style={{ color: stat.color }}>

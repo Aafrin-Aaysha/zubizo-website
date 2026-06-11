@@ -11,7 +11,8 @@ import {
     Loader2,
     Plus,
     Info,
-    Sparkles
+    Sparkles,
+    X
 } from 'lucide-react';
 import { cn, getWhatsAppNumber } from '@/lib/utils';
 import { LeadCaptureModal, LeadData } from '@/components/ui/LeadCaptureModal';
@@ -101,9 +102,30 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+            {/* Thumbnails (Left-aligned on Desktop, Bottom on Mobile) */}
+            {images.length > 1 && (
+                <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto pb-2 lg:pb-0 scrollbar-hide px-1 lg:w-20 lg:shrink-0 lg:h-[55vh] lg:max-h-[480px] order-2 lg:order-1 w-full lg:w-auto">
+                    {images.map((img, idx) => (
+                        <button
+                            key={idx}
+                            onClick={() => setCurrent(idx)}
+                            className={cn(
+                                "shrink-0 w-20 h-26 lg:w-20 lg:h-26 rounded-lg overflow-hidden border-2 transition-all duration-300",
+                                current === idx
+                                    ? "border-[#ae7fcb] shadow-md scale-105"
+                                    : "border-transparent opacity-60 hover:opacity-100"
+                            )}
+                        >
+                            <img src={img} alt="" className="w-full h-full object-cover" />
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {/* Main Image (Right-aligned on Desktop, Top on Mobile) */}
             <div
-                className="relative aspect-[3/4] floating-card rounded-[2rem] overflow-hidden bg-white border border-lavender/10 cursor-zoom-in group"
+                className="relative flex-1 w-full aspect-[3/4] lg:aspect-auto lg:h-[55vh] lg:max-h-[480px] floating-card rounded-[2rem] overflow-hidden bg-white border border-lavender/10 cursor-zoom-in group order-1 lg:order-2"
                 onMouseEnter={() => setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
                 onMouseMove={handleMouseMove}
@@ -148,25 +170,6 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
                     </div>
                 )}
             </div>
-
-            {images.length > 1 && (
-                <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide px-2">
-                    {images.map((img, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => setCurrent(idx)}
-                            className={cn(
-                                "shrink-0 w-24 h-32 rounded-lg overflow-hidden border-2 transition-all duration-300",
-                                current === idx
-                                    ? "border-[#ae7fcb] shadow-md scale-105"
-                                    : "border-transparent opacity-60 hover:opacity-100"
-                            )}
-                        >
-                            <img src={img} alt="" className="w-full h-full object-cover" />
-                        </button>
-                    ))}
-                </div>
-            )}
         </div>
     );
 }
@@ -457,9 +460,6 @@ const PackageImageCard = React.memo(function PackageImageCard({
                     : "border-slate-200 bg-white hover:bg-slate-50 hover:border-[#ae7fcb]/30"
             )}
         >
-            <div className="hidden lg:block w-[64px] h-[64px] rounded-xl overflow-hidden shrink-0 border border-slate-100">
-                <ShimmerImage src={imgUrl} alt={title} className="w-full h-full object-cover" />
-            </div>
             <div className="flex-1 min-w-0 pr-2">
                 <p className={cn("font-bold text-sm tracking-tight leading-snug", isSelected ? "text-[#7C3AED]" : "text-slate-800")}>
                     {title}
@@ -519,6 +519,7 @@ export function DesignDetailClient({ design }: { design: Design }) {
     const [ribbonColour, setRibbonColour] = useState<string | null>(null);
     const [waxSeal, setWaxSeal] = useState<'None' | 'Bronze Round' | 'Gold Round' | 'Custom (enquire)'>('None');
     const [chartType, setChartType] = useState<'Single Card' | 'Tri-fold' | 'Booklet' | null>(null);
+    const [activeCustomizationTab, setActiveCustomizationTab] = useState<'envelope' | 'ribbon' | 'wax_seal' | null>(null);
 
     // Options Configuration Toggles
     const hasEnvelope = design.options?.hasEnvelope || false;
@@ -734,18 +735,83 @@ Please share further details.`;
             <div className="lg:col-span-7 space-y-12">
                 <ImageGallery images={design.images} name={design.name} />
 
-                <div className="space-y-6">
+                {/* Customization Options Preview Circles */}
+                {(hasEnvelope || hasWaxSeal || hasRibbon) && (
+                    <div className="bg-[#FAF8F5]/80 backdrop-blur-md rounded-[2rem] p-6 border border-[#ae7fcb]/10 shadow-sm space-y-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                            <div className="text-[11px] font-bold text-slate-500 tracking-wider">Available Options</div>
+                            <span className="text-[10px] text-amber-600 font-bold tracking-wider bg-amber-50 px-2.5 py-0.5 rounded">
+                                Prices differ for model customizations
+                            </span>
+                        </div>
+                        <div className="flex flex-wrap gap-6 items-center">
+                            {hasEnvelope && (
+                                <button
+                                    onClick={() => setActiveCustomizationTab('envelope')}
+                                    className="flex flex-col items-center gap-2 group focus:outline-none cursor-pointer"
+                                >
+                                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-100 group-hover:border-[#ae7fcb] shadow-sm transition-all duration-300 group-hover:scale-105 relative bg-slate-50">
+                                        <img
+                                            src={getOptionImage('envelope_type_landscape', design.options?.images)}
+                                            alt="Envelopes"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-slate-600 group-hover:text-[#6E4B8B] tracking-wider transition-colors">
+                                        Envelopes
+                                    </span>
+                                </button>
+                            )}
+                            {hasRibbon && (
+                                <button
+                                    onClick={() => setActiveCustomizationTab('ribbon')}
+                                    className="flex flex-col items-center gap-2 group focus:outline-none cursor-pointer"
+                                >
+                                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-100 group-hover:border-[#ae7fcb] shadow-sm transition-all duration-300 group-hover:scale-105 relative bg-slate-50">
+                                        <img
+                                            src={getOptionImage('ribbon_material_satin', design.options?.images)}
+                                            alt="Ribbons"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-slate-600 group-hover:text-[#6E4B8B] tracking-wider transition-colors">
+                                        Ribbons
+                                    </span>
+                                </button>
+                            )}
+                            {hasWaxSeal && (
+                                <button
+                                    onClick={() => setActiveCustomizationTab('wax_seal')}
+                                    className="flex flex-col items-center gap-2 group focus:outline-none cursor-pointer"
+                                >
+                                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-100 group-hover:border-[#ae7fcb] shadow-sm transition-all duration-300 group-hover:scale-105 relative bg-slate-50">
+                                        <img
+                                            src={getOptionImage('wax_seal_gold_round', design.options?.images)}
+                                            alt="Wax Seals"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <span className="text-[10px] font-bold text-slate-600 group-hover:text-[#6E4B8B] tracking-wider transition-colors">
+                                        Wax Seals
+                                    </span>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                <div className="space-y-6 lg:hidden">
                     <div className="flex items-center gap-3">
                         <span className="px-4 py-1.5 bg-[#EDE8F6] text-[#6E4B8B] text-[11px] font-bold uppercase tracking-[0.2em] rounded-full border border-[#ae7fcb]/15 shadow-sm">
                             {design.sku}
                         </span>
                         <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-                        <span className="text-slate-400 text-xs font-bold uppercase tracking-widest">
+                        <span className="text-slate-500 text-[11px] font-bold tracking-wider">
                             {design.categoryId?.name || 'Wedding Collection'}
                         </span>
                     </div>
 
-                    <h1 className="text-3xl md:text-5xl font-normal text-slate-800 font-italiana tracking-tight leading-[1.2]">
+                    <h1 className="!text-2xl md:!text-3xl font-bold text-black font-italiana tracking-tight leading-[1.2]">
                         {design.name}
                     </h1>
 
@@ -758,13 +824,37 @@ Please share further details.`;
             </div>
 
             {/* Right: Configuration Panel */}
-            <div className="lg:col-span-5 sticky top-28">
-                <div className="bg-white rounded-[2.5rem] p-8 shadow-luxury border border-[#ae7fcb]/10 space-y-8 floating-card">
+            <div className="lg:col-span-5 lg:sticky lg:top-28">
+                <div className="bg-white rounded-[2.5rem] shadow-luxury border border-[#ae7fcb]/10 floating-card flex flex-col lg:h-[calc(100vh-160px)] lg:max-h-[820px]">
+                    {/* Scrollable Container */}
+                    <div className="flex-1 overflow-y-auto p-8 space-y-8 min-h-0 custom-scrollbar">
+                    {/* Desktop-only Title and Details */}
+                    <div className="hidden lg:block space-y-4 pb-6 border-b border-[#ae7fcb]/10">
+                        <div className="flex items-center gap-3">
+                            <span className="px-4 py-1.5 bg-[#EDE8F6] text-[#6E4B8B] text-[11px] font-bold uppercase tracking-[0.2em] rounded-full border border-[#ae7fcb]/15 shadow-sm">
+                                {design.sku}
+                            </span>
+                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+                            <span className="text-slate-500 text-[11px] font-bold tracking-wider">
+                                {design.categoryId?.name || 'Wedding Collection'}
+                            </span>
+                        </div>
+
+                        <h1 className="!text-2xl lg:!text-3xl font-bold text-black font-italiana tracking-tight leading-[1.2]">
+                            {design.name}
+                        </h1>
+
+                        <div className="w-16 h-0.5 bg-[#ae7fcb]/30 rounded-full" />
+
+                        <p className="text-slate-500 text-sm leading-relaxed font-light">
+                            {design.description || "An exquisite stationery masterwork designed for life's most cherished moments."}
+                        </p>
+                    </div>
 
                     {/* Package Display / Selection */}
                     {safePackages.length === 1 ? (
                         <div>
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Package</h3>
+                            <div className="text-[11px] font-bold text-slate-500 tracking-wider mb-3">Package</div>
                             <PackageImageCard
                                 title={safePackages[0].title}
                                 isSelected={true}
@@ -773,7 +863,7 @@ Please share further details.`;
                         </div>
                     ) : safePackages.length > 1 ? (
                         <div>
-                            <h2 className="text-xl font-normal text-slate-800 font-italiana mb-4">Choose Package</h2>
+                            <h2 className="text-lg font-bold text-black font-italiana mb-4">Choose Package</h2>
                             <div className="grid grid-cols-1 gap-3">
                                 {safePackages.map((pkg) => (
                                     <PackageImageCard
@@ -790,7 +880,7 @@ Please share further details.`;
                     {/* Inclusions */}
                     {selectedPackage.inclusions && selectedPackage.inclusions.length > 0 && (
                         <div className="space-y-3">
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">What's Included</h3>
+                            <div className="text-[11px] font-bold text-slate-500 tracking-wider">What's Included</div>
                             <div className="space-y-2">
                                 {selectedPackage.inclusions.map((inc, i) => (
                                     <div key={i} className="flex items-start gap-2.5 text-sm text-slate-600 font-light">
@@ -815,11 +905,11 @@ Please share further details.`;
                     {/* Price Tiers */}
                     {selectedPackage.priceTiers && selectedPackage.priceTiers.length > 0 && (
                         <div className="space-y-3">
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Price Per Card</h3>
+                            <div className="text-[11px] font-bold text-slate-500 tracking-wider">Price per card</div>
                             <div className="rounded-[1.5rem] border border-gray-100 overflow-hidden">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="bg-gray-50/80 text-gray-400 text-[10px] uppercase tracking-widest font-black">
+                                        <tr className="bg-gray-50/80 text-gray-400 text-[10px] tracking-wider font-bold">
                                             <th className="px-5 py-3 text-left">Quantity</th>
                                             <th className="px-5 py-3 text-right">Per Card</th>
                                         </tr>
@@ -880,7 +970,7 @@ Please share further details.`;
                     {/* Format Selector */}
                     {hasChart && (
                         <div className="space-y-3">
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">FORMAT</h3>
+                            <div className="text-[11px] font-bold text-slate-500 tracking-wider">Format</div>
                             <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory -mx-8 px-8 md:mx-0 md:px-0 md:flex-wrap md:pb-0">
                                 {['Single Card', 'Tri-fold', 'Booklet'].map((type) => {
                                     const key = `chart_${type.toLowerCase().replace('-', '_').replace(' ', '_')}`;
@@ -908,7 +998,7 @@ Please share further details.`;
                     {hasEnvelope && (
                         <div className="space-y-4">
                             <div>
-                                <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">ENVELOPE COLOUR</h3>
+                                <div className="text-[11px] font-bold text-slate-500 tracking-wider">Envelope colour</div>
                                 <p className="text-[10px] text-slate-400 mt-1 font-medium">Select type, then colour. Different colours are priced differently.</p>
                             </div>
                             
@@ -943,8 +1033,8 @@ Please share further details.`;
                                     {/* Group 1: Standard */}
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Standard</span>
-                                            <span className="px-1.5 py-0.5 bg-green-50 text-green-600 rounded text-[8px] font-black uppercase tracking-wider">No extra charge</span>
+                                            <span className="text-[10px] font-bold text-black tracking-wider">Standard</span>
+                                            <span className="px-1.5 py-0.5 bg-green-50 text-green-600 rounded text-[8px] font-bold tracking-wider">No extra charge</span>
                                         </div>
                                         <div className="grid grid-cols-5 md:flex md:flex-wrap gap-2">
                                             {['Ivory', 'Champagne', 'White', 'Blush', 'Charcoal', 'Black', 'Sage'].map((col) => {
@@ -972,8 +1062,8 @@ Please share further details.`;
                                     {/* Group 2: Premium */}
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Premium</span>
-                                            <span className="px-1.5 py-0.5 bg-purple-50 text-[#6E4B8B] rounded text-[8px] font-black uppercase tracking-wider">+₹{envTierBSurcharge} / card</span>
+                                            <span className="text-[10px] font-bold text-black tracking-wider">Premium</span>
+                                            <span className="px-1.5 py-0.5 bg-purple-50 text-[#6E4B8B] rounded text-[8px] font-bold tracking-wider">+₹{envTierBSurcharge} / card</span>
                                         </div>
                                         <div className="grid grid-cols-5 md:flex md:flex-wrap gap-2">
                                             {['Navy', 'Forest Green', 'Burgundy', 'Royal Blue', 'Lavender', 'Rose Gold'].map((col) => {
@@ -1001,8 +1091,8 @@ Please share further details.`;
                                     {/* Group 3: Special Finish */}
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Special Finish</span>
-                                            <span className="px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded text-[8px] font-black uppercase tracking-wider">+₹{envTierCSurcharge} / card</span>
+                                            <span className="text-[10px] font-bold text-black tracking-wider">Special Finish</span>
+                                            <span className="px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded text-[8px] font-bold tracking-wider">+₹{envTierCSurcharge} / card</span>
                                         </div>
                                         <div className="grid grid-cols-5 md:flex md:flex-wrap gap-2">
                                             {['Gold', 'Silver', 'Coral', 'Teal'].map((col) => {
@@ -1034,7 +1124,7 @@ Please share further details.`;
                     {/* Ribbon Selector */}
                     {hasRibbon && (
                         <div className="space-y-4">
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">RIBBON</h3>
+                                <div className="text-[11px] font-bold text-slate-500 tracking-wider">Ribbon</div>
                             
                             {/* Step 1: Material */}
                             <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory -mx-8 px-8 md:mx-0 md:px-0 md:flex-wrap md:pb-0">
@@ -1079,7 +1169,7 @@ Please share further details.`;
                             {/* Step 2: Width */}
                             {ribbonMaterial !== 'None' && (
                                 <div className="space-y-2 pt-2 border-t border-slate-50">
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Ribbon Width</p>
+                                    <p className="text-[10px] text-slate-500 font-bold tracking-wider">Ribbon width</p>
                                     <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory -mx-8 px-8 md:mx-0 md:px-0 md:flex-wrap md:pb-0">
                                         {(['6mm · Narrow', '15mm · Medium', '25mm · Wide'] as const).map((width) => {
                                             const key = `ribbon_width_${width.split(' · ')[0]}`;
@@ -1114,8 +1204,8 @@ Please share further details.`;
                                     {/* Group 1: Standard */}
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Standard</span>
-                                            <span className="px-1.5 py-0.5 bg-green-50 text-green-600 rounded text-[8px] font-black uppercase tracking-wider">No extra charge</span>
+                                            <span className="text-[10px] font-bold text-black tracking-wider">Standard</span>
+                                            <span className="px-1.5 py-0.5 bg-green-50 text-green-600 rounded text-[8px] font-bold tracking-wider">No extra charge</span>
                                         </div>
                                         <div className="grid grid-cols-5 md:flex md:flex-wrap gap-2">
                                             {['Ivory', 'White', 'Blush', 'Sage'].map((col) => {
@@ -1143,8 +1233,8 @@ Please share further details.`;
                                     {/* Group 2: Premium */}
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Premium</span>
-                                            <span className="px-1.5 py-0.5 bg-purple-50 text-[#6E4B8B] rounded text-[8px] font-black uppercase tracking-wider">+₹{ribbonPremSurcharge} / card</span>
+                                            <span className="text-[10px] font-bold text-black tracking-wider">Premium</span>
+                                            <span className="px-1.5 py-0.5 bg-purple-50 text-[#6E4B8B] rounded text-[8px] font-bold tracking-wider">+₹{ribbonPremSurcharge} / card</span>
                                         </div>
                                         <div className="grid grid-cols-5 md:flex md:flex-wrap gap-2">
                                             {['Navy', 'Gold', 'Burgundy'].map((col) => {
@@ -1176,7 +1266,7 @@ Please share further details.`;
                     {/* Wax Seal Selector */}
                     {hasWaxSeal && (
                         <div className="space-y-4">
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">WAX SEAL</h3>
+                            <div className="text-[11px] font-bold text-slate-500 tracking-wider">Wax seal</div>
                             <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory -mx-8 px-8 md:mx-0 md:px-0 md:flex-wrap md:pb-0">
                                 <OptionImageCard
                                     label="None"
@@ -1288,7 +1378,7 @@ Please share further details.`;
 
                     {/* Quantity Input */}
                     <div className="space-y-3">
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Your Quantity</h3>
+                        <div className="text-[11px] font-bold text-slate-500 tracking-wider">Your quantity</div>
                         <div className="relative">
                             <input
                                 type="number"
@@ -1307,10 +1397,10 @@ Please share further details.`;
                                         : "border-gray-100 text-slate-800 focus:border-[#ae7fcb]"
                                 )}
                             />
-                            <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-widest text-neutral-400">Cards</span>
+                            <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[10px] font-bold tracking-wider text-neutral-400">cards</span>
                         </div>
                         {isInvalidQuantity && (
-                            <p className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
+                            <p className="text-[10px] font-bold text-red-500 tracking-wider">
                                 Minimum order is {design.minQuantity || 50} cards
                             </p>
                         )}
@@ -1319,7 +1409,7 @@ Please share further details.`;
                     {/* Add-ons */}
                     {addOns.length > 0 && (
                         <div className="space-y-3">
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Optional Add-ons</h3>
+                            <div className="text-[11px] font-bold text-slate-500 tracking-wider">Optional add-ons</div>
                             <div className="space-y-2">
                                 {addOns.map((addOn, idx) => {
                                     const isSelected = selectedAddOns.includes(addOn.label);
@@ -1357,22 +1447,27 @@ Please share further details.`;
                         </div>
                     )}
 
-                    {/* Enquire Button */}
-                    <button
-                        onClick={handleEnquire}
-                        disabled={isLogging || isInvalidQuantity}
-                        className="w-full h-14 bg-[#6E4B8B] hover:bg-[#5b3d73] text-white rounded-lg font-bold text-lg shadow-lg flex items-center justify-center gap-4 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group animate-bounce-subtle"
-                    >
-                        {isLogging ? (
-                            <Loader2 className="animate-spin" size={24} />
-                        ) : (
-                            <>
-                                <MessageCircle size={24} />
-                                <span>Enquire on WhatsApp</span>
-                                <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform duration-300" />
-                            </>
-                        )}
-                    </button>
+                    </div> {/* End of Scrollable Container */}
+
+                    {/* Pinned Bottom Container */}
+                    <div className="p-8 pt-4 border-t border-slate-100 bg-white rounded-b-[2.5rem] shrink-0">
+                        {/* Enquire Button */}
+                        <button
+                            onClick={handleEnquire}
+                            disabled={isLogging || isInvalidQuantity}
+                            className="w-full h-14 bg-[#6E4B8B] hover:bg-[#5b3d73] text-white rounded-lg font-bold text-lg shadow-lg flex items-center justify-center gap-4 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group animate-bounce-subtle"
+                        >
+                            {isLogging ? (
+                                <Loader2 className="animate-spin" size={24} />
+                            ) : (
+                                <>
+                                    <MessageCircle size={24} />
+                                    <span>Enquire on WhatsApp</span>
+                                    <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform duration-300" />
+                                </>
+                            )}
+                        </button>
+                    </div>
 
                 </div>
             </div>
@@ -1417,7 +1512,7 @@ Please share further details.`;
                             <div className="text-center space-y-1.5 w-full">
                                 <h4 className="text-lg font-bold text-slate-800 font-italiana">{previewItem.label}</h4>
                                 {previewItem.tier && (
-                                    <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-purple-50 text-[#6E4B8B]">
+                                    <span className="inline-block px-2.5 py-0.5 rounded text-[10px] font-black tracking-wider bg-purple-50 text-[#6E4B8B]">
                                         {previewItem.tier}
                                     </span>
                                 )}
@@ -1428,10 +1523,213 @@ Please share further details.`;
 
                             <button
                                 onClick={() => setPreviewItem(null)}
-                                className="w-full py-3.5 bg-slate-800 text-white rounded-xl text-xs font-black uppercase tracking-widest mt-2 hover:bg-black transition-colors"
+                                className="w-full py-3.5 bg-slate-800 text-white rounded-xl text-xs font-black tracking-wider mt-2 hover:bg-black transition-colors"
                             >
                                 Got it
                             </button>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+            
+            {/* Customization Options Modal */}
+            <AnimatePresence>
+                {activeCustomizationTab && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 0.5 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setActiveCustomizationTab(null)}
+                            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm cursor-pointer"
+                        />
+                        {/* Modal Container */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative bg-white rounded-[2.5rem] w-full max-w-3xl max-h-[85vh] overflow-hidden shadow-2xl border border-lavender/10 flex flex-col z-10 text-slate-700 text-xs font-sans"
+                        >
+                            {/* Header */}
+                            <div className="p-6 border-b border-slate-100 flex items-center justify-between shrink-0">
+                                <div>
+                                    <h2 className="text-xl font-bold text-black font-italiana tracking-tight">
+                                        {activeCustomizationTab === 'envelope' && 'Envelope Varieties'}
+                                        {activeCustomizationTab === 'ribbon' && 'Ribbon Varieties'}
+                                        {activeCustomizationTab === 'wax_seal' && 'Wax Seal Varieties'}
+                                    </h2>
+                                    <p className="text-[10px] text-amber-600 font-bold tracking-wider mt-1">
+                                        Note: Prices differ for model customizations. Please enquire.
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setActiveCustomizationTab(null)}
+                                    className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-black transition-colors cursor-pointer"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            {/* Content (Scrollable) */}
+                            <div className="p-8 overflow-y-auto space-y-8 flex-1">
+                                {activeCustomizationTab === 'envelope' && (
+                                    <>
+                                        {/* Envelope Types */}
+                                        <div className="space-y-4">
+                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Envelope styles</div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                {['Landscape', 'Portrait', 'Pouch'].map((type) => {
+                                                    const key = `envelope_type_${type.toLowerCase()}`;
+                                                    return (
+                                                        <div key={type} className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 flex flex-col items-center gap-3">
+                                                            <div className="w-full aspect-[4/3] rounded-xl overflow-hidden relative bg-slate-100 shadow-inner">
+                                                                <img
+                                                                    src={getOptionImage(key, design.options?.images)}
+                                                                    alt={type}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                            <span className="text-xs font-bold text-slate-800 tracking-wide">{type} Style</span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+
+                                        {/* Envelope Colors */}
+                                        <div className="space-y-4">
+                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Envelope colours</div>
+                                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                                                {[
+                                                    // Standard
+                                                    ...['Ivory', 'Champagne', 'White', 'Blush', 'Charcoal', 'Black', 'Sage'].map(name => ({ name, tier: 'Standard' })),
+                                                    // Premium
+                                                    ...['Navy', 'Forest Green', 'Burgundy', 'Royal Blue', 'Lavender', 'Rose Gold'].map(name => ({ name, tier: 'Premium' })),
+                                                    // Special Finish
+                                                    ...['Gold', 'Silver', 'Coral', 'Teal'].map(name => ({ name, tier: 'Special Finish' }))
+                                                ].map((col) => {
+                                                    const key = `envelope_colour_${col.name.toLowerCase().replace(' ', '_')}`;
+                                                    return (
+                                                        <div key={col.name} className="bg-slate-50/50 rounded-2xl p-3 border border-slate-100 flex flex-col items-center gap-2 text-center">
+                                                            <div className="w-12 h-12 rounded-full overflow-hidden border border-slate-200 shadow-sm relative bg-slate-100">
+                                                                <img
+                                                                    src={getOptionImage(key, design.options?.images)}
+                                                                    alt={col.name}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <span className="text-[10px] font-bold text-slate-800 tracking-wider block">{col.name}</span>
+                                                                <span className="text-[8px] text-slate-400 font-bold tracking-wider block mt-0.5">{col.tier}</span>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {activeCustomizationTab === 'ribbon' && (
+                                    <>
+                                        {/* Ribbon Materials */}
+                                        <div className="space-y-4">
+                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Ribbon materials</div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                {['Satin', 'Organza'].map((mat) => {
+                                                    const key = `ribbon_material_${mat.toLowerCase()}`;
+                                                    return (
+                                                        <div key={mat} className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 flex flex-col items-center gap-3">
+                                                            <div className="w-full aspect-[4/3] rounded-xl overflow-hidden relative bg-slate-100 shadow-inner">
+                                                                <img
+                                                                    src={getOptionImage(key, design.options?.images)}
+                                                                    alt={mat}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                            <span className="text-xs font-bold text-slate-800 tracking-wide">{mat} Finish</span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+
+                                        {/* Ribbon Widths */}
+                                        <div className="space-y-4">
+                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Ribbon widths</div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                {['6mm', '15mm', '25mm'].map((width) => {
+                                                    const key = `ribbon_width_${width.toLowerCase()}`;
+                                                    return (
+                                                        <div key={width} className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 flex flex-col items-center gap-3">
+                                                            <div className="w-full aspect-[4/3] rounded-xl overflow-hidden relative bg-slate-100 shadow-inner">
+                                                                <img
+                                                                    src={getOptionImage(key, design.options?.images)}
+                                                                    alt={width}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                            <span className="text-xs font-bold text-slate-800 tracking-wide">{width} Width</span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+
+                                        {/* Ribbon Colors */}
+                                        <div className="space-y-4">
+                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Ribbon colours</div>
+                                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                                                {['Ivory', 'White', 'Blush', 'Sage', 'Navy', 'Gold', 'Burgundy'].map((col) => {
+                                                    const key = `ribbon_colour_${col.toLowerCase().replace(' ', '_')}`;
+                                                    return (
+                                                        <div key={col} className="bg-slate-50/50 rounded-2xl p-3 border border-slate-100 flex flex-col items-center gap-2 text-center">
+                                                            <div className="w-12 h-12 rounded-full overflow-hidden border border-slate-200 shadow-sm relative bg-slate-100">
+                                                                <img
+                                                                    src={getOptionImage(key, design.options?.images)}
+                                                                    alt={col}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                            <span className="text-[10px] font-bold text-slate-800 tracking-wider block">{col}</span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {activeCustomizationTab === 'wax_seal' && (
+                                    <>
+                                        {/* Wax Seals */}
+                                        <div className="space-y-4">
+                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Wax seal styles</div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                                {[
+                                                    { type: 'Bronze Round', key: 'wax_seal_bronze_round' },
+                                                    { type: 'Gold Round', key: 'wax_seal_gold_round' },
+                                                    { type: 'Custom Design', key: 'wax_seal_custom' }
+                                                ].map((seal) => {
+                                                    return (
+                                                        <div key={seal.type} className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 flex flex-col items-center gap-3">
+                                                            <div className="w-full aspect-[4/3] rounded-xl overflow-hidden relative bg-slate-100 shadow-inner">
+                                                                <img
+                                                                    src={getOptionImage(seal.key, design.options?.images)}
+                                                                    alt={seal.type}
+                                                                    className="w-full h-full object-cover"
+                                                                />
+                                                            </div>
+                                                            <span className="text-xs font-bold text-slate-800 tracking-wide">{seal.type}</span>
+                                                        </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </motion.div>
                     </div>
                 )}
