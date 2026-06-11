@@ -119,7 +119,7 @@ I would like to inquire about your services.`;
                                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#D6BFA3] shrink-0 mt-0.5">
                                         <span className="text-sm">📍</span>
                                     </div>
-                                    <span>SS Arcade, 3F, Convent Road,<br />Cantonment, Trichy 620001</span>
+                                    <span>SS Arcade, 3F, 3rd Floor, Convent Road,<br />Cantonment, Trichy 620001</span>
                                 </span>
                             </li>
                             <li>

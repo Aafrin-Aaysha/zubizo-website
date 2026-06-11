@@ -102,11 +102,11 @@ const CATEGORIES = [
     { name: "Luxury", slug: "luxury", dbName: "Luxury", img: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=300&auto=format&fit=crop" },
     { name: "Religious & Cultural", slug: "religious-cultural", dbName: "Religious & Cultural", img: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?q=80&w=300&auto=format&fit=crop" },
     { name: "Engagement", slug: "engagement", dbName: "Engagement", img: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=300&auto=format&fit=crop" },
+    { name: "Baby Shower", slug: "baby-shower", dbName: "Baby Shower", img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=300&auto=format&fit=crop" },
+    { name: "Housewarming", slug: "housewarming", dbName: "Housewarming", img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=300&auto=format&fit=crop" },
     { name: "E-Invite (Image)", slug: "image-invite", img: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?q=80&w=300&auto=format&fit=crop" },
     { name: "E-Invite (Video)", slug: "video-invite", img: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?q=80&w=300&auto=format&fit=crop" },
-    { name: "E-Invite (Website)", slug: "website-invite", img: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?q=80&w=300&auto=format&fit=crop" },
-    { name: "Baby Shower", slug: "baby-shower", dbName: "Baby Shower", img: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=300&auto=format&fit=crop" },
-    { name: "Housewarming", slug: "housewarming", dbName: "Housewarming", img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=300&auto=format&fit=crop" }
+    { name: "E-Invite (Website)", slug: "website-invite", img: "https://images.unsplash.com/photo-1512486130939-2c4f79935e4f?q=80&w=300&auto=format&fit=crop" }
 ];
 
 const CATEGORY_ICONS: { [key: string]: React.ComponentType<any> } = {
