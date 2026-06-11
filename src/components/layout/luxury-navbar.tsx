@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Menu, X } from "lucide-react";
 import { LogoIcon } from "@/components/ui/logo-icon";
@@ -18,7 +18,16 @@ export const LuxuryNavbar = () => {
     const [isAnnouncementVisible, setIsAnnouncementVisible] = React.useState(true);
     const [scrolled, setScrolled] = React.useState(false);
     
+    const router = useRouter();
     const pathname = usePathname();
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            router.push(`/catalog?search=${encodeURIComponent(searchQuery)}`);
+            setShowResultsDropdown(false);
+        }
+    };
 
     const announcements = [
         "✦ Personalisation on every order",
@@ -160,6 +169,7 @@ export const LuxuryNavbar = () => {
                                 placeholder="Search catalogue..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
+                                onKeyDown={handleKeyDown}
                                 onFocus={() => setShowResultsDropdown(true)}
                                 onBlur={() => setTimeout(() => setShowResultsDropdown(false), 200)}
                                 className="w-full rounded-full py-1.5 pl-8 pr-4 text-[11px] font-medium transition-all outline-none border bg-slate-100 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#ae7fcb]/30"

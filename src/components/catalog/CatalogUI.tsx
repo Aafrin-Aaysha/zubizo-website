@@ -3,7 +3,7 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Search, ChevronDown, Grid3X3, List, X, ArrowUpDown } from "lucide-react";
+import { ChevronDown, X, ArrowUpDown, SlidersHorizontal, Check, FileText, Truck, RefreshCcw, AlertTriangle, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import DesignCard from "./DesignCard";
 
@@ -41,20 +41,31 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
     const searchParams = useSearchParams();
 
     const [showSortMenu, setShowSortMenu] = React.useState(false);
-    const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
-    const [localSearch, setLocalSearch] = React.useState(searchParams.get('search') || "");
+    const [isFilterOpen, setIsFilterOpen] = React.useState(false);
 
     const activeCategory = searchParams.get('category') || "All";
     const sortBy = searchParams.get('sort') || "featured";
+    const activeStyle = searchParams.get('style') || "";
+    const activeOccasion = searchParams.get('occasion') || "";
+    const activeColor = searchParams.get('color') || "";
 
-    // Handle Search with debounce or manual trigger
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        const params = new URLSearchParams(searchParams.toString());
-        if (localSearch) params.set('search', localSearch);
-        else params.delete('search');
-        router.push(`${pathname}?${params.toString()}`);
-    };
+    // Drawer temporary states
+    const [tempCategory, setTempCategory] = React.useState(activeCategory);
+    const [tempPriceRange, setTempPriceRange] = React.useState(activePriceFilter?.priceRange || "");
+    const [tempStyle, setTempStyle] = React.useState(activeStyle);
+    const [tempOccasion, setTempOccasion] = React.useState(activeOccasion);
+    const [tempColor, setTempColor] = React.useState(activeColor);
+
+    // Sync drawer states when drawer opens
+    React.useEffect(() => {
+        if (isFilterOpen) {
+            setTempCategory(activeCategory);
+            setTempPriceRange(activePriceFilter?.priceRange || "");
+            setTempStyle(activeStyle);
+            setTempOccasion(activeOccasion);
+            setTempColor(activeColor);
+        }
+    }, [isFilterOpen, activeCategory, activePriceFilter, activeStyle, activeOccasion, activeColor]);
 
     const toggleSort = (val: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -70,8 +81,35 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
         router.push(`${pathname}?${params.toString()}`);
     };
 
-    const activeSortLabel = SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Featured';
+    const applyFilters = (filters: {
+        category: string;
+        priceRange: string;
+        style: string;
+        occasion: string;
+        color: string;
+    }) => {
+        const params = new URLSearchParams(searchParams.toString());
+        
+        if (filters.category === "All") params.delete('category');
+        else params.set('category', filters.category);
+        
+        if (filters.priceRange) params.set('priceRange', filters.priceRange);
+        else params.delete('priceRange');
+        
+        if (filters.style) params.set('style', filters.style);
+        else params.delete('style');
+        
+        if (filters.occasion) params.set('occasion', filters.occasion);
+        else params.delete('occasion');
+        
+        if (filters.color) params.set('color', filters.color);
+        else params.delete('color');
+        
+        router.push(`${pathname}?${params.toString()}`);
+        setIsFilterOpen(false);
+    };
 
+    const activeSortLabel = SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Featured';
     const priceLabel = getPriceLabel(activePriceFilter);
 
     const clearPriceFilter = () => {
@@ -83,128 +121,176 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
         router.push(`${pathname}?${params.toString()}`);
     };
 
+    // Client-side filtering for style, occasion, colors
+    const filteredDesigns = React.useMemo(() => {
+        let list = [...initialDesigns];
+
+        if (activeStyle) {
+            list = list.filter(d => 
+                d.name.toLowerCase().includes(activeStyle.toLowerCase()) || 
+                d.description?.toLowerCase().includes(activeStyle.toLowerCase()) ||
+                d.sku?.toLowerCase().includes(activeStyle.toLowerCase())
+            );
+        }
+        if (activeOccasion) {
+            list = list.filter(d => 
+                d.name.toLowerCase().includes(activeOccasion.toLowerCase()) || 
+                d.description?.toLowerCase().includes(activeOccasion.toLowerCase()) ||
+                d.sku?.toLowerCase().includes(activeOccasion.toLowerCase())
+            );
+        }
+        if (activeColor) {
+            list = list.filter(d => 
+                d.name.toLowerCase().includes(activeColor.toLowerCase()) || 
+                d.description?.toLowerCase().includes(activeColor.toLowerCase()) ||
+                d.sku?.toLowerCase().includes(activeColor.toLowerCase())
+            );
+        }
+
+        return list;
+    }, [initialDesigns, activeStyle, activeOccasion, activeColor]);
+
     return (
         <div className="site-container py-10">
-            {/* Active price filter badge */}
-            {priceLabel && (
-                <div className="flex items-center gap-2 mb-4">
-                    <span className="text-xs text-neutral-500 font-medium">Filtering by price:</span>
-                    <span className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-lavender/10 text-lavender text-xs font-bold border border-lavender/20">
-                        {priceLabel}
-                        <button onClick={clearPriceFilter} className="hover:text-lavender/60 transition-colors" aria-label="Clear price filter">
-                            <X size={12} />
+            {/* Category Pills */}
+            <div className="mb-6">
+                <div className="flex items-center gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
+                    {['All', ...categories.map(c => c.name)].map(cat => (
+                        <button
+                            key={cat}
+                            onClick={() => setCategory(cat)}
+                            className={cn(
+                                "whitespace-nowrap px-6 h-10 rounded-full text-xs font-bold uppercase tracking-wider border transition-all shrink-0 cursor-pointer shadow-sm",
+                                activeCategory === cat
+                                    ? "bg-[#6E4B8B] text-white border-[#6E4B8B] shadow-md shadow-[#6E4B8B]/20"
+                                    : "bg-white text-neutral-600 border-slate-200 hover:border-[#ae7fcb]/40 hover:text-[#ae7fcb] hover:scale-[1.02] active:scale-[0.98]"
+                            )}
+                        >
+                            {cat}
                         </button>
-                    </span>
+                    ))}
+                </div>
+            </div>
+
+            {/* Filter & Sort Controls Row */}
+            <div className="flex items-center justify-between gap-4 mb-8 pb-4 border-b border-[#ae7fcb]/10">
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setIsFilterOpen(true)}
+                        className="flex items-center gap-2 px-5 h-10 bg-white border border-slate-200 hover:border-[#ae7fcb]/45 rounded-full text-xs font-bold text-slate-700 hover:text-[#ae7fcb] transition-all shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        <SlidersHorizontal size={14} className="text-[#6E4B8B]" />
+                        <span>Filter ⊞</span>
+                        {(activePriceFilter?.priceRange || activeStyle || activeOccasion || activeColor) && (
+                            <span className="w-2 h-2 rounded-full bg-[#6E4B8B]" />
+                        )}
+                    </button>
+
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowSortMenu(v => !v)}
+                            className="flex items-center gap-2 px-5 h-10 bg-white border border-slate-200 hover:border-[#ae7fcb]/45 rounded-full text-xs font-bold text-slate-700 hover:text-[#ae7fcb] transition-all shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                            <ArrowUpDown size={14} className="text-[#6E4B8B]" />
+                            <span>Sort: {activeSortLabel} ▼</span>
+                        </button>
+                        <AnimatePresence>
+                            {showSortMenu && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 8 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 8 }}
+                                    className="absolute left-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl border border-neutral-100 overflow-hidden z-30"
+                                >
+                                    {SORT_OPTIONS.map(opt => (
+                                        <button
+                                            key={opt.value}
+                                            onClick={() => toggleSort(opt.value)}
+                                            className={cn("w-full text-left px-5 py-3.5 text-[10px] hover:bg-gray-50 transition-colors font-bold uppercase tracking-wider",
+                                                sortBy === opt.value ? "text-[#6E4B8B] bg-[#6E4B8B]/5" : "text-slate-600"
+                                            )}
+                                        >
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </div>
+
+                <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    {filteredDesigns.length} designs
+                </div>
+            </div>
+
+            {/* Active filters badges */}
+            {(priceLabel || activeStyle || activeOccasion || activeColor) && (
+                <div className="flex flex-wrap items-center gap-2 mb-8">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Active Filters:</span>
+                    {priceLabel && (
+                        <span className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-[#6E4B8B]/10 text-[#6E4B8B] text-[10px] font-bold border border-[#ae7fcb]/20">
+                            {priceLabel}
+                            <button onClick={clearPriceFilter} className="hover:opacity-60 transition-opacity cursor-pointer">
+                                <X size={10} />
+                            </button>
+                        </span>
+                    )}
+                    {activeStyle && (
+                        <span className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-[#6E4B8B]/10 text-[#6E4B8B] text-[10px] font-bold border border-[#ae7fcb]/20">
+                            Style: {activeStyle}
+                            <button onClick={() => {
+                                const params = new URLSearchParams(searchParams.toString());
+                                params.delete('style');
+                                router.push(`${pathname}?${params.toString()}`);
+                            }} className="hover:opacity-60 transition-opacity cursor-pointer">
+                                <X size={10} />
+                            </button>
+                        </span>
+                    )}
+                    {activeOccasion && (
+                        <span className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-[#6E4B8B]/10 text-[#6E4B8B] text-[10px] font-bold border border-[#ae7fcb]/20">
+                            Occasion: {activeOccasion}
+                            <button onClick={() => {
+                                const params = new URLSearchParams(searchParams.toString());
+                                params.delete('occasion');
+                                router.push(`${pathname}?${params.toString()}`);
+                            }} className="hover:opacity-60 transition-opacity cursor-pointer">
+                                <X size={10} />
+                            </button>
+                        </span>
+                    )}
+                    {activeColor && (
+                        <span className="inline-flex items-center gap-1.5 px-3 h-7 rounded-full bg-[#6E4B8B]/10 text-[#6E4B8B] text-[10px] font-bold border border-[#ae7fcb]/20">
+                            Color: {activeColor}
+                            <button onClick={() => {
+                                const params = new URLSearchParams(searchParams.toString());
+                                params.delete('color');
+                                router.push(`${pathname}?${params.toString()}`);
+                            }} className="hover:opacity-60 transition-opacity cursor-pointer">
+                                <X size={10} />
+                            </button>
+                        </span>
+                    )}
                 </div>
             )}
 
-            {/* Sort + View controls & Category Pills Row */}
-            <div className="flex flex-col gap-6 mb-8">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    {/* Category Pills */}
-                    <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                        {['All', ...categories.map(c => c.name)].map(cat => (
-                            <button
-                                key={cat}
-                                onClick={() => setCategory(cat)}
-                                className={cn(
-                                    "whitespace-nowrap px-4 h-9 rounded-lg text-xs font-bold uppercase tracking-wider border transition-all shrink-0",
-                                    activeCategory === cat
-                                        ? "bg-lavender text-white border-lavender shadow-md shadow-lavender/20"
-                                        : "bg-white text-neutral-500 border-neutral-200 hover:border-lavender/40 hover:text-lavender"
-                                )}
-                            >
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="flex items-center gap-3 self-end">
-                        {/* Sort dropdown */}
-                        <div className="relative">
-                            <button
-                                onClick={() => setShowSortMenu(v => !v)}
-                                className="flex items-center gap-2 px-4 h-10 bg-white border border-neutral-200 rounded-lg text-xs font-semibold text-neutral-700 hover:border-lavender/40 transition-colors shadow-sm"
-                            >
-                                <ArrowUpDown size={14} className="text-lavender" />
-                                {activeSortLabel}
-                                <ChevronDown size={14} className={cn("text-neutral-400 transition-transform", showSortMenu && "rotate-180")} />
-                            </button>
-                            <AnimatePresence>
-                                {showSortMenu && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 8 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 8 }}
-                                        className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-premium border border-neutral-100 overflow-hidden z-30"
-                                    >
-                                        {SORT_OPTIONS.map(opt => (
-                                            <button
-                                                key={opt.value}
-                                                onClick={() => toggleSort(opt.value)}
-                                                className={cn("w-full text-left px-4 py-3 text-sm hover:bg-gray-50 transition-colors font-medium",
-                                                    sortBy === opt.value ? "text-lavender font-bold" : "text-charcoal"
-                                                )}
-                                            >
-                                                {opt.label}
-                                            </button>
-                                        ))}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
-
-                        {/* View mode */}
-                        <div className="flex items-center bg-gray-100 p-1 rounded-lg">
-                            <button onClick={() => setViewMode('grid')} className={cn("p-1.5 rounded-md transition-all", viewMode === 'grid' ? "bg-white text-lavender shadow-sm" : "text-gray-400")}>
-                                <Grid3X3 size={16} />
-                            </button>
-                            <button onClick={() => setViewMode('list')} className={cn("p-1.5 rounded-md transition-all", viewMode === 'list' ? "bg-white text-lavender shadow-sm" : "text-gray-400")}>
-                                <List size={16} />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Search bar */}
-                <form onSubmit={handleSearch} className="relative mb-8 max-w-md group">
-                    <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 group-focus-within:text-lavender transition-colors" />
-                    <input
-                        type="text"
-                        placeholder="Search designs..."
-                        value={localSearch}
-                        onChange={e => setLocalSearch(e.target.value)}
-                        className="w-full h-11 pl-11 pr-4 bg-white border border-neutral-200 rounded-lg text-sm font-medium focus:border-lavender outline-none shadow-sm transition-all"
-                    />
-                    {localSearch && (
-                        <button type="button" onClick={() => { setLocalSearch(''); router.push(pathname); }} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                            <X size={16} />
-                        </button>
-                    )}
-                </form>
-            </div>
-
-            {/* Grid / List */}
+            {/* Grid */}
             <AnimatePresence mode="wait">
-                {initialDesigns.length > 0 ? (
+                {filteredDesigns.length > 0 ? (
                     <motion.div
                         key="grid"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className={cn(
-                            "gap-6 grid",
-                            viewMode === 'grid'
-                                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                        )}
+                        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
                     >
-                        {initialDesigns.map((design, i) => (
+                        {filteredDesigns.map((design, i) => (
                             <motion.div
                                 key={design._id}
-                                initial={{ opacity: 0, y: 16 }}
+                                initial={{ opacity: 0, y: 24 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: Math.min(i * 0.05, 0.4) }}
+                                transition={{ duration: 0.45, delay: Math.min(i * 0.05, 0.45) }}
                             >
                                 <DesignCard design={design} />
                             </motion.div>
@@ -217,15 +303,202 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
                         animate={{ opacity: 1 }}
                         className="py-32 text-center"
                     >
-                        <p className="text-2xl font-bold text-gray-200 font-serif italic mb-3">No designs found</p>
+                        <p className="text-2xl font-bold text-gray-205 font-serif italic mb-3">No designs found</p>
                         <p className="text-sm text-gray-400 mb-6">Try a different filter or search term.</p>
                         <button
-                            onClick={() => router.push(pathname)}
-                            className="px-6 h-10 bg-lavender text-white rounded-lg text-sm font-medium hover:bg-lavender/90 transition-colors tracking-wide"
+                            onClick={() => {
+                                router.push(pathname);
+                            }}
+                            className="px-6 h-10 bg-[#6E4B8B] hover:bg-[#5D3F76] text-white rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer shadow-md"
                         >
                             Reset Explore
                         </button>
                     </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Filter Drawer */}
+            <AnimatePresence>
+                {isFilterOpen && (
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 0.5 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 cursor-pointer"
+                            onClick={() => setIsFilterOpen(false)}
+                        />
+                        {/* Drawer */}
+                        <motion.div
+                            initial={{ x: "100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "100%" }}
+                            transition={{ type: "tween", duration: 0.3, ease: "easeOut" }}
+                            className="fixed right-0 top-0 bottom-0 w-full sm:w-[420px] bg-[#FAF8F5] shadow-2xl z-[60] flex flex-col justify-between"
+                        >
+                            {/* Header */}
+                            <div className="p-6 md:p-8 border-b border-[#ae7fcb]/10 flex items-center justify-between shrink-0 bg-white">
+                                <h3 className="text-xl font-normal text-slate-800 font-italiana">Filters</h3>
+                                <button
+                                    onClick={() => setIsFilterOpen(false)}
+                                    className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                                >
+                                    <X size={16} />
+                                </button>
+                            </div>
+
+                            {/* Scrollable Content */}
+                            <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
+                                {/* Category Section */}
+                                <div className="space-y-3">
+                                    <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Category</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {['All', ...categories.map(c => c.name)].map(cat => (
+                                            <button
+                                                key={cat}
+                                                type="button"
+                                                onClick={() => setTempCategory(cat)}
+                                                className={cn(
+                                                    "px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer",
+                                                    tempCategory === cat
+                                                        ? "bg-[#6E4B8B] text-white border-[#6E4B8B]"
+                                                        : "bg-white text-slate-655 border-slate-200 hover:border-[#ae7fcb]/40 hover:text-[#ae7fcb]"
+                                                )}
+                                            >
+                                                {cat}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Price Range Section */}
+                                <div className="space-y-3">
+                                    <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Price Range</h4>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {[
+                                            { label: "Under ₹30", value: "under30" },
+                                            { label: "Under ₹60", value: "under60" },
+                                            { label: "Under ₹90", value: "under90" },
+                                            { label: "Premium (₹120+)", value: "premium" },
+                                        ].map(slab => (
+                                            <button
+                                                key={slab.value}
+                                                type="button"
+                                                onClick={() => setTempPriceRange(tempPriceRange === slab.value ? "" : slab.value)}
+                                                className={cn(
+                                                    "px-4 py-3 rounded-2xl text-xs font-semibold border transition-all cursor-pointer text-left flex items-center justify-between",
+                                                    tempPriceRange === slab.value
+                                                        ? "bg-[#6E4B8B]/5 text-[#6E4B8B] border-[#6E4B8B]"
+                                                        : "bg-white text-slate-600 border-slate-200 hover:border-[#ae7fcb]/30"
+                                                )}
+                                            >
+                                                <span>{slab.label}</span>
+                                                {tempPriceRange === slab.value && <Check size={14} className="text-[#6E4B8B]" />}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Style Section */}
+                                <div className="space-y-3">
+                                    <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Style</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {["Traditional", "Minimalist", "Luxury"].map(style => (
+                                            <button
+                                                key={style}
+                                                type="button"
+                                                onClick={() => setTempStyle(tempStyle === style ? "" : style)}
+                                                className={cn(
+                                                    "px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer",
+                                                    tempStyle === style
+                                                        ? "bg-[#6E4B8B] text-white border-[#6E4B8B]"
+                                                        : "bg-white text-slate-600 border-slate-200 hover:border-[#ae7fcb]/40 hover:text-[#ae7fcb]"
+                                                )}
+                                            >
+                                                {style}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Occasion Section */}
+                                <div className="space-y-3">
+                                    <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Occasion</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {["Wedding", "Engagement", "Baby Shower", "Housewarming"].map(occ => (
+                                            <button
+                                                key={occ}
+                                                type="button"
+                                                onClick={() => setTempOccasion(tempOccasion === occ ? "" : occ)}
+                                                className={cn(
+                                                    "px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer",
+                                                    tempOccasion === occ
+                                                        ? "bg-[#6E4B8B] text-white border-[#6E4B8B]"
+                                                        : "bg-white text-slate-600 border-slate-200 hover:border-[#ae7fcb]/40 hover:text-[#ae7fcb]"
+                                                )}
+                                            >
+                                                {occ}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Colors Section */}
+                                <div className="space-y-3">
+                                    <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Colors</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {["Gold", "Rose Gold", "Pastel", "Floral", "Purple"].map(col => (
+                                            <button
+                                                key={col}
+                                                type="button"
+                                                onClick={() => setTempColor(tempColor === col ? "" : col)}
+                                                className={cn(
+                                                    "px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer",
+                                                    tempColor === col
+                                                        ? "bg-[#6E4B8B] text-white border-[#6E4B8B]"
+                                                        : "bg-white text-slate-600 border-slate-200 hover:border-[#ae7fcb]/40 hover:text-[#ae7fcb]"
+                                                )}
+                                            >
+                                                {col}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Sticky Footer */}
+                            <div className="p-6 md:p-8 border-t border-[#ae7fcb]/10 bg-white shrink-0 flex items-center gap-4">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setTempCategory("All");
+                                        setTempPriceRange("");
+                                        setTempStyle("");
+                                        setTempOccasion("");
+                                        setTempColor("");
+                                        applyFilters({ category: "All", priceRange: "", style: "", occasion: "", color: "" });
+                                    }}
+                                    className="flex-1 h-12 rounded-2xl border border-slate-200 text-slate-750 font-bold text-xs uppercase tracking-wider hover:bg-slate-50 transition-colors cursor-pointer"
+                                >
+                                    Reset
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => applyFilters({
+                                        category: tempCategory,
+                                        priceRange: tempPriceRange,
+                                        style: tempStyle,
+                                        occasion: tempOccasion,
+                                        color: tempColor
+                                    })}
+                                    className="flex-1 h-12 rounded-2xl bg-[#6E4B8B] hover:bg-[#5D3F76] text-white font-bold text-xs uppercase tracking-wider transition-colors cursor-pointer"
+                                >
+                                    Apply
+                                </button>
+                            </div>
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
         </div>
