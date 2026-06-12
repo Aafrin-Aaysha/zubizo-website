@@ -19,7 +19,8 @@ import {
     ChevronDown,
     Tag,
     Calendar,
-    ShoppingBag
+    ShoppingBag,
+    ArrowLeft
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -389,6 +390,9 @@ export default function InventoryPage() {
 
     const activeCatData = groupedData.find(c => c.name === activeCategory);
     const activeMatData = activeCatData?.materials.find(m => m.name === activeMaterial);
+    const materialsToShow = activeCategory 
+        ? filteredMaterials.filter(m => m.category === activeCategory)
+        : filteredMaterials;
 
     const lowStockCount = materials.filter(m => m.currentStock <= m.lowStockThreshold && m.usageType !== 'manual').length;
     const totalValue = materials.reduce((acc, m) => acc + (m.currentStock * m.defaultPrice), 0);
@@ -610,150 +614,259 @@ export default function InventoryPage() {
                 />
             </div>
 
-            {/* Flat Materials List Table */}
+            {/* Inventory Content Area */}
             {isLoading ? (
                 <div className="bg-white rounded-[24px] border border-slate-100 p-16 text-center shadow-sm">
                     <Loader2 className="animate-spin text-[#ae7fcb] mx-auto" size={32} />
                     <p className="text-slate-400 mt-3 font-bold text-sm">Loading Inventory...</p>
                 </div>
-            ) : filteredMaterials.length === 0 ? (
-                <div className="bg-white rounded-[24px] border border-slate-100 p-16 text-center shadow-sm">
-                    <ShoppingBag className="text-slate-350 mx-auto mb-3" size={32} />
-                    <p className="text-slate-400 font-bold text-sm">No matching items found.</p>
+            ) : activeCategory === null && searchQuery === '' ? (
+                // Category Cards Grid View
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {groupedData.map((cat) => {
+                            const catMeta = CATEGORY_META[cat.name] || { label: cat.name, icon: '📦' };
+                            return (
+                                <div
+                                    key={cat.name}
+                                    onClick={() => setActiveCategory(cat.name)}
+                                    className="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.015)] hover:shadow-[0_8px_30px_rgba(174,127,203,0.12)] hover:border-[#ae7fcb]/50 transition-all duration-300 cursor-pointer flex flex-col justify-between group active:scale-[0.99]"
+                                >
+                                    <div>
+                                        <div className="w-14 h-14 rounded-2xl bg-[#ae7fcb]/10 text-[#6E4B8B] flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">
+                                            {catMeta.icon}
+                                        </div>
+                                        <h3 className="text-base font-extrabold text-slate-800 tracking-tight mt-5 group-hover:text-[#6E4B8B] transition-colors">
+                                            {catMeta.label}
+                                        </h3>
+                                        <p className="text-slate-400 text-xs font-semibold mt-1">
+                                            {cat.totalMaterials} materials, {cat.totalVariants} variants
+                                        </p>
+                                    </div>
+                                    <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between">
+                                        <div>
+                                            <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Valuation</span>
+                                            <span className="text-sm font-black text-slate-800 mt-0.5 block">
+                                                ₹{cat.totalStockValue.toLocaleString('en-IN')}
+                                            </span>
+                                        </div>
+                                        <div className="w-8 h-8 rounded-xl bg-slate-50 group-hover:bg-[#ae7fcb] group-hover:text-white flex items-center justify-center text-slate-400 transition-all">
+                                            <ChevronRight size={16} />
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    {groupedData.length === 0 && (
+                        <div className="bg-white rounded-[24px] border border-slate-100 p-16 text-center shadow-sm">
+                            <ShoppingBag className="text-slate-350 mx-auto mb-3" size={32} />
+                            <p className="text-slate-400 font-bold text-sm">No categories found.</p>
+                        </div>
+                    )}
+                </div>
+            ) : materialsToShow.length === 0 ? (
+                <div className="space-y-6">
+                    {activeCategory && (
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.01)] mb-6">
+                            <div className="flex items-center gap-3.5">
+                                <button 
+                                    onClick={() => setActiveCategory(null)}
+                                    className="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-550 hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-all border border-slate-200/40 cursor-pointer"
+                                    title="Back to Categories"
+                                >
+                                    <ArrowLeft size={18} />
+                                </button>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-2xl">{CATEGORY_META[activeCategory]?.icon || '📦'}</span>
+                                        <h3 className="text-lg font-black text-slate-800">{CATEGORY_META[activeCategory]?.label || activeCategory}</h3>
+                                    </div>
+                                    <p className="text-slate-400 text-xs mt-0.5 font-medium">Viewing variants and stock within this category.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-6 text-xs font-bold text-slate-500 border-l border-slate-100 pl-6 text-left">
+                                <div>
+                                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Total Variants</span>
+                                    <span className="text-base font-black text-slate-800 mt-0.5 block">{activeCatData?.totalVariants || 0}</span>
+                                </div>
+                                <div>
+                                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Category Valuation</span>
+                                    <span className="text-base font-black text-slate-800 mt-0.5 block">₹{(activeCatData?.totalStockValue || 0).toLocaleString('en-IN')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div className="bg-white rounded-[24px] border border-slate-100 p-16 text-center shadow-sm">
+                        <ShoppingBag className="text-slate-350 mx-auto mb-3" size={32} />
+                        <p className="text-slate-400 font-bold text-sm">No matching items found.</p>
+                    </div>
                 </div>
             ) : (
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.01)] overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="bg-slate-50/75 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                                    <th className="px-6 py-4">Material / Variant Name</th>
-                                    <th className="px-6 py-4">Category</th>
-                                    <th className="px-6 py-4">Specs</th>
-                                    <th className="px-6 py-4">Stock Status</th>
-                                    <th className="px-6 py-4">Unit Cost</th>
-                                    <th className="px-6 py-4">Total Value</th>
-                                    <th className="px-6 py-4">Managed By</th>
-                                    <th className="px-6 py-4">Last Restocked</th>
-                                    <th className="px-6 py-4 text-right">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                                {filteredMaterials.map(m => {
-                                    const isLow = m.currentStock <= m.lowStockThreshold;
-                                    const { materialName, variantName } = parseMaterialName(m.name);
-                                    return (
-                                        <tr key={m._id} className="hover:bg-slate-50/30 transition-colors group">
-                                            <td className="px-6 py-4">
-                                                <div className="flex flex-col gap-0.5">
-                                                    <span className="font-semibold text-slate-800 text-sm">
-                                                        <HighlightText text={materialName} search={searchQuery} />
+                <div className="space-y-6">
+                    {activeCategory && (
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.01)] mb-6">
+                            <div className="flex items-center gap-3.5">
+                                <button 
+                                    onClick={() => setActiveCategory(null)}
+                                    className="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-all border border-slate-200/40 cursor-pointer"
+                                    title="Back to Categories"
+                                >
+                                    <ArrowLeft size={18} />
+                                </button>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-2xl">{CATEGORY_META[activeCategory]?.icon || '📦'}</span>
+                                        <h3 className="text-lg font-black text-slate-800">{CATEGORY_META[activeCategory]?.label || activeCategory}</h3>
+                                    </div>
+                                    <p className="text-slate-400 text-xs mt-0.5 font-medium">Viewing variants and stock within this category.</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-6 text-xs font-bold text-slate-500 border-l border-slate-105 pl-6 text-left">
+                                <div>
+                                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Total Variants</span>
+                                    <span className="text-base font-black text-slate-800 mt-0.5 block">{activeCatData?.totalVariants || 0}</span>
+                                </div>
+                                <div>
+                                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Category Valuation</span>
+                                    <span className="text-base font-black text-slate-800 mt-0.5 block">₹{(activeCatData?.totalStockValue || 0).toLocaleString('en-IN')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.01)] overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-slate-50/75 border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                        <th className="px-6 py-4">Material / Variant Name</th>
+                                        <th className="px-6 py-4">Category</th>
+                                        <th className="px-6 py-4">Specs</th>
+                                        <th className="px-6 py-4">Stock Status</th>
+                                        <th className="px-6 py-4">Unit Cost</th>
+                                        <th className="px-6 py-4">Total Value</th>
+                                        <th className="px-6 py-4">Managed By</th>
+                                        <th className="px-6 py-4">Last Restocked</th>
+                                        <th className="px-6 py-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100">
+                                    {materialsToShow.map(m => {
+                                        const isLow = m.currentStock <= m.lowStockThreshold;
+                                        const { materialName, variantName } = parseMaterialName(m.name);
+                                        return (
+                                            <tr key={m._id} className="hover:bg-slate-50/30 transition-colors group">
+                                                <td className="px-6 py-4">
+                                                    <div className="flex flex-col gap-0.5">
+                                                        <span className="font-semibold text-slate-800 text-sm">
+                                                            <HighlightText text={materialName} search={searchQuery} />
+                                                        </span>
+                                                        {variantName !== 'Default' && (
+                                                            <span className="text-[11px] text-slate-450 font-medium">
+                                                                Variant: <HighlightText text={variantName} search={searchQuery} />
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-50/70 text-[#6E4B8B] border border-purple-100/50 rounded-full text-[10px] font-bold">
+                                                        <span>{CATEGORY_META[m.category]?.icon || '📦'}</span>
+                                                        <span>{CATEGORY_META[m.category]?.label || m.category}</span>
                                                     </span>
-                                                    {variantName !== 'Default' && (
-                                                        <span className="text-[11px] text-slate-450 font-medium">
-                                                            Variant: <HighlightText text={variantName} search={searchQuery} />
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="text-[11px] text-slate-500 font-medium space-y-0.5">
+                                                        {m.size && <div>Size: {m.size}</div>}
+                                                        {m.gsm && <div>GSM: {m.gsm}</div>}
+                                                        {!m.size && !m.gsm && <span className="text-slate-350 italic font-light">N/A</span>}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {m.trackInventory ? (
+                                                        <div className="flex items-center">
+                                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                                                isLow 
+                                                                    ? "bg-amber-50 text-amber-600 border border-amber-200" 
+                                                                    : "bg-emerald-50 text-emerald-600 border border-emerald-200"
+                                                            }`}>
+                                                                {isLow && <AlertTriangle size={10} className="animate-pulse" />}
+                                                                {m.currentStock} {m.unit}
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-550 text-slate-400 border border-slate-100">
+                                                            Outsourced
                                                         </span>
                                                     )}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-50/70 text-[#6E4B8B] border border-purple-100/50 rounded-full text-[10px] font-bold">
-                                                    <span>{CATEGORY_META[m.category]?.icon || '📦'}</span>
-                                                    <span>{CATEGORY_META[m.category]?.label || m.category}</span>
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="text-[11px] text-slate-500 font-medium space-y-0.5">
-                                                    {m.size && <div>Size: {m.size}</div>}
-                                                    {m.gsm && <div>GSM: {m.gsm}</div>}
-                                                    {!m.size && !m.gsm && <span className="text-slate-350 italic font-light">N/A</span>}
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                {m.trackInventory ? (
-                                                    <div className="flex items-center">
-                                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                                                            isLow 
-                                                                ? "bg-amber-50 text-amber-600 border border-amber-200" 
-                                                                : "bg-emerald-50 text-emerald-600 border border-emerald-200"
-                                                        }`}>
-                                                            {isLow && <AlertTriangle size={10} className="animate-pulse" />}
-                                                            {m.currentStock} {m.unit}
-                                                        </span>
+                                                </td>
+                                                <td className="px-6 py-4 font-medium text-slate-650 text-sm">
+                                                    ₹{m.defaultPrice}
+                                                </td>
+                                                <td className="px-6 py-4 font-semibold text-slate-800 text-sm">
+                                                    {m.trackInventory ? `₹${(m.currentStock * m.defaultPrice).toLocaleString('en-IN')}` : '-'}
+                                                </td>
+                                                <td className="px-6 py-4 text-slate-500 text-xs font-medium">
+                                                    {m.adminName || 'System'}
+                                                </td>
+                                                <td className="px-6 py-4 text-slate-400 text-xs font-medium">
+                                                    {m.lastRestockedAt 
+                                                        ? new Date(m.lastRestockedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                                                        : 'N/A'}
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        <button 
+                                                            onClick={() => { setSelectedMaterial(m); setRestockAmount(0); setIsRestockModalOpen(true); }}
+                                                            className="p-2 text-emerald-600 hover:text-white bg-emerald-50 hover:bg-emerald-600 rounded-xl transition-all border border-emerald-100/30 hover:border-emerald-600 cursor-pointer shadow-sm"
+                                                            title="Adjust Stock"
+                                                        >
+                                                            <ArrowUpRight size={14} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => { 
+                                                                setSelectedMaterial(m); 
+                                                                setEditFormData({
+                                                                    name: m.name,
+                                                                    category: m.category,
+                                                                    usageType: m.usageType,
+                                                                    usageValue: m.usageValue,
+                                                                    unit: m.unit,
+                                                                    defaultPrice: m.defaultPrice,
+                                                                    lowStockThreshold: m.lowStockThreshold,
+                                                                    size: m.size || '',
+                                                                    gsm: m.gsm || '',
+                                                                    trackInventory: m.trackInventory !== undefined ? m.trackInventory : true
+                                                                });
+                                                                setSyncToAll(false);
+                                                                setIsEditModalOpen(true); 
+                                                            }}
+                                                            className="p-2 text-[#6E4B8B] hover:text-white bg-purple-50 hover:bg-[#6E4B8B] rounded-xl transition-all border border-purple-100/30 hover:border-[#6E4B8B] cursor-pointer shadow-sm"
+                                                            title="Edit Material"
+                                                        >
+                                                            <Edit size={14} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => { setSelectedMaterial(m); setIsHistoryModalOpen(true); }}
+                                                            className="p-2 text-slate-600 hover:text-white bg-slate-50 hover:bg-slate-600 rounded-xl transition-all border border-slate-200/50 hover:border-slate-600 cursor-pointer shadow-sm"
+                                                            title="View History"
+                                                        >
+                                                            <History size={14} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleDelete(m._id)}
+                                                            className="p-2 text-red-650 hover:text-white bg-red-50 hover:bg-red-650 rounded-xl transition-all border border-red-100/30 hover:border-red-650 cursor-pointer shadow-sm"
+                                                            title="Delete"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
                                                     </div>
-                                                ) : (
-                                                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-50 text-slate-400 border border-slate-100">
-                                                        Outsourced
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 font-medium text-slate-600 text-sm">
-                                                ₹{m.defaultPrice}
-                                            </td>
-                                            <td className="px-6 py-4 font-semibold text-slate-800 text-sm">
-                                                {m.trackInventory ? `₹${(m.currentStock * m.defaultPrice).toLocaleString('en-IN')}` : '-'}
-                                            </td>
-                                            <td className="px-6 py-4 text-slate-500 text-xs font-medium">
-                                                {m.adminName || 'System'}
-                                            </td>
-                                            <td className="px-6 py-4 text-slate-400 text-xs font-medium">
-                                                {m.lastRestockedAt 
-                                                    ? new Date(m.lastRestockedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-                                                    : 'N/A'}
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <button 
-                                                        onClick={() => { setSelectedMaterial(m); setRestockAmount(0); setIsRestockModalOpen(true); }}
-                                                        className="p-2 text-emerald-600 hover:text-white bg-emerald-50 hover:bg-emerald-600 rounded-xl transition-all border border-emerald-100/30 hover:border-emerald-600 cursor-pointer shadow-sm"
-                                                        title="Adjust Stock"
-                                                    >
-                                                        <ArrowUpRight size={14} />
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => { 
-                                                            setSelectedMaterial(m); 
-                                                            setEditFormData({
-                                                                name: m.name,
-                                                                category: m.category,
-                                                                usageType: m.usageType,
-                                                                usageValue: m.usageValue,
-                                                                unit: m.unit,
-                                                                defaultPrice: m.defaultPrice,
-                                                                lowStockThreshold: m.lowStockThreshold,
-                                                                size: m.size || '',
-                                                                gsm: m.gsm || '',
-                                                                trackInventory: m.trackInventory !== undefined ? m.trackInventory : true
-                                                            });
-                                                            setSyncToAll(false);
-                                                            setIsEditModalOpen(true); 
-                                                        }}
-                                                        className="p-2 text-[#6E4B8B] hover:text-white bg-purple-50 hover:bg-[#6E4B8B] rounded-xl transition-all border border-purple-100/30 hover:border-[#6E4B8B] cursor-pointer shadow-sm"
-                                                        title="Edit Material"
-                                                    >
-                                                        <Edit size={14} />
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => { setSelectedMaterial(m); setIsHistoryModalOpen(true); }}
-                                                        className="p-2 text-slate-600 hover:text-white bg-slate-50 hover:bg-slate-600 rounded-xl transition-all border border-slate-200/50 hover:border-slate-600 cursor-pointer shadow-sm"
-                                                        title="View History"
-                                                    >
-                                                        <History size={14} />
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleDelete(m._id)}
-                                                        className="p-2 text-red-650 hover:text-white bg-red-50 hover:bg-red-650 rounded-xl transition-all border border-red-100/30 hover:border-red-650 cursor-pointer shadow-sm"
-                                                        title="Delete"
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             )}
