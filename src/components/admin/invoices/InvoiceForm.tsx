@@ -194,30 +194,30 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
         <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
                 {/* Customer Details */}
-                <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
-                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-50 pb-4">Customer Details</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-4">Customer Details</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Customer Name *</label>
-                            <input required value={customerName} onChange={e => setCustomerName(e.target.value)} type="text" className="w-full p-3 bg-gray-50 border-transparent rounded-xl focus:bg-white border-none outline-none transition-all font-medium text-sm" placeholder="John Doe" />
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Customer Name *</label>
+                            <input required value={customerName} onChange={e => setCustomerName(e.target.value)} type="text" className="w-full px-4 py-3 bg-slate-50/50 hover:bg-slate-50 focus:bg-white border border-gray-200 focus:border-[#ae7fcb] focus:ring-1 focus:ring-[#ae7fcb] rounded-xl outline-none transition-all font-medium text-sm text-gray-800" placeholder="John Doe" />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Phone Number</label>
-                            <input value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} type="text" className="w-full p-3 bg-gray-50 border-transparent rounded-xl focus:bg-white border-none outline-none transition-all font-medium text-sm" placeholder="+91 99999..." />
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Phone Number</label>
+                            <input value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} type="text" className="w-full px-4 py-3 bg-slate-50/50 hover:bg-slate-50 focus:bg-white border border-gray-200 focus:border-[#ae7fcb] focus:ring-1 focus:ring-[#ae7fcb] rounded-xl outline-none transition-all font-medium text-sm text-gray-800" placeholder="+91 99999..." />
                         </div>
                         <div className="space-y-2 md:col-span-2">
-                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Address</label>
-                            <textarea value={customerAddress} onChange={e => setCustomerAddress(e.target.value)} className="w-full p-3 bg-gray-50 border-transparent rounded-xl focus:bg-white border-none outline-none transition-all font-medium text-sm resize-none h-20" placeholder="Full shipping address..." />
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address</label>
+                            <textarea value={customerAddress} onChange={e => setCustomerAddress(e.target.value)} className="w-full px-4 py-3 bg-slate-50/50 hover:bg-slate-50 focus:bg-white border border-gray-200 focus:border-[#ae7fcb] focus:ring-1 focus:ring-[#ae7fcb] rounded-xl outline-none transition-all font-medium text-sm text-gray-800 resize-none h-24" placeholder="Full shipping address..." />
                         </div>
                     </div>
                 </div>
 
                 {/* Order Details */}
-                <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
-                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-50 pb-4">Order Specifics</h2>
-                    <div className="flex items-end gap-2">
+                <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+                    <h2 className="text-lg font-bold text-gray-900 border-b border-gray-100 pb-4">Order Specifics</h2>
+                    <div className="flex items-end gap-3">
                         <div className="flex-1 space-y-2">
-                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Design Code (SKU) *</label>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Design Code (SKU) *</label>
                             <input 
                                 required 
                                 value={designCode} 
@@ -229,85 +229,90 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                                     }
                                 }}
                                 type="text" 
-                                className="w-full p-3 bg-gray-50 border-gray-100 border rounded-xl focus:bg-white outline-none transition-all font-bold tracking-widest text-sm uppercase" 
+                                className="w-full px-4 py-3 bg-slate-50/50 hover:bg-slate-50 focus:bg-white border border-gray-200 focus:border-[#ae7fcb] focus:ring-1 focus:ring-[#ae7fcb] rounded-xl outline-none transition-all font-bold tracking-widest text-sm uppercase text-gray-800" 
                                 placeholder="ZB_1031" 
                             />
                         </div>
-                        <button type="button" onClick={handleFetchDesign} disabled={isSearching} className="p-3 bg-purple-100 hover:bg-purple-200 text-purple-600 rounded-xl transition-colors font-bold flex items-center justify-center">
-                            {isSearching ? <Loader2 className="animate-spin" size={20} /> : <ArrowRight size={20} />}
+                        <button type="button" onClick={handleFetchDesign} disabled={isSearching} className="px-5 py-3.5 bg-[#ae7fcb]/10 hover:bg-[#ae7fcb] text-[#ae7fcb] hover:text-white rounded-xl transition-all font-bold flex items-center justify-center border border-[#ae7fcb]/20 hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
+                            {isSearching ? <Loader2 className="animate-spin" size={18} /> : <ArrowRight size={18} />}
                         </button>
                     </div>
                     {design && (
                         <motion.div 
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-4"
+                            className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-2xl flex items-center gap-4"
                         >
-                            {design.images?.[0] && <img src={design.images[0]} className="w-12 h-12 rounded-lg object-cover shadow-sm" />}
+                            {design.images?.[0] && <img src={design.images[0]} className="w-14 h-14 rounded-xl object-cover shadow-sm border border-emerald-200" />}
                             <div>
-                                <p className="font-bold text-emerald-900">{design.name}</p>
-                                <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Design Matched</p>
+                                <p className="font-bold text-emerald-950 text-sm">{design.name}</p>
+                                <p className="text-[9px] text-emerald-600 font-black uppercase tracking-wider mt-0.5">Design Matched Successfully</p>
                             </div>
                         </motion.div>
                     )}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Quantity *</label>
-                            <input required type="number" min="1" value={quantity === 0 ? '' : quantity} onChange={e => setQuantity(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full p-4 bg-gray-50 border-none rounded-xl focus:bg-white outline-none transition-all font-black text-xl text-center" />
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Quantity *</label>
+                            <input required type="number" min="1" value={quantity === 0 ? '' : quantity} onChange={e => setQuantity(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full p-3.5 bg-slate-50/50 hover:bg-slate-50/80 focus:bg-white border border-gray-200 focus:border-[#ae7fcb] focus:ring-1 focus:ring-[#ae7fcb] rounded-xl outline-none transition-all font-black text-xl text-center text-gray-800" />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Price / Card (₹) *</label>
-                            <input required type="number" step="0.01" min="0" value={pricePerCard === 0 ? '' : pricePerCard} onChange={e => setPricePerCard(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full p-4 bg-gray-50 border-none rounded-xl focus:bg-white outline-none transition-all font-black text-xl text-center" />
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Price / Card (₹) *</label>
+                            <input required type="number" step="0.01" min="0" value={pricePerCard === 0 ? '' : pricePerCard} onChange={e => setPricePerCard(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full p-3.5 bg-slate-50/50 hover:bg-slate-50/80 focus:bg-white border border-gray-200 focus:border-[#ae7fcb] focus:ring-1 focus:ring-[#ae7fcb] rounded-xl outline-none transition-all font-black text-xl text-center text-gray-800" />
                         </div>
                     </div>
                 </div>
 
                 {/* Materials list */}
-                <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
-                    <div className="flex items-center gap-2 border-b border-gray-50 pb-4">
+                <div className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 border-b border-gray-100 pb-4">
                         <h2 className="text-lg font-bold text-gray-900 flex-1">Materials Required</h2>
-                        <button type="button" onClick={addCustomMaterial} className="px-3 py-1.5 text-[10px] font-black bg-blue-50 text-blue-700 rounded-lg uppercase tracking-widest border border-blue-100">
-                            + Custom Cost
-                        </button>
-                        <select onChange={(e) => { if(e.target.value) addMaterial(e.target.value); e.target.value=''; }} className="px-3 py-1.5 text-[10px] font-black bg-purple-50 text-purple-700 rounded-lg cursor-pointer max-w-[150px] uppercase tracking-widest border border-purple-100 outline-none">
-                            <option value="">+ From Lib</option>
-                            {inventory.map((inv: any) => (
-                                <option key={inv._id} value={inv._id}>{inv.name} {inv.size ? `(${inv.size})` : ''}</option>
-                            ))}
-                        </select>
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                            <button type="button" onClick={addCustomMaterial} className="flex-1 sm:flex-none px-3.5 py-2 text-[10px] font-black bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl uppercase tracking-widest border border-blue-100 transition-colors cursor-pointer">
+                                + Custom Cost
+                            </button>
+                            <select onChange={(e) => { if(e.target.value) addMaterial(e.target.value); e.target.value=''; }} className="flex-1 sm:flex-none px-3.5 py-2 text-[10px] font-black bg-[#ae7fcb]/5 hover:bg-[#ae7fcb]/10 text-[#ae7fcb] rounded-xl cursor-pointer max-w-[160px] uppercase tracking-widest border border-[#ae7fcb]/10 outline-none transition-colors">
+                                <option value="">+ From Lib</option>
+                                {inventory.map((inv: any) => (
+                                    <option key={inv._id} value={inv._id}>{inv.name} {inv.size ? `(${inv.size})` : ''}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                     {materials.length === 0 ? (
-                        <p className="text-sm text-gray-400 text-center py-4 font-medium">No materials mapped yet. Load a design or add manually.</p>
+                        <p className="text-sm text-gray-400 text-center py-6 font-medium">No materials mapped yet. Load a design SKU or add manually from your library.</p>
                     ) : (
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             {materials.map((m, i) => (
-                                <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2">
-                                            {m.materialId ? (
-                                                <p className="text-sm font-bold text-charcoal">{m.name}</p>
-                                            ) : (
-                                                <input value={m.name} onChange={e => { const copy = [...materials]; copy[i].name = e.target.value; setMaterials(copy); }} className="text-sm font-bold text-charcoal bg-transparent border-b border-dashed border-gray-300 outline-none focus:border-purple-400 w-full" placeholder="Item name..." />
-                                            )}
-                                        </div>
-                                        <div className="flex items-center gap-1.5 mt-1">
-                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Rate (₹):</span>
-                                            <input type="number" step="0.01" value={m.costPerUnit === 0 ? '' : m.costPerUnit} onChange={e => updateMaterialRate(i, e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 p-0.5 text-center font-bold text-[10px] bg-white border border-gray-200 rounded outline-none text-purple-600" />
-                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">/ {m.unit}</span>
+                                <div key={i} className="grid grid-cols-12 items-center gap-4 p-4 bg-slate-50/50 hover:bg-slate-50/80 rounded-2xl border border-gray-100 hover:border-gray-200 transition-all">
+                                    <div className="col-span-12 sm:col-span-5">
+                                        {m.materialId ? (
+                                            <p className="text-xs font-bold text-slate-800">{m.name}</p>
+                                        ) : (
+                                            <input value={m.name} onChange={e => { const copy = [...materials]; copy[i].name = e.target.value; setMaterials(copy); }} className="text-xs font-bold text-slate-800 bg-transparent border-b border-dashed border-gray-300 focus:border-[#ae7fcb] outline-none w-full py-0.5" placeholder="Item name..." />
+                                        )}
+                                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mt-1">Material Item</p>
+                                    </div>
+                                    <div className="col-span-6 sm:col-span-3 flex flex-col">
+                                        <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Rate (₹)</label>
+                                        <div className="flex items-center gap-1.5">
+                                            <input type="number" step="0.01" value={m.costPerUnit === 0 ? '' : m.costPerUnit} onChange={e => updateMaterialRate(i, e.target.value === '' ? 0 : Number(e.target.value))} className="w-16 px-2 py-1 text-center font-bold text-xs bg-white border border-gray-200 rounded-lg outline-none text-[#ae7fcb] focus:border-[#ae7fcb] focus:ring-1 focus:ring-[#ae7fcb]" />
+                                            <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">/ {m.unit}</span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Qty Required:</span>
-                                        <input type="number" step="0.01" value={m.quantityPerCard === 0 ? '' : m.quantityPerCard} onChange={e => updateMaterialQty(i, e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 p-1 text-center font-bold text-sm bg-white border border-gray-200 rounded outline-none" />
+                                    <div className="col-span-5 sm:col-span-3 flex flex-col">
+                                        <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Qty / Card</label>
+                                        <input type="number" step="0.01" value={m.quantityPerCard === 0 ? '' : m.quantityPerCard} onChange={e => updateMaterialQty(i, e.target.value === '' ? 0 : Number(e.target.value))} className="w-16 px-2 py-1 text-center font-bold text-xs bg-white border border-gray-200 rounded-lg outline-none focus:border-[#ae7fcb] focus:ring-1 focus:ring-[#ae7fcb]" />
                                     </div>
-                                    <button type="button" onClick={() => removeMaterial(i)} className="text-red-400 hover:text-red-500 p-1">
-                                        <Trash2 size={16} />
-                                    </button>
+                                    <div className="col-span-1 flex items-center justify-end">
+                                        <button type="button" onClick={() => removeMaterial(i)} className="text-slate-400 hover:text-red-500 p-1.5 hover:bg-red-50 rounded-xl transition-all cursor-pointer">
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
-                            <div className="mt-4 p-3 bg-purple-50/50 rounded-xl flex items-center justify-between text-sm font-bold text-purple-900">
-                                <span>Total Material Cost Prediction:</span>
-                                <span>₹{totalMaterialCost.toFixed(2)}</span>
+                            <div className="mt-6 p-4 bg-[#ae7fcb]/5 rounded-2xl flex items-center justify-between text-xs font-bold text-[#6E4B8B] border border-[#ae7fcb]/10">
+                                <span className="uppercase tracking-wider">Total Material Cost Prediction:</span>
+                                <span className="text-sm font-black">₹{totalMaterialCost.toFixed(2)}</span>
                             </div>
                         </div>
                     )}
@@ -315,8 +320,8 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
             </div>
 
             <div className="lg:col-span-1 space-y-6">
-                <div className="bg-charcoal p-6 rounded-[2rem] text-white shadow-xl relative overflow-hidden">
-                    <h2 className="text-lg font-black mb-6 border-b border-white/10 pb-4">Customer Bill <span className="text-lavender font-normal italic">Calc</span></h2>
+                <div className="bg-[#1A1A1A] p-8 rounded-[2rem] text-white shadow-xl relative overflow-hidden border border-white/5">
+                    <h2 className="text-lg font-bold mb-6 border-b border-white/10 pb-4">Customer Bill <span className="text-[#ae7fcb] font-normal italic">Calc</span></h2>
                     <div className="space-y-4 text-sm font-medium">
                         <div className="flex justify-between text-gray-400">
                             <span>Cards Cost</span>
@@ -325,50 +330,50 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                         <div className="space-y-4">
                             <div className="flex justify-between items-center group">
                                 <span className="text-gray-400">Designing Charge</span>
-                                <div className="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity bg-white/5 px-2 py-1 rounded-lg">
-                                    <IndianRupee size={12}/>
+                                <div className="flex items-center gap-1.5 bg-white/5 focus-within:bg-white/10 px-3 py-1.5 rounded-xl border border-white/5 focus-within:border-[#ae7fcb]/50 transition-all">
+                                    <IndianRupee size={12} className="text-[#ae7fcb]"/>
                                     <input type="number" value={designingCharge === 0 ? '' : designingCharge} onChange={e=>setDesigningCharge(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 bg-transparent border-none p-0 text-right outline-none text-white font-bold text-sm" />
                                 </div>
                             </div>
                             <div className="flex justify-between items-center group">
                                 <span className="text-gray-400">Shipping Charge</span>
-                                <div className="flex items-center gap-1 opacity-50 group-hover:opacity-100 transition-opacity bg-white/5 px-2 py-1 rounded-lg">
-                                    <IndianRupee size={12}/>
+                                <div className="flex items-center gap-1.5 bg-white/5 focus-within:bg-white/10 px-3 py-1.5 rounded-xl border border-white/5 focus-within:border-[#ae7fcb]/50 transition-all">
+                                    <IndianRupee size={12} className="text-[#ae7fcb]"/>
                                     <input type="number" value={shippingCharge === 0 ? '' : shippingCharge} onChange={e=>setShippingCharge(e.target.value === '' ? 0 : Number(e.target.value))} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 bg-transparent border-none p-0 text-right outline-none text-white font-bold text-sm" />
                                 </div>
                             </div>
                         </div>
 
                         {customCharges.map((c, i) => (
-                            <div key={i} className="flex items-center gap-2 group">
-                                <input value={c.label} onChange={e => { const arr = [...customCharges]; arr[i].label = e.target.value; setCustomCharges(arr); }} className="flex-1 bg-white/5 rounded p-2 text-xs outline-none text-white border-none" placeholder="Label..." />
-                                <div className="flex items-center gap-1 bg-white/5 px-2 py-1.5 rounded-lg opacity-80 group-hover:opacity-100 transition-opacity">
-                                    <IndianRupee size={10} className="text-gray-400" />
+                            <div key={i} className="flex items-center gap-3 group">
+                                <input value={c.label} onChange={e => { const arr = [...customCharges]; arr[i].label = e.target.value; setCustomCharges(arr); }} className="flex-1 bg-white/5 rounded-xl px-3 py-2 text-xs outline-none text-white border border-white/5 focus:border-[#ae7fcb]/50 transition-all" placeholder="Label..." />
+                                <div className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1.5 rounded-xl border border-white/5 focus-within:border-[#ae7fcb]/50 transition-all">
+                                    <IndianRupee size={10} className="text-[#ae7fcb]" />
                                     <input type="number" value={c.amount === 0 ? '' : c.amount} onChange={e => { const arr = [...customCharges]; arr[i].amount = e.target.value === '' ? 0 : Number(e.target.value); setCustomCharges(arr); }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-12 bg-transparent border-none p-0 text-right outline-none text-white font-bold text-xs" />
                                 </div>
-                                <button type="button" onClick={() => removeCustomCharge(i)} className="text-red-400 p-2 hover:bg-white/10 rounded-lg group/btn">
-                                    <Trash2 size={12} className="group-hover/btn:scale-110 transition-transform"/>
+                                <button type="button" onClick={() => removeCustomCharge(i)} className="text-red-400 p-2 hover:bg-white/10 rounded-xl transition-all cursor-pointer">
+                                    <Trash2 size={12} />
                                 </button>
                             </div>
                         ))}
-                        <button type="button" onClick={addCustomCharge} className="text-[10px] text-lavender font-bold uppercase tracking-widest">+ Add Charge</button>
+                        <button type="button" onClick={addCustomCharge} className="text-[10px] text-[#ae7fcb] hover:text-[#b78ed1] font-bold uppercase tracking-widest transition-colors cursor-pointer">+ Add Charge</button>
 
                         <div className="h-px bg-white/10 my-4" />
-                        <div className="flex justify-between text-lg">
-                            <span className="font-bold text-white uppercase tracking-widest text-sm">Grand Total</span>
+                        <div className="flex justify-between items-center text-lg">
+                            <span className="font-bold text-white uppercase tracking-wider text-xs">Grand Total</span>
                             <span className="font-black text-white">₹{grandTotal.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Admin Profit Insight */}
-                <div className="bg-emerald-50 p-6 rounded-[2rem] border border-emerald-100">
-                    <div className="flex items-center justify-between mb-2">
-                        <h2 className="text-sm font-bold text-emerald-900 uppercase tracking-widest">Admin Profit</h2>
-                        <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600"><IndianRupee size={16}/></div>
+                <div className="bg-emerald-50/50 p-6 rounded-[2rem] border border-emerald-100/80 shadow-sm">
+                    <div className="flex items-center justify-between mb-3">
+                        <h2 className="text-xs font-bold text-emerald-900 uppercase tracking-widest">Admin Profit</h2>
+                        <div className="w-8 h-8 rounded-xl bg-emerald-100/60 flex items-center justify-center text-emerald-700"><IndianRupee size={14}/></div>
                     </div>
-                    <p className="text-3xl font-black text-emerald-600">₹{profit.toFixed(2)}</p>
-                    <p className="text-[10px] text-emerald-500 font-bold mt-2 leading-tight uppercase tracking-widest">
+                    <p className="text-3xl font-black text-emerald-700">₹{profit.toFixed(2)}</p>
+                    <p className="text-[9px] text-emerald-600 font-bold mt-2 leading-relaxed uppercase tracking-wider">
                         Calculated dynamically based on live inventory prices.
                     </p>
                 </div>
@@ -379,7 +384,7 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                         <select 
                             value={status} 
                             onChange={e => setStatus(e.target.value)}
-                            className="w-full p-3 bg-gray-50 border-none rounded-xl outline-none font-bold text-sm"
+                            className="w-full p-3.5 bg-slate-50/50 hover:bg-slate-50 border border-gray-200 focus:border-[#ae7fcb] focus:ring-1 focus:ring-[#ae7fcb] rounded-xl outline-none font-bold text-sm text-gray-800 transition-all cursor-pointer"
                         >
                             <option value="Generated">Generated</option>
                             <option value="Paid">Paid</option>
@@ -391,9 +396,9 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                 <button 
                     type="submit"
                     disabled={saveMutation.isPending || !design}
-                    className="w-full py-5 bg-lavender hover:bg-[#9a6ab5] text-white rounded-3xl font-bold text-lg shadow-xl shadow-lavender/20 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full py-4.5 bg-[#ae7fcb] hover:bg-[#9c6eb9] text-white rounded-[2rem] font-bold text-base shadow-xl shadow-[#ae7fcb]/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 cursor-pointer"
                 >
-                    {saveMutation.isPending ? <Loader2 className="animate-spin" /> : <Save size={22} />}
+                    {saveMutation.isPending ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
                     {isEditing ? 'Update Invoice' : 'Generate Invoice'}
                 </button>
             </div>

@@ -175,6 +175,20 @@ h4 {
   font-size: clamp(1rem, 3vw, 1.25rem);
 }
 
+/* Reset heading styles inside the Admin Panel to prevent massive public fluid headings */
+.admin-layout h1,
+.admin-layout h2,
+.admin-layout h3,
+.admin-layout h4,
+.admin-layout h5,
+.admin-layout h6 {
+  font-family: 'Satoshi', sans-serif !important;
+  font-weight: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  letter-spacing: inherit !important;
+}
+
 /* Fluid Design Titles for Cards */
 .design-title {
   font-size: 18px;

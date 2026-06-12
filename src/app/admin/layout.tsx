@@ -19,7 +19,8 @@ import {
     Database,
     BarChart,
     FileText,
-    History
+    History,
+    Smartphone
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LogoIcon } from '@/components/ui/logo-icon';
@@ -28,7 +29,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const sidebarItems = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
     { name: 'Manage Designs', href: '/admin/designs', icon: ImageIcon },
-    { name: 'Digital Invites', href: '/admin/digital-invites', icon: Zap },
+    { name: 'Digital Invites', href: '/admin/digital-invites', icon: Smartphone },
     { name: 'Bulk Import', href: '/admin/bulk-import', icon: Zap },
     { name: 'Categories', href: '/admin/categories', icon: FolderTree },
     { name: 'Invoice Generator', href: '/admin/invoices/new', icon: FileText },
@@ -83,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname === '/admin/login') return <>{children}</>;
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-gray-50 flex admin-layout">
             {/* Sidebar Overlay for Mobile */}
             <AnimatePresence>
                 {isMobile && isSidebarOpen && (
