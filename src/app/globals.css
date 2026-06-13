@@ -183,11 +183,28 @@ h4 {
 .admin-layout h5,
 .admin-layout h6 {
   font-family: 'Satoshi', sans-serif !important;
-  font-weight: inherit !important;
-  font-size: inherit !important;
-  line-height: inherit !important;
-  letter-spacing: inherit !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.25 !important;
 }
+
+.admin-layout h1 { font-size: 2.25rem; }
+.admin-layout h2 { font-size: 1.5rem; }
+.admin-layout h3 { font-size: 1.25rem; }
+.admin-layout h4 { font-size: 1.125rem; }
+.admin-layout h5 { font-size: 1rem; }
+.admin-layout h6 { font-size: 0.875rem; }
+
+/* Allow Tailwind font weight classes to work in admin layout by overriding global weight */
+.admin-layout .font-thin { font-weight: 100 !important; }
+.admin-layout .font-extralight { font-weight: 200 !important; }
+.admin-layout .font-light { font-weight: 300 !important; }
+.admin-layout .font-normal { font-weight: 400 !important; }
+.admin-layout .font-medium { font-weight: 500 !important; }
+.admin-layout .font-semibold { font-weight: 600 !important; }
+.admin-layout .font-bold { font-weight: 700 !important; }
+.admin-layout .font-extrabold { font-weight: 800 !important; }
+.admin-layout .font-black { font-weight: 900 !important; }
+.admin-layout .font-serif { font-family: var(--font-viaoda), serif !important; }
 
 /* Fluid Design Titles for Cards */
 .design-title {
