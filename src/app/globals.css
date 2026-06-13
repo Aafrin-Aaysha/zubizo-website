@@ -182,19 +182,25 @@ h4 {
 .admin-layout h4,
 .admin-layout h5,
 .admin-layout h6 {
-  font-family: 'Satoshi', sans-serif !important;
+  font-family: var(--font-viaoda), serif !important;
+  font-weight: 300 !important;
   letter-spacing: -0.01em !important;
-  line-height: 1.25 !important;
+  line-height: 1.2 !important;
 }
 
-.admin-layout h1 { font-size: 2.25rem; }
-.admin-layout h2 { font-size: 1.5rem; }
-.admin-layout h3 { font-size: 1.25rem; }
-.admin-layout h4 { font-size: 1.125rem; }
-.admin-layout h5 { font-size: 1rem; }
-.admin-layout h6 { font-size: 0.875rem; }
+.admin-layout h1 { font-size: 2.5rem !important; }
+.admin-layout h2 { font-size: 2rem !important; }
+.admin-layout h3 { font-size: 1.5rem !important; }
+.admin-layout h4 { font-size: 1.25rem !important; }
+.admin-layout h5 { font-size: 1.125rem !important; }
+.admin-layout h6 { font-size: 1rem !important; }
 
-/* Allow Tailwind font weight classes to work in admin layout by overriding global weight */
+/* Allow explicit Tailwind classes to override the defaults within .admin-layout */
+.admin-layout .font-sans { font-family: 'Satoshi', sans-serif !important; }
+.admin-layout .font-dmsans { font-family: var(--font-dmsans), sans-serif !important; }
+.admin-layout .font-serif { font-family: var(--font-viaoda), serif !important; }
+.admin-layout .font-italiana { font-family: var(--font-italiana), serif !important; }
+
 .admin-layout .font-thin { font-weight: 100 !important; }
 .admin-layout .font-extralight { font-weight: 200 !important; }
 .admin-layout .font-light { font-weight: 300 !important; }
@@ -204,7 +210,16 @@ h4 {
 .admin-layout .font-bold { font-weight: 700 !important; }
 .admin-layout .font-extrabold { font-weight: 800 !important; }
 .admin-layout .font-black { font-weight: 900 !important; }
-.admin-layout .font-serif { font-family: var(--font-viaoda), serif !important; }
+
+.admin-layout .text-xs { font-size: 0.75rem !important; }
+.admin-layout .text-sm { font-size: 0.875rem !important; }
+.admin-layout .text-base { font-size: 1rem !important; }
+.admin-layout .text-lg { font-size: 1.125rem !important; }
+.admin-layout .text-xl { font-size: 1.25rem !important; }
+.admin-layout .text-2xl { font-size: 1.5rem !important; }
+.admin-layout .text-3xl { font-size: 1.875rem !important; }
+.admin-layout .text-4xl { font-size: 2.25rem !important; }
+.admin-layout .text-5xl { font-size: 3rem !important; }
 
 /* Fluid Design Titles for Cards */
 .design-title {
