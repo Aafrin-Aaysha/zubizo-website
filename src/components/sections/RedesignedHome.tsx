@@ -123,10 +123,10 @@ const CATEGORY_ICONS: { [key: string]: React.ComponentType<any> } = {
 };
 
 const PRICE_SLABS = [
-    { title: "Under ₹50", subtitle: "Affordable Elegance", img: "https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?q=80&w=300&auto=format&fit=crop", link: "/catalog?maxPrice=50", popular: false },
-    { title: "₹50 - ₹100", subtitle: "Premium Craftsmanship", img: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=300&auto=format&fit=crop", link: "/catalog?minPrice=50&maxPrice=100", popular: true },
-    { title: "₹100 - ₹200", subtitle: "Handcrafted Luxury", img: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=300&auto=format&fit=crop", link: "/catalog?minPrice=100&maxPrice=200", popular: false },
-    { title: "₹200 & Above", subtitle: "Couture Masterpieces", img: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?q=80&w=300&auto=format&fit=crop", link: "/catalog?minPrice=200", popular: false },
+    { title: "Under ₹25", subtitle: "Affordable Elegance", img: "https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?q=80&w=300&auto=format&fit=crop", link: "/catalog?maxPrice=25", popular: false },
+    { title: "₹25 - ₹50", subtitle: "Premium Craftsmanship", img: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=300&auto=format&fit=crop", link: "/catalog?minPrice=25&maxPrice=50", popular: false },
+    { title: "₹50 - ₹100", subtitle: "Handcrafted Luxury", img: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=300&auto=format&fit=crop", link: "/catalog?minPrice=50&maxPrice=100", popular: true },
+    { title: "₹100 & Above", subtitle: "Couture Masterpieces", img: "https://images.unsplash.com/photo-1562259949-e8e7689d7828?q=80&w=300&auto=format&fit=crop", link: "/catalog?minPrice=100", popular: false },
 ];
 
 const REACH_COUNTRIES = [
