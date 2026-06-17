@@ -61,9 +61,9 @@ const DesignCard = ({
                             </p>
                         )}
                     </div>
-                    {(isTrending || isNew) && (
+                    {isTrending && (
                         <div className="absolute left-6 top-6 rounded-full bg-white/90 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-charcoal backdrop-blur-md">
-                            {isTrending ? "Trending" : "New"}
+                            Trending
                         </div>
                     )}
                 </motion.div>
@@ -85,9 +85,9 @@ const DesignCard = ({
                             fill
                             className="object-cover transition-transform duration-700 group-hover:scale-110"
                         />
-                        {(isTrending || isNew) && (
+                        {isTrending && (
                             <div className="absolute left-4 top-4 rounded-full bg-lavender/90 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
-                                {isTrending ? "Trending" : "New"}
+                                Trending
                             </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />

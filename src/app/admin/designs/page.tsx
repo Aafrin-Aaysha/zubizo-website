@@ -154,6 +154,8 @@ export default function DesignsPage() {
                         setFormData(prev => ({ ...prev, videoUrl: result.url }));
                         toast.success('Video uploaded successfully');
                     }
+                } else {
+                    toast.error(result.message || `Failed to upload ${type}`);
                 }
             } catch (error) {
                 toast.error(`Failed to upload ${type}`);
@@ -377,7 +379,7 @@ export default function DesignsPage() {
         <div className="space-y-8 pb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h2 className="text-xl font-black text-charcoal">Design Management</h2>
+                    <h2 className="text-2xl font-normal text-charcoal">Design Management</h2>
                     <p className="text-gray-500 mt-1 font-medium">Manage your invitation catalogue and package pricing.</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -444,7 +446,8 @@ export default function DesignsPage() {
 
             {/* Table */}
             <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden min-h-[400px]">
-                <div className="overflow-x-auto">
+                {/* Desktop View Table */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left min-w-[1000px] lg:min-w-0">
                         <thead className="bg-gray-50/50 text-gray-400 text-[10px] font-black uppercase tracking-widest border-b border-gray-100">
                             <tr>
@@ -550,9 +553,89 @@ export default function DesignsPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Mobile/Tablet Card Layout */}
+                <div className="md:hidden p-5 space-y-4">
+                    {isLoading ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="animate-pulse bg-gray-50 p-5 rounded-3xl border border-gray-100 h-40"></div>
+                        ))
+                    ) : paginatedDesigns.length === 0 ? (
+                        <div className="py-16 text-center">
+                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-200 mx-auto mb-4">
+                                <PackageIcon size={32} />
+                            </div>
+                            <p className="font-bold text-gray-900">No designs found</p>
+                            <button onClick={() => openModal()} className="text-lavender font-bold hover:underline text-sm mt-1">Create your first design</button>
+                        </div>
+                    ) : (
+                        paginatedDesigns.map(design => (
+                            <div key={design._id} className="bg-gray-50/40 p-5 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-4">
+                                <div className="flex items-start gap-4">
+                                    <div className="w-16 h-16 rounded-2xl bg-gray-100 border border-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
+                                        {design.images?.[0] ? (
+                                            <img src={design.images[0]} alt="" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-gray-300"><Upload size={16} /></div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-bold text-charcoal text-sm truncate">{design.name}</p>
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest truncate">/catalog/{design.slug}</p>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            <span className="text-[10px] font-black text-lavender bg-lavender/5 px-2.5 py-1 rounded-full border border-lavender/10 uppercase tracking-widest">
+                                                {design.sku}
+                                            </span>
+                                            <span className="text-[10px] font-bold text-gray-500 bg-white px-2.5 py-1 rounded-full border border-gray-100">
+                                                {design.categoryId?.name || design.categoryId || 'General'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex items-center justify-between border-t border-gray-100/60 pt-3">
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Starting Price</span>
+                                        <span className="text-sm font-black text-gray-900">
+                                            ₹{getStartingPrice(design)}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {design.isTrending && <span className="text-sm" title="Trending">🔥</span>}
+                                        {design.isFeatured && <span className="text-sm" title="Featured">✨</span>}
+                                        <div className={cn(
+                                            "px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border",
+                                            design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-gray-400 bg-gray-50 border-gray-100"
+                                        )}>
+                                            {design.isActive ? 'Live' : 'Hidden'}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3 border-t border-gray-100/60 pt-3">
+                                    <button 
+                                        type="button"
+                                        onClick={() => openModal(design)} 
+                                        className="flex-1 py-3 bg-lavender/10 hover:bg-lavender/25 text-lavender rounded-2xl font-black text-xs flex items-center justify-center gap-2 transition-all border border-lavender/15"
+                                    >
+                                        <Edit2 size={14} /> Edit
+                                    </button>
+                                    <button 
+                                        type="button"
+                                        onClick={() => deleteDesign(design._id)} 
+                                        className="p-3 bg-red-50 text-red-400 hover:text-red-500 hover:bg-red-100 rounded-2xl transition-all border border-red-100 hover:border-red-200"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="flex items-center justify-center gap-3 p-8">
+                    <div className="flex items-center justify-center gap-3 p-8 border-t border-gray-50">
                         <button
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage(p => p - 1)}
@@ -598,7 +681,7 @@ export default function DesignsPage() {
                                         <PackageIcon size={24} />
                                     </div>
                                     <div>
-                                        <h2 className="text-2xl font-black text-charcoal">{editingDesign ? 'Update Design' : 'New Collection'}</h2>
+                                        <h2 className="text-2xl font-normal text-charcoal">{editingDesign ? 'Update Design' : 'New Collection'}</h2>
                                         <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Configure your artisanal invitation</p>
                                     </div>
                                 </div>
@@ -787,40 +870,7 @@ export default function DesignsPage() {
 
                                             <div className="space-y-4">
                                                 {/* Toggles */}
-                                                <div className="grid grid-cols-2 gap-4">
-                                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-transparent hover:border-[#ae7fcb]/20 transition-all cursor-pointer"
-                                                        onClick={() => setFormData({ 
-                                                            ...formData, 
-                                                            options: { ...formData.options, hasEnvelope: !formData.options.hasEnvelope } 
-                                                        })}>
-                                                        <span className="font-bold text-xs text-slate-700">Has Envelope</span>
-                                                        <div className={cn("w-8 h-5 rounded-full relative transition-all", formData.options.hasEnvelope ? "bg-[#ae7fcb]" : "bg-gray-200")}>
-                                                            <div className={cn("absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all", formData.options.hasEnvelope ? "left-3.5" : "left-0.5")} />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-transparent hover:border-[#ae7fcb]/20 transition-all cursor-pointer"
-                                                        onClick={() => setFormData({ 
-                                                            ...formData, 
-                                                            options: { ...formData.options, hasRibbon: !formData.options.hasRibbon } 
-                                                        })}>
-                                                        <span className="font-bold text-xs text-slate-700">Has Ribbon</span>
-                                                        <div className={cn("w-8 h-5 rounded-full relative transition-all", formData.options.hasRibbon ? "bg-[#ae7fcb]" : "bg-gray-200")}>
-                                                            <div className={cn("absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all", formData.options.hasRibbon ? "left-3.5" : "left-0.5")} />
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-transparent hover:border-[#ae7fcb]/20 transition-all cursor-pointer"
-                                                        onClick={() => setFormData({ 
-                                                            ...formData, 
-                                                            options: { ...formData.options, hasWaxSeal: !formData.options.hasWaxSeal } 
-                                                        })}>
-                                                        <span className="font-bold text-xs text-slate-700">Has Wax Seal</span>
-                                                        <div className={cn("w-8 h-5 rounded-full relative transition-all", formData.options.hasWaxSeal ? "bg-[#ae7fcb]" : "bg-gray-200")}>
-                                                            <div className={cn("absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all", formData.options.hasWaxSeal ? "left-3.5" : "left-0.5")} />
-                                                        </div>
-                                                    </div>
-
+                                                <div>
                                                     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-transparent hover:border-[#ae7fcb]/20 transition-all cursor-pointer"
                                                         onClick={() => setFormData({ 
                                                             ...formData, 
@@ -833,102 +883,12 @@ export default function DesignsPage() {
                                                     </div>
                                                 </div>
 
-                                                {/* Display Model Colours Text */}
-                                                <div>
-                                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5 block">Display Model Colours Notice</label>
-                                                    <input
-                                                        type="text"
-                                                        value={formData.options.displayModelColours}
-                                                        onChange={e => setFormData({
-                                                            ...formData,
-                                                            options: { ...formData.options, displayModelColours: e.target.value }
-                                                        })}
-                                                        placeholder="e.g. Navy envelope, Ivory Satin ribbon"
-                                                        className="w-full px-4 py-2.5 bg-gray-50 border border-transparent rounded-xl focus:bg-white focus:border-[#ae7fcb] outline-none transition-all text-xs font-bold text-slate-700"
-                                                    />
-                                                </div>
-
-                                                {/* Surcharges Section */}
-                                                <div className="grid grid-cols-3 gap-3">
-                                                    <div>
-                                                        <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 block">Env Tier B (+)</label>
-                                                        <input
-                                                            type="number"
-                                                            value={formData.options.envelopeTierBSurcharge}
-                                                            onChange={e => setFormData({
-                                                                ...formData,
-                                                                options: { ...formData.options, envelopeTierBSurcharge: e.target.value === '' ? 0 : parseInt(e.target.value) }
-                                                            })}
-                                                            className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-[#ae7fcb]"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 block">Env Tier C (+)</label>
-                                                        <input
-                                                            type="number"
-                                                            value={formData.options.envelopeTierCSurcharge}
-                                                            onChange={e => setFormData({
-                                                                ...formData,
-                                                                options: { ...formData.options, envelopeTierCSurcharge: e.target.value === '' ? 0 : parseInt(e.target.value) }
-                                                            })}
-                                                            className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-[#ae7fcb]"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 block">Ribbon Prem (+)</label>
-                                                        <input
-                                                            type="number"
-                                                            value={formData.options.ribbonPremiumSurcharge}
-                                                            onChange={e => setFormData({
-                                                                ...formData,
-                                                                options: { ...formData.options, ribbonPremiumSurcharge: e.target.value === '' ? 0 : parseInt(e.target.value) }
-                                                            })}
-                                                            className="w-full px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-[#ae7fcb]"
-                                                        />
-                                                    </div>
-                                                </div>
-
                                                 {/* Image Overrides Manager */}
                                                 <div className="space-y-4 pt-4 border-t border-gray-100">
                                                     <h4 className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Design-Specific Option Image Overrides</h4>
                                                     <div className="max-h-[220px] overflow-y-auto space-y-2 pr-1 scrollbar-thin">
                                                         {(() => {
                                                             const keys: { label: string; key: string }[] = [];
-                                                            if (formData.options.hasEnvelope) {
-                                                                keys.push(
-                                                                    { label: 'Envelope Type: Landscape', key: 'envelope_type_landscape' },
-                                                                    { label: 'Envelope Type: Portrait', key: 'envelope_type_portrait' },
-                                                                    { label: 'Envelope Type: Pouch', key: 'envelope_type_pouch' }
-                                                                );
-                                                                const colors = [
-                                                                    'Ivory', 'Champagne', 'White', 'Blush', 'Charcoal', 'Black', 'Sage',
-                                                                    'Navy', 'Forest Green', 'Burgundy', 'Royal Blue', 'Lavender', 'Rose Gold',
-                                                                    'Gold', 'Silver', 'Coral', 'Teal'
-                                                                ];
-                                                                colors.forEach(col => {
-                                                                    keys.push({ label: `Envelope Color: ${col}`, key: `envelope_colour_${col.toLowerCase().replace(/\s+/g, '_')}` });
-                                                                });
-                                                            }
-                                                            if (formData.options.hasRibbon) {
-                                                                keys.push(
-                                                                    { label: 'Ribbon Material: Satin', key: 'ribbon_material_satin' },
-                                                                    { label: 'Ribbon Material: Organza', key: 'ribbon_material_organza' },
-                                                                    { label: 'Ribbon Width: 6mm Narrow', key: 'ribbon_width_6mm' },
-                                                                    { label: 'Ribbon Width: 15mm Medium', key: 'ribbon_width_15mm' },
-                                                                    { label: 'Ribbon Width: 25mm Wide', key: 'ribbon_width_25mm' }
-                                                                );
-                                                                const colors = ['Ivory', 'White', 'Blush', 'Sage', 'Navy', 'Gold', 'Burgundy'];
-                                                                colors.forEach(col => {
-                                                                    keys.push({ label: `Ribbon Color: ${col}`, key: `ribbon_colour_${col.toLowerCase().replace(/\s+/g, '_')}` });
-                                                                });
-                                                            }
-                                                            if (formData.options.hasWaxSeal) {
-                                                                keys.push(
-                                                                    { label: 'Wax Seal: Bronze Round', key: 'wax_seal_bronze_round' },
-                                                                    { label: 'Wax Seal: Gold Round', key: 'wax_seal_gold_round' },
-                                                                    { label: 'Wax Seal: Custom Shape', key: 'wax_seal_custom' }
-                                                                );
-                                                            }
                                                             if (formData.options.hasChart) {
                                                                 keys.push(
                                                                     { label: 'Chart Type: Single Card', key: 'chart_single_card' },
@@ -938,7 +898,7 @@ export default function DesignsPage() {
                                                             }
 
                                                             if (keys.length === 0) {
-                                                                return <p className="text-[10px] text-slate-400 italic">Enable envelope, ribbon, wax seal, or chart to upload overrides.</p>;
+                                                                return <p className="text-[10px] text-slate-400 italic">Enable chart options to upload overrides.</p>;
                                                             }
 
                                                             return keys.map(({ label, key }) => {

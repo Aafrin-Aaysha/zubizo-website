@@ -107,7 +107,7 @@ export default function AdminAccountPage() {
     return (
         <div className="max-w-4xl mx-auto space-y-6 pb-10 text-slate-700 text-xs">
             <div>
-                <h2 className="text-xl font-black text-charcoal">Admin Settings</h2>
+                <h2 className="text-2xl font-normal text-charcoal">Admin Settings</h2>
                 <p className="text-gray-500 mt-0.5 text-xs font-medium">Manage your profile information and account security.</p>
             </div>
 

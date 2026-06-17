@@ -594,7 +594,7 @@ export default function BulkImportPage() {
                         <ArrowLeft size={18} />
                     </Link>
                     <div>
-                        <h1 className="text-xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
+                        <h1 className="text-2xl font-normal text-charcoal tracking-tight flex items-center gap-3">
                             <Sparkles className="text-lavender" size={20} />
                             Bulk Import
                         </h1>
@@ -625,7 +625,7 @@ export default function BulkImportPage() {
                                 <FileText size={24} />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black text-charcoal">Step 1: Paste Design Data</h2>
+                                <h2 className="text-2xl font-normal text-charcoal">Step 1: Paste Design Data</h2>
                                 <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-0.5">Copy from WhatsApp and paste below</p>
                             </div>
                         </div>

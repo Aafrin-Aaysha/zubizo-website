@@ -527,7 +527,7 @@ export default function InventoryPage() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
                 <div>
-                    <h2 className="text-xl font-black text-charcoal">Inventory Management</h2>
+                    <h2 className="text-2xl font-normal text-charcoal">Inventory Management</h2>
                     <p className="text-slate-400 text-xs mt-1 font-medium">Track your luxury studio materials, sheets, and envelopes with premium variants hierarchy.</p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
@@ -633,10 +633,7 @@ export default function InventoryPage() {
                                     className="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.015)] hover:shadow-[0_8px_30px_rgba(174,127,203,0.12)] hover:border-[#ae7fcb]/50 transition-all duration-300 cursor-pointer flex flex-col justify-between group active:scale-[0.99]"
                                 >
                                     <div>
-                                        <div className="w-14 h-14 rounded-2xl bg-[#ae7fcb]/10 text-[#6E4B8B] flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">
-                                            {catMeta.icon}
-                                        </div>
-                                        <h3 className="text-base font-extrabold text-slate-800 tracking-tight mt-5 group-hover:text-[#6E4B8B] transition-colors">
+                                        <h3 className="text-lg font-extrabold text-slate-800 tracking-tight group-hover:text-[#6E4B8B] transition-colors">
                                             {catMeta.label}
                                         </h3>
                                         <p className="text-slate-400 text-xs font-semibold mt-1">
@@ -679,8 +676,7 @@ export default function InventoryPage() {
                                 </button>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-2xl">{CATEGORY_META[activeCategory]?.icon || '📦'}</span>
-                                        <h3 className="text-lg font-black text-slate-800">{CATEGORY_META[activeCategory]?.label || activeCategory}</h3>
+                                        <h3 className="text-xl font-normal text-slate-800">{CATEGORY_META[activeCategory]?.label || activeCategory}</h3>
                                     </div>
                                     <p className="text-slate-400 text-xs mt-0.5 font-medium">Viewing variants and stock within this category.</p>
                                 </div>
@@ -716,8 +712,7 @@ export default function InventoryPage() {
                                 </button>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-2xl">{CATEGORY_META[activeCategory]?.icon || '📦'}</span>
-                                        <h3 className="text-lg font-black text-slate-800">{CATEGORY_META[activeCategory]?.label || activeCategory}</h3>
+                                        <h3 className="text-xl font-normal text-slate-800">{CATEGORY_META[activeCategory]?.label || activeCategory}</h3>
                                     </div>
                                     <p className="text-slate-400 text-xs mt-0.5 font-medium">Viewing variants and stock within this category.</p>
                                 </div>
@@ -770,7 +765,6 @@ export default function InventoryPage() {
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-purple-50/70 text-[#6E4B8B] border border-purple-100/50 rounded-full text-[10px] font-bold">
-                                                        <span>{CATEGORY_META[m.category]?.icon || '📦'}</span>
                                                         <span>{CATEGORY_META[m.category]?.label || m.category}</span>
                                                     </span>
                                                 </td>
@@ -918,13 +912,12 @@ export default function InventoryPage() {
                                                     <div 
                                                         key={catKey}
                                                         onClick={() => setAddFlowData({ ...addFlowData, category: catKey })}
-                                                        className={`p-3.5 rounded-xl border cursor-pointer text-center transition-all flex flex-col items-center justify-center gap-1.5 ${
+                                                        className={`p-3.5 rounded-xl border cursor-pointer text-center transition-all flex items-center justify-center h-14 ${
                                                             isSelected 
                                                                 ? 'border-[#a855f7] bg-purple-50/20 font-extrabold text-[#a855f7]' 
                                                                 : 'border-purple-50/50 hover:border-purple-200/50 hover:bg-slate-50'
                                                         }`}
                                                     >
-                                                        <span className="text-2xl">{catInfo.icon}</span>
                                                         <span className="text-[11px] font-bold">{catInfo.label}</span>
                                                     </div>
                                                 );

@@ -64,6 +64,10 @@ const DesignSchema = new mongoose.Schema({
         default: 50,
         min: 1
     },
+    basePrice: {
+        type: Number,
+        default: 0
+    },
     packages: {
         type: [PackageSchema],
         validate: {
@@ -114,6 +118,11 @@ const DesignSchema = new mongoose.Schema({
     },
     demoUrl: {
         type: String,
+        default: ""
+    },
+    packageName: {
+        type: String,
+        enum: ['', 'Starter', 'Value', 'Premium', 'Ultra'],
         default: ""
     },
     isActive: {

@@ -47,20 +47,6 @@ export const DigitalInvitesHero = () => {
             </p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6"
-          >
-            <Link 
-              href="#categories" 
-              className="group flex items-center gap-3 px-10 py-5 bg-[#6E4B8B] text-white rounded-full font-bold text-sm uppercase tracking-widest hover:bg-[#5b3d73] transition-all shadow-lg shadow-[#6E4B8B]/20 active:scale-95"
-            >
-              Explore Designs
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </motion.div>
         </div>
       </div>
 

@@ -14,11 +14,6 @@ export default function DesignCard({ design }: { design: any }) {
     if (design.isTrending) {
         badges.push({ text: "Trending", emoji: "🔥", color: "bg-amber-50/90 text-amber-700 border-amber-200" });
     }
-    // Check if created within last 30 days
-    const isRecent = design.createdAt && (new Date().getTime() - new Date(design.createdAt).getTime()) < 30 * 24 * 60 * 60 * 1000;
-    if (design.isNew || isRecent) {
-        badges.push({ text: "New", emoji: "⭐", color: "bg-blue-5/90 text-blue-700 border-blue-200" });
-    }
     if (design.isBestSeller) {
         badges.push({ text: "Best Seller", emoji: "👑", color: "bg-emerald-50/90 text-emerald-700 border-emerald-200" });
     }

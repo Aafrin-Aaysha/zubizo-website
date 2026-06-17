@@ -19,6 +19,16 @@ export function getWhatsAppNumber() {
 }
 
 export function getStartingPrice(design: any) {
+    const isDigital = 
+        design.categoryId?.name === 'Digital E-Invite' || 
+        design.categoryId?.name === 'Premium E-Website' ||
+        design.packages?.[0]?.title === 'Digital Delivery' ||
+        design.packages?.[0]?.title === 'Website Access';
+
+    if (isDigital) {
+        return design.basePrice || 0;
+    }
+
     // 1. Fallback if no packages exist
     if (!design.packages || design.packages.length === 0) {
         return design.basePrice || 0;

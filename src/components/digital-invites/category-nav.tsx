@@ -11,10 +11,10 @@ const categoryCards = [
     title: "Image E-Invites",
     description: "High-resolution artisanal designs ready for WhatsApp sharing.",
     icon: Image,
-    href: "#pricing",
+    href: "/digital-invites/image",
     accent: "bg-[#EDE8F6]",
     textColor: "text-[#6E4B8B]",
-    isPremium: false,
+    isPremium: true,
     label: null
   },
   {
@@ -22,7 +22,7 @@ const categoryCards = [
     title: "Website Invites",
     description: "Interactive, mobile-first websites with RSVP and more.",
     icon: Layout,
-    href: "#pricing",
+    href: "/digital-invites/website",
     accent: "bg-[#EDE8F6]",
     textColor: "text-[#6E4B8B]",
     isPremium: true,
@@ -48,7 +48,7 @@ export const CategoryNavigation = () => {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 max-w-4xl mx-auto">
           {categoryCards.map((card, index) => (
             <motion.div
               key={card.id}

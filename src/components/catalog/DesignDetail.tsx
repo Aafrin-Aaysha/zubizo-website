@@ -105,7 +105,7 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
         <div className="flex flex-col lg:flex-row gap-6 items-start">
             {/* Thumbnails (Left-aligned on Desktop, Bottom on Mobile) */}
             {images.length > 1 && (
-                <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto pb-2 lg:pb-0 scrollbar-hide px-1 lg:w-20 lg:shrink-0 lg:h-[55vh] lg:max-h-[480px] order-2 lg:order-1 w-full lg:w-auto">
+                <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto pb-2 lg:pb-0 scrollbar-hide px-1 lg:w-20 lg:shrink-0 lg:h-[78vh] lg:max-h-[750px] order-2 lg:order-1 w-full lg:w-auto">
                     {images.map((img, idx) => (
                         <button
                             key={idx}
@@ -125,7 +125,7 @@ function ImageGallery({ images, name }: { images: string[]; name: string }) {
 
             {/* Main Image (Right-aligned on Desktop, Top on Mobile) */}
             <div
-                className="relative flex-1 w-full aspect-[3/4] lg:aspect-auto lg:h-[55vh] lg:max-h-[480px] floating-card rounded-[2rem] overflow-hidden bg-white border border-lavender/10 cursor-zoom-in group order-1 lg:order-2"
+                className="relative flex-1 w-full aspect-[3/4] lg:aspect-auto lg:h-[78vh] lg:max-h-[750px] floating-card rounded-[2rem] overflow-hidden bg-white border border-lavender/10 cursor-zoom-in group order-1 lg:order-2"
                 onMouseEnter={() => setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
                 onMouseMove={handleMouseMove}
@@ -485,6 +485,9 @@ const PackageImageCard = React.memo(function PackageImageCard({
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 export function DesignDetailClient({ design }: { design: Design }) {
+    const isDigital = design.categoryId?.name === 'Digital E-Invite' || design.categoryId?.name === 'Premium E-Website';
+    const isWebsite = design.categoryId?.name === 'Premium E-Website';
+
     const safePackages = useMemo(() => {
         if (design.packages && design.packages.length > 0) {
             // Normalize each package: if priceTiers is missing/empty but pricePerCard exists, create a default tier
@@ -520,11 +523,9 @@ export function DesignDetailClient({ design }: { design: Design }) {
     const [waxSeal, setWaxSeal] = useState<'None' | 'Bronze Round' | 'Gold Round' | 'Custom (enquire)'>('None');
     const [chartType, setChartType] = useState<'Single Card' | 'Tri-fold' | 'Booklet' | null>(null);
     const [activeCustomizationTab, setActiveCustomizationTab] = useState<'envelope' | 'ribbon' | 'wax_seal' | null>(null);
-
-    // Options Configuration Toggles
-    const hasEnvelope = design.options?.hasEnvelope || false;
-    const hasRibbon = design.options?.hasRibbon || false;
-    const hasWaxSeal = design.options?.hasWaxSeal || false;
+    const hasEnvelope = false;
+    const hasRibbon = false;
+    const hasWaxSeal = false;
     const hasChart = design.options?.hasChart || false;
 
     // Options Surcharge Overrides
@@ -618,6 +619,54 @@ export function DesignDetailClient({ design }: { design: Design }) {
     };
 
     const handleModalSubmit = async (data: LeadData) => {
+        if (isDigital) {
+            const priceVal = design.basePrice || 0;
+            const pageUrl = window.location.href;
+            
+            try {
+                await fetch('/api/inquiries', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        designId: design._id,
+                        designName: design.name,
+                        sku: design.sku,
+                        selectedPackage: isWebsite ? 'Website Access' : 'Digital Delivery',
+                        quantity: 1,
+                        estimatedTotal: priceVal,
+                        source: 'design_page',
+                        customerName: data.name,
+                        phone: data.phone,
+                        notes: isWebsite ? `Live Demo: ${design.demoUrl || 'N/A'}` : 'Image E-Invite'
+                    })
+                });
+            } catch (error) {
+                console.error("Inquiry logging failed", error);
+                throw new Error("Failed to connect to the server.");
+            }
+
+            const message = `*Inquiry from Website (Digital Invite)*
+  
+Hello Zubizo,
+  
+My name is ${data.name}.
+My contact number is ${data.phone}.
+  
+I'm interested in:
+*Design:* ${design.name}
+*SKU:* ${design.sku}
+*Type:* ${isWebsite ? 'E-Website Invite' : 'Image E-Invite'}
+*Link:* ${pageUrl}
+${isWebsite && design.demoUrl ? `*Demo Link:* ${design.demoUrl}\n` : ''}*Price:* ₹${priceVal}
+  
+Please share further details.`;
+
+            const cleanNumber = getWhatsAppNumber();
+            window.open(`https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`, '_blank');
+            setIsModalOpen(false);
+            return;
+        }
+
         const q = typeof quantity === 'string' ? parseInt(quantity) : quantity;
 
         // Build a nice option selections log for the database notes
@@ -730,75 +779,145 @@ Please share further details.`;
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+        isDigital ? (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+                {/* Left: Gallery */}
+                <div className="lg:col-span-7 space-y-12">
+                    <ImageGallery images={design.images} name={design.name} />
+
+                    <div className="space-y-6 lg:hidden">
+                        <div className="flex items-center gap-3">
+                            <span className="px-4 py-1.5 bg-[#EDE8F6] text-[#6E4B8B] text-[11px] font-bold uppercase tracking-[0.2em] rounded-full border border-[#ae7fcb]/15 shadow-sm">
+                                {design.sku}
+                            </span>
+                            <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+                            <span className="text-slate-500 text-[11px] font-bold tracking-wider">
+                                {isWebsite ? 'E-Website Invite' : 'Image E-Invite'}
+                            </span>
+                        </div>
+
+                        <h1 className="!text-2xl md:!text-3xl font-bold text-black font-italiana tracking-tight leading-[1.2]">
+                            {design.name}
+                        </h1>
+
+                        <div className="w-20 h-1 bg-[#ae7fcb]/30 rounded-full" />
+
+                        <p className="text-slate-550 text-base leading-relaxed font-light max-w-2xl">
+                            {design.description || (isWebsite 
+                                ? "An interactive, mobile-first wedding website featuring RSVP management, event details, maps, and photo gallery."
+                                : "A premium, high-resolution digital invitation suite perfect for WhatsApp and email sharing.")}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Right: Info + CTA */}
+                <div className="lg:col-span-5 lg:sticky lg:top-28">
+                    <div className="bg-white rounded-[2.5rem] shadow-luxury border border-[#ae7fcb]/10 floating-card p-8 space-y-8">
+                        {/* Desktop Title & Details */}
+                        <div className="hidden lg:block space-y-4 pb-6 border-b border-[#ae7fcb]/10">
+                            <div className="flex items-center gap-3">
+                                <span className="px-4 py-1.5 bg-[#EDE8F6] text-[#6E4B8B] text-[11px] font-bold uppercase tracking-[0.2em] rounded-full border border-[#ae7fcb]/15 shadow-sm">
+                                    {design.sku}
+                                </span>
+                                <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+                                <span className="text-slate-500 text-[11px] font-bold tracking-wider">
+                                    {isWebsite ? 'E-Website Invite' : 'Image E-Invite'}
+                                </span>
+                            </div>
+
+                            <h1 className="!text-2xl lg:!text-3xl font-bold text-black font-italiana tracking-tight leading-[1.2]">
+                                {design.name}
+                            </h1>
+
+                            <div className="w-16 h-0.5 bg-[#ae7fcb]/30 rounded-full" />
+
+                            <p className="text-slate-550 text-sm leading-relaxed font-light">
+                                {design.description || (isWebsite 
+                                    ? "An interactive, mobile-first wedding website featuring RSVP management, event details, maps, and photo gallery."
+                                    : "A premium, high-resolution digital invitation suite perfect for WhatsApp and email sharing.")}
+                            </p>
+                        </div>
+
+                        {/* Flat Pricing Section */}
+                        <div className="p-6 bg-[#FAF8F5] rounded-[1.5rem] border border-[#ae7fcb]/10 flex items-center justify-between">
+                            <div>
+                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">Price</span>
+                                <span className="text-3xl font-bold text-[#ae7fcb]">₹{design.basePrice || 0}</span>
+                            </div>
+                            <div className="text-right">
+                                <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-[9px] font-black uppercase tracking-wider border border-green-150">
+                                    Fixed Price
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* E-Website Features or E-Invite Deliverables */}
+                        <div className="space-y-4">
+                            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
+                                {isWebsite ? 'Interactive Features Included' : 'Digital Deliverables'}
+                            </h3>
+                            <ul className="space-y-2.5">
+                                {(isWebsite ? [
+                                    "RSVP Guest Management System",
+                                    "Google Maps Navigation Integration",
+                                    "Custom Love Story Timeline",
+                                    "Photo Gallery Showcase",
+                                    "Countdown to Wedding Timer",
+                                    "Background Music Integration"
+                                ] : [
+                                    "High-Resolution JPEG, PNG & PDF Formats",
+                                    "Custom text additions & color adjustments",
+                                    "Unlimited WhatsApp/Email sharing"
+                                ]).map((feature, idx) => (
+                                    <li key={idx} className="flex items-start gap-2 text-sm text-slate-600 font-medium">
+                                        <Check size={16} className="text-[#ae7fcb] shrink-0 mt-0.5" />
+                                        <span>{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Live Demo Link (for E-Websites) */}
+                        {isWebsite && design.demoUrl && (
+                            <div className="pt-2">
+                                <a
+                                    href={design.demoUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full h-14 bg-lavender/5 text-lavender border-2 border-lavender/25 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-lavender hover:text-white transition-all flex items-center justify-center gap-2"
+                                >
+                                    View Live Website
+                                    <ArrowRight size={16} />
+                                </a>
+                            </div>
+                        )}
+
+                        {/* Primary WhatsApp CTA */}
+                        <div className="pt-2">
+                            <button
+                                onClick={handleEnquire}
+                                className="w-full h-14 bg-charcoal hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-charcoal/20 transition-all flex items-center justify-center gap-2"
+                            >
+                                <MessageCircle size={18} />
+                                Enquire via WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <LeadCaptureModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSubmit={handleModalSubmit}
+                />
+            </div>
+        ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
             {/* Left: Gallery + Description */}
             <div className="lg:col-span-7 space-y-12">
                 <ImageGallery images={design.images} name={design.name} />
 
-                {/* Customization Options Preview Circles */}
-                {(hasEnvelope || hasWaxSeal || hasRibbon) && (
-                    <div className="bg-[#FAF8F5]/80 backdrop-blur-md rounded-[2rem] p-6 border border-[#ae7fcb]/10 shadow-sm space-y-4">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                            <div className="text-[11px] font-bold text-slate-500 tracking-wider">Available Options</div>
-                            <span className="text-[10px] text-amber-600 font-bold tracking-wider bg-amber-50 px-2.5 py-0.5 rounded">
-                                Prices differ for model customizations
-                            </span>
-                        </div>
-                        <div className="flex flex-wrap gap-6 items-center">
-                            {hasEnvelope && (
-                                <button
-                                    onClick={() => setActiveCustomizationTab('envelope')}
-                                    className="flex flex-col items-center gap-2 group focus:outline-none cursor-pointer"
-                                >
-                                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-100 group-hover:border-[#ae7fcb] shadow-sm transition-all duration-300 group-hover:scale-105 relative bg-slate-50">
-                                        <img
-                                            src={getOptionImage('envelope_type_landscape', design.options?.images)}
-                                            alt="Envelopes"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <span className="text-[10px] font-bold text-slate-600 group-hover:text-[#6E4B8B] tracking-wider transition-colors">
-                                        Envelopes
-                                    </span>
-                                </button>
-                            )}
-                            {hasRibbon && (
-                                <button
-                                    onClick={() => setActiveCustomizationTab('ribbon')}
-                                    className="flex flex-col items-center gap-2 group focus:outline-none cursor-pointer"
-                                >
-                                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-100 group-hover:border-[#ae7fcb] shadow-sm transition-all duration-300 group-hover:scale-105 relative bg-slate-50">
-                                        <img
-                                            src={getOptionImage('ribbon_material_satin', design.options?.images)}
-                                            alt="Ribbons"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <span className="text-[10px] font-bold text-slate-600 group-hover:text-[#6E4B8B] tracking-wider transition-colors">
-                                        Ribbons
-                                    </span>
-                                </button>
-                            )}
-                            {hasWaxSeal && (
-                                <button
-                                    onClick={() => setActiveCustomizationTab('wax_seal')}
-                                    className="flex flex-col items-center gap-2 group focus:outline-none cursor-pointer"
-                                >
-                                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-slate-100 group-hover:border-[#ae7fcb] shadow-sm transition-all duration-300 group-hover:scale-105 relative bg-slate-50">
-                                        <img
-                                            src={getOptionImage('wax_seal_gold_round', design.options?.images)}
-                                            alt="Wax Seals"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                    <span className="text-[10px] font-bold text-slate-600 group-hover:text-[#6E4B8B] tracking-wider transition-colors">
-                                        Wax Seals
-                                    </span>
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                )}
+
 
                 <div className="space-y-6 lg:hidden">
                     <div className="flex items-center gap-3">
@@ -994,329 +1113,8 @@ Please share further details.`;
                         </div>
                     )}
 
-                    {/* Envelope Selector */}
-                    {hasEnvelope && (
-                        <div className="space-y-4">
-                            <div>
-                                <div className="text-[11px] font-bold text-slate-500 tracking-wider">Envelope colour</div>
-                                <p className="text-[10px] text-slate-400 mt-1 font-medium">Select type, then colour. Different colours are priced differently.</p>
-                            </div>
-                            
-                            {/* Step 1: Envelope Type */}
-                            <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory -mx-8 px-8 md:mx-0 md:px-0 md:flex-wrap md:pb-0">
-                                {['Landscape', 'Portrait', 'Pouch'].map((type) => {
-                                    const key = `envelope_type_${type.toLowerCase()}`;
-                                    const isSelected = envelopeType === type;
-                                    const overrides = design.options?.images;
-                                    return (
-                                        <OptionImageCard
-                                            key={type}
-                                            label={type}
-                                            imageKey={key}
-                                            isSelected={isSelected}
-                                            overrides={overrides}
-                                            onClick={() => {
-                                                setEnvelopeType(type as any);
-                                                setEnvelopeColour(null);
-                                            }}
-                                            onMouseEnter={(e) => handleMouseEnterCard(e, { url: getOptionImage(key, overrides), label: type })}
-                                            onMouseLeave={handleMouseLeaveCard}
-                                            onClickMobile={() => handleCardClickMobile({ url: getOptionImage(key, overrides), label: type })}
-                                        />
-                                    );
-                                })}
-                            </div>
-
-                            {/* Step 2: Envelope Colour */}
-                            {envelopeType && (
-                                <div className="space-y-4 pt-2 border-t border-slate-50">
-                                    {/* Group 1: Standard */}
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-black tracking-wider">Standard</span>
-                                            <span className="px-1.5 py-0.5 bg-green-50 text-green-600 rounded text-[8px] font-bold tracking-wider">No extra charge</span>
-                                        </div>
-                                        <div className="grid grid-cols-5 md:flex md:flex-wrap gap-2">
-                                            {['Ivory', 'Champagne', 'White', 'Blush', 'Charcoal', 'Black', 'Sage'].map((col) => {
-                                                const key = `envelope_colour_${col.toLowerCase().replace(' ', '_')}`;
-                                                const isSelected = envelopeColour === col;
-                                                const overrides = design.options?.images;
-                                                return (
-                                                    <SwatchCard
-                                                        key={col}
-                                                        label={col}
-                                                        imageKey={key}
-                                                        isSelected={isSelected}
-                                                        overrides={overrides}
-                                                        surcharge={0}
-                                                        onClick={() => setEnvelopeColour(col)}
-                                                        onMouseEnter={(e) => handleMouseEnterCard(e, { url: getOptionImage(key, overrides), label: col, tier: 'Standard', surcharge: 'No extra charge' })}
-                                                        onMouseLeave={handleMouseLeaveCard}
-                                                        onClickMobile={() => handleCardClickMobile({ url: getOptionImage(key, overrides), label: col, tier: 'Standard', surcharge: 'No extra charge' })}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    {/* Group 2: Premium */}
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-black tracking-wider">Premium</span>
-                                            <span className="px-1.5 py-0.5 bg-purple-50 text-[#6E4B8B] rounded text-[8px] font-bold tracking-wider">+₹{envTierBSurcharge} / card</span>
-                                        </div>
-                                        <div className="grid grid-cols-5 md:flex md:flex-wrap gap-2">
-                                            {['Navy', 'Forest Green', 'Burgundy', 'Royal Blue', 'Lavender', 'Rose Gold'].map((col) => {
-                                                const key = `envelope_colour_${col.toLowerCase().replace(' ', '_')}`;
-                                                const isSelected = envelopeColour === col;
-                                                const overrides = design.options?.images;
-                                                return (
-                                                    <SwatchCard
-                                                        key={col}
-                                                        label={col}
-                                                        imageKey={key}
-                                                        isSelected={isSelected}
-                                                        overrides={overrides}
-                                                        surcharge={envTierBSurcharge}
-                                                        onClick={() => setEnvelopeColour(col)}
-                                                        onMouseEnter={(e) => handleMouseEnterCard(e, { url: getOptionImage(key, overrides), label: col, tier: 'Premium', surcharge: `+₹${envTierBSurcharge} / card` })}
-                                                        onMouseLeave={handleMouseLeaveCard}
-                                                        onClickMobile={() => handleCardClickMobile({ url: getOptionImage(key, overrides), label: col, tier: 'Premium', surcharge: `+₹${envTierBSurcharge} / card` })}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    {/* Group 3: Special Finish */}
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-black tracking-wider">Special Finish</span>
-                                            <span className="px-1.5 py-0.5 bg-amber-50 text-amber-600 rounded text-[8px] font-bold tracking-wider">+₹{envTierCSurcharge} / card</span>
-                                        </div>
-                                        <div className="grid grid-cols-5 md:flex md:flex-wrap gap-2">
-                                            {['Gold', 'Silver', 'Coral', 'Teal'].map((col) => {
-                                                const key = `envelope_colour_${col.toLowerCase().replace(' ', '_')}`;
-                                                const isSelected = envelopeColour === col;
-                                                const overrides = design.options?.images;
-                                                return (
-                                                    <SwatchCard
-                                                        key={col}
-                                                        label={col}
-                                                        imageKey={key}
-                                                        isSelected={isSelected}
-                                                        overrides={overrides}
-                                                        surcharge={envTierCSurcharge}
-                                                        onClick={() => setEnvelopeColour(col)}
-                                                        onMouseEnter={(e) => handleMouseEnterCard(e, { url: getOptionImage(key, overrides), label: col, tier: 'Special Finish', surcharge: `+₹${envTierCSurcharge} / card` })}
-                                                        onMouseLeave={handleMouseLeaveCard}
-                                                        onClickMobile={() => handleCardClickMobile({ url: getOptionImage(key, overrides), label: col, tier: 'Special Finish', surcharge: `+₹${envTierCSurcharge} / card` })}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Ribbon Selector */}
-                    {hasRibbon && (
-                        <div className="space-y-4">
-                                <div className="text-[11px] font-bold text-slate-500 tracking-wider">Ribbon</div>
-                            
-                            {/* Step 1: Material */}
-                            <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory -mx-8 px-8 md:mx-0 md:px-0 md:flex-wrap md:pb-0">
-                                <OptionImageCard
-                                    label="None"
-                                    isSelected={ribbonMaterial === 'None'}
-                                    dashed
-                                    widthClass="w-[80px]"
-                                    heightClass="h-[96px]"
-                                    onClick={() => {
-                                        setRibbonMaterial('None');
-                                        setRibbonWidth(null);
-                                        setRibbonColour(null);
-                                    }}
-                                />
-                                {['Satin', 'Organza'].map((mat) => {
-                                    const key = `ribbon_material_${mat.toLowerCase()}`;
-                                    const isSelected = ribbonMaterial === mat;
-                                    const overrides = design.options?.images;
-                                    return (
-                                        <OptionImageCard
-                                            key={mat}
-                                            label={mat}
-                                            imageKey={key}
-                                            isSelected={isSelected}
-                                            overrides={overrides}
-                                            widthClass="w-[80px]"
-                                            heightClass="h-[96px]"
-                                            onClick={() => {
-                                                setRibbonMaterial(mat as any);
-                                                setRibbonWidth(null);
-                                                setRibbonColour(null);
-                                            }}
-                                            onMouseEnter={(e) => handleMouseEnterCard(e, { url: getOptionImage(key, overrides), label: mat })}
-                                            onMouseLeave={handleMouseLeaveCard}
-                                            onClickMobile={() => handleCardClickMobile({ url: getOptionImage(key, overrides), label: mat })}
-                                        />
-                                    );
-                                })}
-                            </div>
-
-                            {/* Step 2: Width */}
-                            {ribbonMaterial !== 'None' && (
-                                <div className="space-y-2 pt-2 border-t border-slate-50">
-                                    <p className="text-[10px] text-slate-500 font-bold tracking-wider">Ribbon width</p>
-                                    <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory -mx-8 px-8 md:mx-0 md:px-0 md:flex-wrap md:pb-0">
-                                        {(['6mm · Narrow', '15mm · Medium', '25mm · Wide'] as const).map((width) => {
-                                            const key = `ribbon_width_${width.split(' · ')[0]}`;
-                                            const isSelected = ribbonWidth === width;
-                                            const overrides = design.options?.images;
-                                            return (
-                                                <OptionImageCard
-                                                    key={width}
-                                                    label={width}
-                                                    imageKey={key}
-                                                    isSelected={isSelected}
-                                                    overrides={overrides}
-                                                    widthClass="w-[80px]"
-                                                    heightClass="h-[96px]"
-                                                    onClick={() => {
-                                                        setRibbonWidth(width);
-                                                        setRibbonColour(null);
-                                                    }}
-                                                    onMouseEnter={(e) => handleMouseEnterCard(e, { url: getOptionImage(key, overrides), label: width })}
-                                                    onMouseLeave={handleMouseLeaveCard}
-                                                    onClickMobile={() => handleCardClickMobile({ url: getOptionImage(key, overrides), label: width })}
-                                                />
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Step 3: Ribbon Colour */}
-                            {ribbonMaterial !== 'None' && ribbonWidth && (
-                                <div className="space-y-4 pt-2 border-t border-slate-50">
-                                    {/* Group 1: Standard */}
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-black tracking-wider">Standard</span>
-                                            <span className="px-1.5 py-0.5 bg-green-50 text-green-600 rounded text-[8px] font-bold tracking-wider">No extra charge</span>
-                                        </div>
-                                        <div className="grid grid-cols-5 md:flex md:flex-wrap gap-2">
-                                            {['Ivory', 'White', 'Blush', 'Sage'].map((col) => {
-                                                const key = `ribbon_colour_${col.toLowerCase().replace(' ', '_')}`;
-                                                const isSelected = ribbonColour === col;
-                                                const overrides = design.options?.images;
-                                                return (
-                                                    <SwatchCard
-                                                        key={col}
-                                                        label={col}
-                                                        imageKey={key}
-                                                        isSelected={isSelected}
-                                                        overrides={overrides}
-                                                        surcharge={0}
-                                                        onClick={() => setRibbonColour(col)}
-                                                        onMouseEnter={(e) => handleMouseEnterCard(e, { url: getOptionImage(key, overrides), label: col, tier: 'Standard', surcharge: 'No extra charge' })}
-                                                        onMouseLeave={handleMouseLeaveCard}
-                                                        onClickMobile={() => handleCardClickMobile({ url: getOptionImage(key, overrides), label: col, tier: 'Standard', surcharge: 'No extra charge' })}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-
-                                    {/* Group 2: Premium */}
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-[10px] font-bold text-black tracking-wider">Premium</span>
-                                            <span className="px-1.5 py-0.5 bg-purple-50 text-[#6E4B8B] rounded text-[8px] font-bold tracking-wider">+₹{ribbonPremSurcharge} / card</span>
-                                        </div>
-                                        <div className="grid grid-cols-5 md:flex md:flex-wrap gap-2">
-                                            {['Navy', 'Gold', 'Burgundy'].map((col) => {
-                                                const key = `ribbon_colour_${col.toLowerCase().replace(' ', '_')}`;
-                                                const isSelected = ribbonColour === col;
-                                                const overrides = design.options?.images;
-                                                return (
-                                                    <SwatchCard
-                                                        key={col}
-                                                        label={col}
-                                                        imageKey={key}
-                                                        isSelected={isSelected}
-                                                        overrides={overrides}
-                                                        surcharge={ribbonPremSurcharge}
-                                                        onClick={() => setRibbonColour(col)}
-                                                        onMouseEnter={(e) => handleMouseEnterCard(e, { url: getOptionImage(key, overrides), label: col, tier: 'Premium', surcharge: `+₹${ribbonPremSurcharge} / card` })}
-                                                        onMouseLeave={handleMouseLeaveCard}
-                                                        onClickMobile={() => handleCardClickMobile({ url: getOptionImage(key, overrides), label: col, tier: 'Premium', surcharge: `+₹${ribbonPremSurcharge} / card` })}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Wax Seal Selector */}
-                    {hasWaxSeal && (
-                        <div className="space-y-4">
-                            <div className="text-[11px] font-bold text-slate-500 tracking-wider">Wax seal</div>
-                            <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory -mx-8 px-8 md:mx-0 md:px-0 md:flex-wrap md:pb-0">
-                                <OptionImageCard
-                                    label="None"
-                                    isSelected={waxSeal === 'None'}
-                                    dashed
-                                    widthClass="w-[80px]"
-                                    heightClass="h-[96px]"
-                                    onClick={() => setWaxSeal('None')}
-                                />
-                                {(['Bronze Round', 'Gold Round', 'Custom (enquire)'] as const).map((type) => {
-                                    let key = '';
-                                    let icon = undefined;
-                                    if (type === 'Bronze Round') key = 'wax_seal_bronze_round';
-                                    else if (type === 'Gold Round') key = 'wax_seal_gold_round';
-                                    else {
-                                        key = 'wax_seal_custom';
-                                        icon = '✦';
-                                    }
-                                    const isSelected = waxSeal === type;
-                                    const overrides = design.options?.images;
-                                    return (
-                                        <OptionImageCard
-                                            key={type}
-                                            label={type.split(' ')[0]}
-                                            subtext={type.includes('Custom') ? 'Discuss with us' : ''}
-                                            imageKey={icon ? undefined : key}
-                                            icon={icon}
-                                            isSelected={isSelected}
-                                            overrides={overrides}
-                                            widthClass="w-[80px]"
-                                            heightClass="h-[96px]"
-                                            onClick={() => setWaxSeal(type)}
-                                            onMouseEnter={(e) => handleMouseEnterCard(e, { url: getOptionImage(key, overrides), label: type })}
-                                            onMouseLeave={handleMouseLeaveCard}
-                                            onClickMobile={() => handleCardClickMobile({ url: getOptionImage(key, overrides), label: type })}
-                                        />
-                                    );
-                                })}
-                            </div>
-
-                            {waxSeal.includes('Custom') && (
-                                <p className="text-[10px] text-slate-400 font-medium italic">
-                                    * Custom shape requires additional charges. Our team will confirm via WhatsApp.
-                                </p>
-                            )}
-                        </div>
-                    )}
-
                     {/* Selected Options Summary Panel */}
-                    {(envelopeType || ribbonMaterial !== 'None' || waxSeal !== 'None' || chartType) && (
+                    {hasChart && chartType && (
                         <div className="bg-[#F8F4FF] border border-[#DDD6FE] rounded-xl p-4 space-y-2.5 text-xs text-slate-755">
                             <div className="flex items-center justify-between">
                                 <span className="flex items-center gap-2 font-medium">
@@ -1325,54 +1123,12 @@ Please share further details.`;
                                 <span className="font-bold text-slate-800">{selectedPackage.title}</span>
                             </div>
 
-                            {hasEnvelope && envelopeType && (
-                                <div className="flex items-center justify-between">
-                                    <span className="flex items-center gap-2 font-medium">
-                                        <span className="text-[14px]">✉️</span> Envelope
-                                    </span>
-                                    <span className="font-bold text-slate-800">
-                                        {envelopeType} {envelopeColour ? `· ${envelopeColour}` : ''}
-                                        {envelopeSurcharge > 0 && ` (+₹${envelopeSurcharge}/card)`}
-                                    </span>
-                                </div>
-                            )}
-
-                            {hasRibbon && ribbonMaterial !== 'None' && (
-                                <div className="flex items-center justify-between">
-                                    <span className="flex items-center gap-2 font-medium">
-                                        <span className="text-[14px]">🎀</span> Ribbon
-                                    </span>
-                                    <span className="font-bold text-slate-800">
-                                        {ribbonMaterial} {ribbonWidth ? `· ${ribbonWidth.split(' · ')[0]}` : ''} {ribbonColour ? `· ${ribbonColour}` : ''}
-                                        {ribbonSurcharge > 0 && ` (+₹${ribbonSurcharge}/card)`}
-                                    </span>
-                                </div>
-                            )}
-
-                            {hasWaxSeal && waxSeal !== 'None' && (
-                                <div className="flex items-center justify-between">
-                                    <span className="flex items-center gap-2 font-medium">
-                                        <span className="text-[14px]">🔴</span> Wax Seal
-                                    </span>
-                                    <span className="font-bold text-slate-800">{waxSeal}</span>
-                                </div>
-                            )}
-
-                            {hasChart && chartType && (
-                                <div className="flex items-center justify-between">
-                                    <span className="flex items-center gap-2 font-medium">
-                                        <span className="text-[14px]">✦</span> Format
-                                    </span>
-                                    <span className="font-bold text-slate-800">{chartType}</span>
-                                </div>
-                            )}
-
-                            {totalColourSurcharge > 0 && (
-                                <div className="pt-2 border-t border-[#DDD6FE] flex justify-between items-center text-[11px] font-bold text-[#6E4B8B]">
-                                    <span>Total colour surcharge:</span>
-                                    <span>+₹{totalColourSurcharge} / card</span>
-                                </div>
-                            )}
+                            <div className="flex items-center justify-between">
+                                <span className="flex items-center gap-2 font-medium">
+                                    <span className="text-[14px]">✦</span> Format
+                                </span>
+                                <span className="font-bold text-slate-800">{chartType}</span>
+                            </div>
                         </div>
                     )}
 
@@ -1532,208 +1288,7 @@ Please share further details.`;
                 )}
             </AnimatePresence>
             
-            {/* Customization Options Modal */}
-            <AnimatePresence>
-                {activeCustomizationTab && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        {/* Backdrop */}
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 0.5 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setActiveCustomizationTab(null)}
-                            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm cursor-pointer"
-                        />
-                        {/* Modal Container */}
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="relative bg-white rounded-[2.5rem] w-full max-w-3xl max-h-[85vh] overflow-hidden shadow-2xl border border-lavender/10 flex flex-col z-10 text-slate-700 text-xs font-sans"
-                        >
-                            {/* Header */}
-                            <div className="p-6 border-b border-slate-100 flex items-center justify-between shrink-0">
-                                <div>
-                                    <h2 className="text-xl font-bold text-black font-italiana tracking-tight">
-                                        {activeCustomizationTab === 'envelope' && 'Envelope Varieties'}
-                                        {activeCustomizationTab === 'ribbon' && 'Ribbon Varieties'}
-                                        {activeCustomizationTab === 'wax_seal' && 'Wax Seal Varieties'}
-                                    </h2>
-                                    <p className="text-[10px] text-amber-600 font-bold tracking-wider mt-1">
-                                        Note: Prices differ for model customizations. Please enquire.
-                                    </p>
-                                </div>
-                                <button
-                                    onClick={() => setActiveCustomizationTab(null)}
-                                    className="w-10 h-10 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-black transition-colors cursor-pointer"
-                                >
-                                    <X size={20} />
-                                </button>
-                            </div>
 
-                            {/* Content (Scrollable) */}
-                            <div className="p-8 overflow-y-auto space-y-8 flex-1">
-                                {activeCustomizationTab === 'envelope' && (
-                                    <>
-                                        {/* Envelope Types */}
-                                        <div className="space-y-4">
-                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Envelope styles</div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                                {['Landscape', 'Portrait', 'Pouch'].map((type) => {
-                                                    const key = `envelope_type_${type.toLowerCase()}`;
-                                                    return (
-                                                        <div key={type} className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 flex flex-col items-center gap-3">
-                                                            <div className="w-full aspect-[4/3] rounded-xl overflow-hidden relative bg-slate-100 shadow-inner">
-                                                                <img
-                                                                    src={getOptionImage(key, design.options?.images)}
-                                                                    alt={type}
-                                                                    className="w-full h-full object-cover"
-                                                                />
-                                                            </div>
-                                                            <span className="text-xs font-bold text-slate-800 tracking-wide">{type} Style</span>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-
-                                        {/* Envelope Colors */}
-                                        <div className="space-y-4">
-                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Envelope colours</div>
-                                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                                                {[
-                                                    // Standard
-                                                    ...['Ivory', 'Champagne', 'White', 'Blush', 'Charcoal', 'Black', 'Sage'].map(name => ({ name, tier: 'Standard' })),
-                                                    // Premium
-                                                    ...['Navy', 'Forest Green', 'Burgundy', 'Royal Blue', 'Lavender', 'Rose Gold'].map(name => ({ name, tier: 'Premium' })),
-                                                    // Special Finish
-                                                    ...['Gold', 'Silver', 'Coral', 'Teal'].map(name => ({ name, tier: 'Special Finish' }))
-                                                ].map((col) => {
-                                                    const key = `envelope_colour_${col.name.toLowerCase().replace(' ', '_')}`;
-                                                    return (
-                                                        <div key={col.name} className="bg-slate-50/50 rounded-2xl p-3 border border-slate-100 flex flex-col items-center gap-2 text-center">
-                                                            <div className="w-12 h-12 rounded-full overflow-hidden border border-slate-200 shadow-sm relative bg-slate-100">
-                                                                <img
-                                                                    src={getOptionImage(key, design.options?.images)}
-                                                                    alt={col.name}
-                                                                    className="w-full h-full object-cover"
-                                                                />
-                                                            </div>
-                                                            <div>
-                                                                <span className="text-[10px] font-bold text-slate-800 tracking-wider block">{col.name}</span>
-                                                                <span className="text-[8px] text-slate-400 font-bold tracking-wider block mt-0.5">{col.tier}</span>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-
-                                {activeCustomizationTab === 'ribbon' && (
-                                    <>
-                                        {/* Ribbon Materials */}
-                                        <div className="space-y-4">
-                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Ribbon materials</div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                {['Satin', 'Organza'].map((mat) => {
-                                                    const key = `ribbon_material_${mat.toLowerCase()}`;
-                                                    return (
-                                                        <div key={mat} className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 flex flex-col items-center gap-3">
-                                                            <div className="w-full aspect-[4/3] rounded-xl overflow-hidden relative bg-slate-100 shadow-inner">
-                                                                <img
-                                                                    src={getOptionImage(key, design.options?.images)}
-                                                                    alt={mat}
-                                                                    className="w-full h-full object-cover"
-                                                                />
-                                                            </div>
-                                                            <span className="text-xs font-bold text-slate-800 tracking-wide">{mat} Finish</span>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-
-                                        {/* Ribbon Widths */}
-                                        <div className="space-y-4">
-                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Ribbon widths</div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                                {['6mm', '15mm', '25mm'].map((width) => {
-                                                    const key = `ribbon_width_${width.toLowerCase()}`;
-                                                    return (
-                                                        <div key={width} className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 flex flex-col items-center gap-3">
-                                                            <div className="w-full aspect-[4/3] rounded-xl overflow-hidden relative bg-slate-100 shadow-inner">
-                                                                <img
-                                                                    src={getOptionImage(key, design.options?.images)}
-                                                                    alt={width}
-                                                                    className="w-full h-full object-cover"
-                                                                />
-                                                            </div>
-                                                            <span className="text-xs font-bold text-slate-800 tracking-wide">{width} Width</span>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-
-                                        {/* Ribbon Colors */}
-                                        <div className="space-y-4">
-                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Ribbon colours</div>
-                                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                                                {['Ivory', 'White', 'Blush', 'Sage', 'Navy', 'Gold', 'Burgundy'].map((col) => {
-                                                    const key = `ribbon_colour_${col.toLowerCase().replace(' ', '_')}`;
-                                                    return (
-                                                        <div key={col} className="bg-slate-50/50 rounded-2xl p-3 border border-slate-100 flex flex-col items-center gap-2 text-center">
-                                                            <div className="w-12 h-12 rounded-full overflow-hidden border border-slate-200 shadow-sm relative bg-slate-100">
-                                                                <img
-                                                                    src={getOptionImage(key, design.options?.images)}
-                                                                    alt={col}
-                                                                    className="w-full h-full object-cover"
-                                                                />
-                                                            </div>
-                                                            <span className="text-[10px] font-bold text-slate-800 tracking-wider block">{col}</span>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-
-                                {activeCustomizationTab === 'wax_seal' && (
-                                    <>
-                                        {/* Wax Seals */}
-                                        <div className="space-y-4">
-                                            <div className="text-[11px] font-bold text-slate-500 tracking-wider border-b border-slate-50 pb-2">Wax seal styles</div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                                {[
-                                                    { type: 'Bronze Round', key: 'wax_seal_bronze_round' },
-                                                    { type: 'Gold Round', key: 'wax_seal_gold_round' },
-                                                    { type: 'Custom Design', key: 'wax_seal_custom' }
-                                                ].map((seal) => {
-                                                    return (
-                                                        <div key={seal.type} className="bg-slate-50/50 rounded-2xl p-4 border border-slate-100 flex flex-col items-center gap-3">
-                                                            <div className="w-full aspect-[4/3] rounded-xl overflow-hidden relative bg-slate-100 shadow-inner">
-                                                                <img
-                                                                    src={getOptionImage(seal.key, design.options?.images)}
-                                                                    alt={seal.type}
-                                                                    className="w-full h-full object-cover"
-                                                                />
-                                                            </div>
-                                                            <span className="text-xs font-bold text-slate-800 tracking-wide">{seal.type}</span>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
             
             <LeadCaptureModal
                 isOpen={isModalOpen}
@@ -1741,5 +1296,6 @@ Please share further details.`;
                 onSubmit={handleModalSubmit}
             />
         </div>
+        )
     );
 }

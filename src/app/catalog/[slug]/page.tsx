@@ -8,7 +8,7 @@ import Design from '@/models/Design';
 import SiteSettings from '@/models/SiteSettings';
 import { Metadata } from 'next';
 import { ChevronLeft } from 'lucide-react';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -42,8 +42,15 @@ export default async function DesignDetailPage({ params }: { params: Promise<{ s
         notFound();
     }
 
-    const s = siteSettings as any;
     const categoryName = design.categoryId?.name || 'Invitation';
+
+    if (categoryName === 'Digital E-Invite') {
+        redirect('/digital-invites/image');
+    } else if (categoryName === 'Premium E-Website') {
+        redirect('/digital-invites/website');
+    }
+
+    const s = siteSettings as any;
 
     // Serialize mongoose document
     const serialized = JSON.parse(JSON.stringify(design));

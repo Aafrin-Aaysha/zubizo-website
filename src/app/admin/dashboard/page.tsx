@@ -84,7 +84,7 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h2 className="text-xl font-black text-charcoal">Business Overview</h2>
+                    <h2 className="text-2xl font-normal text-charcoal">Business Overview</h2>
                     <p className="text-gray-500 mt-1 font-medium">Insights into your revenue and inventory consumption.</p>
                 </div>
                 <div className="flex items-center gap-4">
@@ -142,7 +142,7 @@ export default function DashboardPage() {
                     <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden min-h-[500px]">
                         <div className="p-5 md:p-8 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
-                                <h2 className="text-xl font-black text-charcoal">Recent Invoices</h2>
+                                <h2 className="text-2xl font-normal text-charcoal">Recent Invoices</h2>
                                 <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Generated Orders</p>
                             </div>
                             <div className="relative group sm:w-64">
@@ -228,7 +228,7 @@ export default function DashboardPage() {
                 <div className="space-y-8">
                     <section className="bg-charcoal p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-lavender/10 rounded-full -translate-y-16 translate-x-16 blur-3xl" />
-                        <h2 className="text-xl font-black mb-1">Quick Links</h2>
+                        <h2 className="text-2xl font-normal mb-1">Quick Links</h2>
                         <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.2em] mb-8">Instant Admin Access</p>
 
                         <div className="space-y-4">

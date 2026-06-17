@@ -113,7 +113,7 @@ export default function HomepageBuilder() {
         <div className="max-w-5xl mx-auto py-8">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-xl font-bold text-gray-900 mb-2 font-serif">Homepage Builder</h1>
+                    <h1 className="text-2xl font-normal text-charcoal mb-2">Homepage Builder</h1>
                     <p className="text-gray-500">Design and organize your website's home page sections.</p>
                 </div>
                 <div className="flex gap-4">

@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 const CATEGORY_MAP: Record<string, { title: string, subtitle: string, categoryName: string }> = {
     image: {
         title: "Image E-Invites",
-        subtitle: "Artisanal high-resolution designs crafted for elegant digital sharing.",
+        subtitle: "Artisanal high-resolution designs crafted for elegant digital sharing. Available in High-Resolution JPEG, PNG & PDF formats for a flat price of ₹499.",
         categoryName: "Digital E-Invite"
     },
     website: {

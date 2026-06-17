@@ -31,13 +31,6 @@ export const FinalCTA = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <Link 
-              href="/catalog?category=Digital+E-Invite" 
-              className="group w-full sm:w-auto flex items-center justify-center gap-3 px-10 py-5 bg-[#6E4B8B] text-white rounded-full font-bold text-sm uppercase tracking-widest hover:bg-[#5b3d73] transition-all shadow-lg active:scale-95"
-            >
-              Get Started Now
-              <ArrowRight size={18} />
-            </Link>
             <a 
               href={waLink}
               target="_blank"

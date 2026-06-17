@@ -35,7 +35,7 @@ export default function DigitalInvitesAdminPage() {
     const [editingDesign, setEditingDesign] = useState<any>(null);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState<'Image' | 'Video' | 'Website'>('Image');
+    const [activeTab, setActiveTab] = useState<'Image' | 'Website'>('Image');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -55,7 +55,8 @@ export default function DigitalInvitesAdminPage() {
         isActive: true,
         images: [] as string[],
         videoUrl: '',
-        demoUrl: ''
+        demoUrl: '',
+        packageName: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -63,8 +64,8 @@ export default function DigitalInvitesAdminPage() {
         setIsLoading(true);
         try {
             const [designsRes, catsRes] = await Promise.all([
-                fetch('/api/designs?showInactive=true'),
-                fetch('/api/categories')
+                fetch(`/api/designs?showInactive=true&_t=${Date.now()}`, { cache: 'no-store' }),
+                fetch(`/api/categories?_t=${Date.now()}`, { cache: 'no-store' })
             ]);
             const designsData = await designsRes.json();
             const catsData = await catsRes.json();
@@ -122,9 +123,7 @@ export default function DigitalInvitesAdminPage() {
         
         let matchesTab = false;
         if (activeTab === 'Image') {
-            matchesTab = categoryName === 'Digital E-Invite' && (!design.videoUrl || design.videoUrl.trim() === '');
-        } else if (activeTab === 'Video') {
-            matchesTab = categoryName === 'Digital E-Invite' && (design.videoUrl && design.videoUrl.trim() !== '');
+            matchesTab = categoryName === 'Digital E-Invite';
         } else {
             matchesTab = categoryName === 'Premium E-Website';
         }
@@ -163,6 +162,8 @@ export default function DigitalInvitesAdminPage() {
                         setFormData(prev => ({ ...prev, videoUrl: result.url }));
                         toast.success('Video uploaded successfully');
                     }
+                } else {
+                    toast.error(result.message || `Failed to upload ${type}`);
                 }
             } catch (error) {
                 toast.error(`Failed to upload ${type}`);
@@ -265,7 +266,8 @@ export default function DigitalInvitesAdminPage() {
                 isActive: design.isActive !== undefined ? design.isActive : true,
                 images: design.images || [],
                 videoUrl: design.videoUrl || '',
-                demoUrl: design.demoUrl || ''
+                demoUrl: design.demoUrl || '',
+                packageName: design.packageName || ''
             });
         } else {
             setEditingDesign(null);
@@ -288,7 +290,8 @@ export default function DigitalInvitesAdminPage() {
                 isActive: true,
                 images: [],
                 videoUrl: '',
-                demoUrl: ''
+                demoUrl: '',
+                packageName: ''
             });
         }
         setIsModalOpen(true);
@@ -303,8 +306,8 @@ export default function DigitalInvitesAdminPage() {
         <div className="space-y-8 pb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h2 className="text-xl font-black text-charcoal">Digital Invite Management</h2>
-                    <p className="text-gray-500 mt-1 font-medium">Manage Image, Video, and Website Invitations.</p>
+                    <h2 className="text-2xl font-normal text-charcoal">Digital Invite Management</h2>
+                    <p className="text-gray-500 mt-1 font-medium">Manage Image and Website Invitations.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <button
@@ -329,16 +332,6 @@ export default function DigitalInvitesAdminPage() {
                     >
                         <ImageIcon size={14} />
                         Image
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('Video')}
-                        className={cn(
-                            "flex-1 xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all",
-                            activeTab === 'Video' ? "bg-white text-lavender shadow-sm" : "text-gray-400 hover:text-gray-600"
-                        )}
-                    >
-                        <PlayCircle size={14} />
-                        Video
                     </button>
                     <button
                         onClick={() => setActiveTab('Website')}
@@ -411,10 +404,14 @@ export default function DigitalInvitesAdminPage() {
                                                         <div className="w-full h-full flex items-center justify-center text-gray-200"><ImageIcon size={16} /></div>
                                                     )}
                                                 </div>
-                                                <div>
-                                                    <p className="font-bold text-charcoal">{design.name}</p>
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">₹{design.basePrice || getStartingPrice(design)}</p>
-                                                </div>
+                                                 <div>
+                                                     <p className="font-bold text-charcoal">{design.name}</p>
+                                                     {design.packageName && (
+                                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
+                                                             {design.packageName} Package • ₹{design.basePrice || getStartingPrice(design)}
+                                                         </p>
+                                                     )}
+                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-8 py-5 text-xs font-black text-lavender uppercase tracking-widest">{design.sku}</td>
@@ -422,10 +419,6 @@ export default function DigitalInvitesAdminPage() {
                                             {activeTab === 'Website' ? (
                                                 <a href={design.demoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold text-lavender hover:underline">
                                                     <ExternalLink size={14} /> View Live
-                                                </a>
-                                            ) : activeTab === 'Video' ? (
-                                                <a href={design.videoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold text-blue-500 hover:underline">
-                                                    <PlayCircle size={14} /> Play Video
                                                 </a>
                                             ) : (
                                                 <span className="text-xs font-medium text-gray-500">{design.images?.length || 0} Images</span>
@@ -471,10 +464,10 @@ export default function DigitalInvitesAdminPage() {
                             <div className="p-8 bg-white border-b border-gray-100 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-2xl bg-lavender/10 text-lavender flex items-center justify-center">
-                                        {activeTab === 'Image' ? <ImageIcon size={24} /> : activeTab === 'Video' ? <PlayCircle size={24} /> : <Globe size={24} />}
+                                        {activeTab === 'Image' ? <ImageIcon size={24} /> : <Globe size={24} />}
                                     </div>
                                     <div>
-                                        <h2 className="text-2xl font-black text-charcoal">{editingDesign ? 'Edit' : 'Create'} {activeTab} Invite</h2>
+                                        <h2 className="text-2xl font-normal text-charcoal">{editingDesign ? 'Edit' : 'Create'} {activeTab} Invite</h2>
                                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Specialized Digital Configuration</p>
                                     </div>
                                 </div>
@@ -494,43 +487,47 @@ export default function DigitalInvitesAdminPage() {
                                                     <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Name</label>
                                                     <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal" placeholder="e.g. Royal Marigold" />
                                                 </div>
-                                                <div className="grid grid-cols-2 gap-5">
-                                                    <div>
-                                                        <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">SKU</label>
-                                                        <input type="text" required value={formData.sku} onChange={e => setFormData({ ...formData, sku: e.target.value })} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-black uppercase" placeholder="ZT-001" />
-                                                    </div>
-                                                    <div>
-                                                        <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Price (₹)</label>
-                                                        <input type="number" required value={formData.basePrice === 0 ? '' : formData.basePrice} onChange={e => setFormData({ ...formData, basePrice: e.target.value === '' ? 0 : parseFloat(e.target.value) })} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender font-black" />
-                                                    </div>
+                                                <div>
+                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">SKU</label>
+                                                    <input type="text" required value={formData.sku} onChange={e => setFormData({ ...formData, sku: e.target.value })} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-black uppercase" placeholder="ZT-001" />
                                                 </div>
                                                 
-                                                {activeTab === 'Video' && (
-                                                    <div>
-                                                        <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Video Resource</label>
-                                                        <div className="space-y-3">
-                                                            <div className="flex items-center gap-3">
-                                                                <input type="text" value={formData.videoUrl} onChange={e => setFormData({ ...formData, videoUrl: e.target.value })} className="flex-1 px-5 py-4 bg-blue-50/50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-blue-500 outline-none transition-all font-bold text-blue-600 text-xs" placeholder="Video URL or Upload..." />
-                                                                <label className="w-14 h-14 bg-white border border-gray-100 rounded-[1.25rem] flex items-center justify-center text-blue-500 hover:border-blue-300 cursor-pointer shadow-sm">
-                                                                    <input type="file" className="hidden" onChange={(e) => handleMediaUpload(e, 'video')} accept="video/*" />
-                                                                    <Upload size={20} />
-                                                                </label>
-                                                            </div>
-                                                            {formData.videoUrl && (
-                                                                <div className="px-4 py-2 bg-blue-50 rounded-xl flex items-center justify-between">
-                                                                    <span className="text-[9px] font-black uppercase text-blue-400">Clip Linked</span>
-                                                                    <button type="button" onClick={() => setFormData({ ...formData, videoUrl: '' })} className="text-blue-600 hover:text-red-500"><Trash2 size={14} /></button>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )}
-
                                                 {activeTab === 'Website' && (
-                                                    <div>
-                                                        <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Live Demo Link</label>
-                                                        <input type="url" required value={formData.demoUrl} onChange={e => setFormData({ ...formData, demoUrl: e.target.value })} className="w-full px-5 py-4 bg-lavender/5 border-2 border-lavender/20 rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold text-lavender text-xs" placeholder="https://..." />
-                                                    </div>
+                                                    <>
+                                                        <div>
+                                                            <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Live Demo Link</label>
+                                                            <input type="url" required value={formData.demoUrl} onChange={e => setFormData({ ...formData, demoUrl: e.target.value })} className="w-full px-5 py-4 bg-lavender/5 border-2 border-lavender/20 rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold text-lavender text-xs" placeholder="https://..." />
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-5">
+                                                            <div>
+                                                                <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Package</label>
+                                                                <select 
+                                                                    required 
+                                                                    value={formData.packageName} 
+                                                                    onChange={e => setFormData({ ...formData, packageName: e.target.value })} 
+                                                                    className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal"
+                                                                >
+                                                                    <option value="">Select Package</option>
+                                                                    <option value="Starter">Starter</option>
+                                                                    <option value="Value">Value</option>
+                                                                    <option value="Premium">Premium</option>
+                                                                    <option value="Ultra">Ultra</option>
+                                                                </select>
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Price (₹)</label>
+                                                                <input 
+                                                                    type="number" 
+                                                                    required 
+                                                                    value={formData.basePrice === 0 ? '' : formData.basePrice} 
+                                                                    onChange={e => setFormData({ ...formData, basePrice: e.target.value === '' ? 0 : parseFloat(e.target.value) })} 
+                                                                    onWheel={(e) => (e.target as HTMLInputElement).blur()} 
+                                                                    className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender font-black" 
+                                                                    placeholder="e.g. 2499"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </>
                                                 )}
 
                                                 <div>
