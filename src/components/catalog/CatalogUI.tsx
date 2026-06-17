@@ -3,7 +3,8 @@
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { ChevronDown, X, ArrowUpDown, SlidersHorizontal, Check, FileText, Truck, RefreshCcw, AlertTriangle, Info } from "lucide-react";
+import Link from "next/link";
+import { ChevronDown, X, ArrowUpDown, SlidersHorizontal, Check, FileText, Truck, RefreshCcw, AlertTriangle, Info, Mail, Layers, Stamp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import DesignCard from "./DesignCard";
 
@@ -135,6 +136,31 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
                             </button>
                         );
                     })}
+                </div>
+            </div>
+
+            {/* Customization Options Circles */}
+            <div className="mb-10 flex flex-col items-center">
+                <h3 className="text-sm font-italiana text-[#8aa3be] mb-6 text-center tracking-widest uppercase">Customization Options</h3>
+                <div className="flex items-center justify-center gap-8 overflow-x-auto pb-4 scrollbar-hide w-full">
+                    <Link href="/options/envelopes" target="_blank" className="flex flex-col items-center gap-3 group shrink-0">
+                        <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-200 group-hover:border-[#ae7fcb] transition-all shadow-sm">
+                            <img src="/envelope-icon.jpg.png" alt="Envelopes" className="w-full h-full object-cover" />
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 group-hover:text-[#6E4B8B]">Envelopes</span>
+                    </Link>
+                    <Link href="/options/chart-sheets" target="_blank" className="flex flex-col items-center gap-3 group shrink-0">
+                        <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-200 group-hover:border-[#ae7fcb] transition-all shadow-sm">
+                            <img src="/chart-sheets-icon.jpg.png" alt="Chart Sheets" className="w-full h-full object-cover" />
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 group-hover:text-[#6E4B8B]">Chart Sheets</span>
+                    </Link>
+                    <Link href="/options/wax-seals" target="_blank" className="flex flex-col items-center gap-3 group shrink-0">
+                        <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-200 group-hover:border-[#ae7fcb] transition-all shadow-sm">
+                            <img src="/wax-seal-icon.jpg.png" alt="Wax Seal" className="w-full h-full object-cover" />
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 group-hover:text-[#6E4B8B]">Wax Seal</span>
+                    </Link>
                 </div>
             </div>
 

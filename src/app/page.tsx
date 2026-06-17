@@ -3,6 +3,7 @@ import dbConnect from "@/lib/db";
 import SiteSettings from "@/models/SiteSettings";
 import Design from "@/models/Design";
 import Category from "@/models/Category";
+import { getStartingPrice } from "@/lib/utils";
 import { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +26,7 @@ async function getHomeData() {
             .lean();
 
         // 4. Fetch New Arrivals: sorted by newest
-        const newArrivals = await Design.find({ isDeleted: false, isActive: true })
+        const newArrivals = await Design.find({ isNewArrival: true, isDeleted: false, isActive: true })
             .sort({ createdAt: -1 })
             .populate('categoryId')
             .limit(4)
@@ -37,7 +38,7 @@ async function getHomeData() {
                 ...p,
                 _id: p._id.toString(),
                 categoryName: p.categoryId?.name || 'Wedding Invite',
-                defaultPrice: p.packages?.[0]?.priceTiers?.[0]?.pricePerCard || p.packages?.[0]?.pricePerCard || 50
+                defaultPrice: getStartingPrice(p)
             }));
         };
 

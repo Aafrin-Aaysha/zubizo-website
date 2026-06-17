@@ -112,6 +112,10 @@ const DesignSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isNewArrival: {
+        type: Boolean,
+        default: false
+    },
     videoUrl: {
         type: String,
         default: ""

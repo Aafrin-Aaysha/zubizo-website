@@ -52,6 +52,7 @@ export default function DigitalInvitesAdminPage() {
         addOns: [] as any[],
         isTrending: false,
         isFeatured: false,
+        isNewArrival: false,
         isActive: true,
         images: [] as string[],
         videoUrl: '',
@@ -263,6 +264,7 @@ export default function DigitalInvitesAdminPage() {
                 addOns: design.addOns || [],
                 isTrending: design.isTrending || false,
                 isFeatured: design.isFeatured || false,
+                isNewArrival: design.isNewArrival || false,
                 isActive: design.isActive !== undefined ? design.isActive : true,
                 images: design.images || [],
                 videoUrl: design.videoUrl || '',
@@ -287,6 +289,7 @@ export default function DigitalInvitesAdminPage() {
                 addOns: [],
                 isTrending: false,
                 isFeatured: false,
+                isNewArrival: false,
                 isActive: true,
                 images: [],
                 videoUrl: '',
@@ -425,11 +428,22 @@ export default function DigitalInvitesAdminPage() {
                                             )}
                                         </td>
                                         <td className="px-8 py-5">
-                                            <div className={cn(
-                                                "inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                                                design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-gray-400 bg-gray-50 border-gray-100"
-                                            )}>
-                                                {design.isActive ? 'Active' : 'Draft'}
+                                            <div className="flex flex-wrap gap-2 items-center">
+                                                {design.isTrending && (
+                                                    <span className="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold">Trending</span>
+                                                )}
+                                                {design.isFeatured && (
+                                                    <span className="bg-lavender/10 text-lavender text-[10px] px-2 py-0.5 rounded font-bold">Featured</span>
+                                                )}
+                                                {design.isNewArrival && (
+                                                    <span className="bg-[#ae7fcb] text-white text-[10px] px-2 py-0.5 rounded font-bold">New Arrival</span>
+                                                )}
+                                                <div className={cn(
+                                                    "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
+                                                    design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-gray-400 bg-gray-50 border-gray-100"
+                                                )}>
+                                                    {design.isActive ? 'Active' : 'Draft'}
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-8 py-5 text-right">
@@ -529,6 +543,41 @@ export default function DigitalInvitesAdminPage() {
                                                         </div>
                                                     </>
                                                 )}
+
+                                                <div className="space-y-3 mb-6">
+                                                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ ...formData, isNewArrival: !formData.isNewArrival })}>
+                                                        <div>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as New Arrival</p>
+                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Show in "Just Designed for You" section</p>
+                                                        </div>
+                                                        <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isNewArrival ? "bg-lavender" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isNewArrival ? "left-5" : "left-1")} />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ ...formData, isTrending: !formData.isTrending })}>
+                                                        <div>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as Trending</p>
+                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Show in trending sections</p>
+                                                        </div>
+                                                        <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isTrending ? "bg-lavender" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isTrending ? "left-5" : "left-1")} />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}>
+                                                        <div>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as Featured</p>
+                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Show in featured home page section</p>
+                                                        </div>
+                                                        <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isFeatured ? "bg-lavender" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isFeatured ? "left-5" : "left-1")} />
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                                 <div>
                                                     <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Visibility</label>
