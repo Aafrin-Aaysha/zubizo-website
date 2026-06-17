@@ -21,7 +21,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { category } = await params;
     const titles: Record<string, string> = {
         image: "E-Invites (Image) | Premium Digital Collection | Zubizo",
-        video: "E-Invites (Video) | Animated Digital Collection | Zubizo",
         website: "E-Website Invites | Interactive Wedding Websites | Zubizo",
     };
 
@@ -35,11 +34,6 @@ const CATEGORY_MAP: Record<string, { title: string, subtitle: string, categoryNa
     image: {
         title: "Image E-Invites",
         subtitle: "Artisanal high-resolution designs crafted for elegant digital sharing.",
-        categoryName: "Digital E-Invite"
-    },
-    video: {
-        title: "Video E-Invites",
-        subtitle: "Cinematic animations with custom music for a grand digital reveal.",
         categoryName: "Digital E-Invite"
     },
     website: {

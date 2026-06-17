@@ -18,17 +18,6 @@ const categoryCards = [
     label: null
   },
   {
-    id: "video",
-    title: "Video E-Invites",
-    description: "Cinematic animations with custom music for a grand reveal.",
-    icon: Play,
-    href: "#pricing",
-    accent: "bg-[#EDE8F6]",
-    textColor: "text-[#6E4B8B]",
-    isPremium: false,
-    label: null
-  },
-  {
     id: "website",
     title: "Website Invites",
     description: "Interactive, mobile-first websites with RSVP and more.",

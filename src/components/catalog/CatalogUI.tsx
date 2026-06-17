@@ -110,20 +110,31 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
             {/* Category Pills */}
             <div className="mb-6">
                 <div className="flex items-center gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-4 px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:px-0">
-                    {['All', ...categories.map(c => c.name)].map(cat => (
-                        <button
-                            key={cat}
-                            onClick={() => setCategory(cat)}
-                            className={cn(
-                                "whitespace-nowrap px-6 h-10 rounded-full text-xs font-bold uppercase tracking-wider border transition-all shrink-0 cursor-pointer shadow-sm",
-                                activeCategory === cat
-                                    ? "bg-[#6E4B8B] text-white border-[#6E4B8B] shadow-md shadow-[#6E4B8B]/20"
-                                    : "bg-white text-neutral-600 border-slate-200 hover:border-[#ae7fcb]/40 hover:text-[#ae7fcb] hover:scale-[1.02] active:scale-[0.98]"
-                            )}
-                        >
-                            {cat}
-                        </button>
-                    ))}
+                    {['All', ...categories.map(c => c.name)].map(cat => {
+                        const isActive = activeCategory === cat;
+                        return (
+                            <button
+                                key={cat}
+                                onClick={() => setCategory(cat)}
+                                className={cn(
+                                    "relative isolate whitespace-nowrap px-6 h-10 rounded-full text-xs font-bold uppercase tracking-wider border transition-all shrink-0 cursor-pointer shadow-sm outline-none",
+                                    isActive
+                                        ? "text-white border-[#6E4B8B] bg-transparent"
+                                        : "bg-white text-neutral-600 border-slate-200 hover:border-[#ae7fcb]/40 hover:text-[#ae7fcb] hover:scale-[1.02] active:scale-[0.98]"
+                                )}
+                            >
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="activeCatalogCategoryTab"
+                                        className="absolute inset-0 bg-[#6E4B8B] rounded-full"
+                                        style={{ zIndex: -1 }}
+                                        transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                                    />
+                                )}
+                                <span className="relative z-10">{cat}</span>
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
