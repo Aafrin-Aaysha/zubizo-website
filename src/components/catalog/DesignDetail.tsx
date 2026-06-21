@@ -609,9 +609,12 @@ export function DesignDetailClient({ design }: { design: Design }) {
         const q = typeof quantity === 'string' ? (parseInt(quantity) || 0) : quantity;
         const perCardBase = activeTier?.pricePerCard || 0;
         const perCardAddOns = (design.addOns || [])
-            .filter(a => selectedAddOns.includes(a.label))
+            .filter(a => selectedAddOns.includes(a.label) && !a.isFixedPrice)
             .reduce((sum, a) => sum + a.pricePerCard, 0);
-        return (perCardBase + totalColourSurcharge + perCardAddOns) * q;
+        const fixedAddOns = (design.addOns || [])
+            .filter(a => selectedAddOns.includes(a.label) && a.isFixedPrice)
+            .reduce((sum, a) => sum + a.pricePerCard, 0);
+        return ((perCardBase + totalColourSurcharge + perCardAddOns) * q) + fixedAddOns;
     }, [activeTier, totalColourSurcharge, selectedAddOns, quantity, design.addOns]);
 
     const handleEnquire = () => {
@@ -1194,7 +1197,9 @@ Please share further details.`;
                                             <span className={cn("text-sm font-bold shrink-0", isSelected ? "text-[#6E4B8B]" : "text-gray-400")}>
                                                 {addOn.pricePerCard === 0
                                                     ? (addOn.note || 'Free')
-                                                    : `+₹${addOn.pricePerCard}/card`}
+                                                    : addOn.isFixedPrice 
+                                                        ? `+₹${addOn.pricePerCard} (One Time)` 
+                                                        : `+₹${addOn.pricePerCard}/card`}
                                             </span>
                                         </button>
                                     );

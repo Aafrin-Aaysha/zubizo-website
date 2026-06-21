@@ -1,10 +1,12 @@
-"use client";
+﻿const fs = require('fs');
+
+const code = "use client";
 
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
     Plus, Search, AlertTriangle, Package, Edit2, Trash2, 
-    Loader2, X, ChevronLeft, ShoppingBag, Layers, Settings 
+    Loader2, X, ChevronLeft, ShoppingBag, Layers 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -38,42 +40,10 @@ const CATEGORY_META: Record<string, { label: string; icon: string }> = {
     'Packaging': { label: 'Packaging & Box', icon: '📦' }
 };
 
-const DEFAULT_CATEGORIES = [
+const PRIMARY_CATEGORIES = [
     'Envelopes', 'Chart Sheets', 'Vellum Paper', 'Add-ons', 
     'Core Materials', 'Card Types', 'Packaging'
 ];
-
-const COLOR_MAP: Record<string, string> = {
-    'white': '#ffffff',
-    'ivory': '#fffff0',
-    'blue': '#60a5fa',
-    'purple': '#c084fc',
-    'green': '#4ade80',
-    'maroon': '#800000',
-    'marron': '#800000',
-    'red': '#f87171',
-    'black': '#1e293b',
-    'brown': '#b45309',
-    'craft brown': '#d97706',
-    'lavender': '#e9d5ff',
-    'pink': '#f472b6',
-    'gold': '#fbbf24',
-    'silver': '#cbd5e1',
-    'orange': '#fb923c',
-    'yellow': '#facc15',
-    'navy': '#1e3a8a',
-    'emerald': '#10b981',
-    'teal': '#14b8a6',
-    'gray': '#94a3b8'
-};
-
-const getColorStyle = (variantName: string) => {
-    const key = variantName.toLowerCase().trim();
-    if (COLOR_MAP[key]) return COLOR_MAP[key];
-    const match = Object.keys(COLOR_MAP).find(k => key.includes(k));
-    if (match) return COLOR_MAP[match];
-    return '#e2e8f0'; // default slate color
-};
 
 export default function InventoryPage() {
     const queryClient = useQueryClient();
@@ -92,14 +62,11 @@ export default function InventoryPage() {
     const [restockAmount, setRestockAmount] = useState(0);
 
     const [addFlowData, setAddFlowData] = useState({
-        name: '', category: 'Envelopes', currentStock: '' as number | string, 
-        unit: 'pcs', defaultPrice: '' as number | string, lowStockThreshold: '' as number | string,
+        name: '', category: 'Envelopes', currentStock: 0, 
+        unit: 'pcs', defaultPrice: 0, lowStockThreshold: 10,
         size: '', gsm: '', trackInventory: true,
         parentMaterialId: ''
     });
-
-    const [isNewCategory, setIsNewCategory] = useState(false);
-    const [newCategoryName, setNewCategoryName] = useState('');
     
     const [editFormData, setEditFormData] = useState<any>(null);
 
@@ -112,57 +79,9 @@ export default function InventoryPage() {
         }
     });
 
-    const { data: dbCategories = [], isLoading: catsLoading } = useQuery({
-        queryKey: ['categories'],
-        queryFn: async () => {
-            const res = await fetch('/api/admin/categories');
-            if (!res.ok) throw new Error('Failed to load categories');
-            return res.json();
-        }
-    });
-
-    const [isManageCategoryModalOpen, setIsManageCategoryModalOpen] = useState(false);
-    const [editingCategory, setEditingCategory] = useState<{_id: string, name: string} | null>(null);
-
-    const deleteCategoryMutation = useMutation({
-        mutationFn: async (id: string) => {
-            const res = await fetch(`/api/admin/categories/${id}`, { method: 'DELETE' });
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.message || 'Failed to delete category');
-            }
-        },
-        onSuccess: () => {
-            toast.success('Category deleted');
-            queryClient.invalidateQueries({ queryKey: ['categories'] });
-        },
-        onError: (error: any) => toast.error(error.message)
-    });
-
-    const saveCategoryMutation = useMutation({
-        mutationFn: async ({ id, name }: { id?: string, name: string }) => {
-            const url = id ? `/api/admin/categories/${id}` : '/api/admin/categories';
-            const method = id ? 'PUT' : 'POST';
-            const res = await fetch(url, {
-                method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name })
-            });
-            if (!res.ok) throw new Error('Failed to save category');
-        },
-        onSuccess: () => {
-            toast.success('Category saved');
-            queryClient.invalidateQueries({ queryKey: ['categories'] });
-            queryClient.invalidateQueries({ queryKey: ['inventory'] });
-            setEditingCategory(null);
-            setNewCategoryName('');
-        },
-        onError: () => toast.error('Failed to save category')
-    });
-
     const restockMutation = useMutation({
         mutationFn: async ({ id, amount }: { id: string, amount: number }) => {
-            const res = await fetch(`/api/admin/inventory/${id}`, {
+            const res = await fetch(\/api/admin/inventory/\\, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ restockAmount: amount })
@@ -181,7 +100,7 @@ export default function InventoryPage() {
 
     const deleteMutation = useMutation({
         mutationFn: async (id: string) => {
-            const res = await fetch(`/api/admin/inventory/${id}`, { method: 'DELETE' });
+            const res = await fetch(\/api/admin/inventory/\\, { method: 'DELETE' });
             if (!res.ok) throw new Error('Failed to delete material');
         },
         onSuccess: () => {
@@ -193,7 +112,7 @@ export default function InventoryPage() {
 
     const updateMutation = useMutation({
         mutationFn: async ({ id, data }: { id: string, data: any }) => {
-            const res = await fetch(`/api/admin/inventory/${id}`, {
+            const res = await fetch(\/api/admin/inventory/\\, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -218,17 +137,9 @@ export default function InventoryPage() {
                 body: JSON.stringify(addFlowData)
             });
             if (!res.ok) throw new Error('Failed to create material');
-            
-            // Revalidate data
-            queryClient.invalidateQueries({ queryKey: ['inventory'] });
             toast.success('Material created!');
             setIsAddModalOpen(false);
-            
-            if (isNewCategory && newCategoryName.trim()) {
-                setActiveCategory(newCategoryName.trim());
-                setIsNewCategory(false);
-                setNewCategoryName('');
-            }
+            queryClient.invalidateQueries({ queryKey: ['inventory'] });
         } catch (err) {
             toast.error('Error creating material');
         }
@@ -277,11 +188,6 @@ export default function InventoryPage() {
         });
         return { totalValuation, lowStockCount };
     }, [materials]);
-
-    // Compute dynamic categories
-    const categoriesToDisplay = dbCategories.length > 0 
-        ? dbCategories.map((c: any) => c.name) 
-        : DEFAULT_CATEGORIES;
 
     return (
         <div className="space-y-8 max-w-[1600px] mx-auto pb-12 text-slate-700 text-sm font-sans">
@@ -332,11 +238,11 @@ export default function InventoryPage() {
                     <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm flex items-center justify-between">
                         <div className="space-y-1">
                             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Low Stock Alerts</span>
-                            <span className={`text-2xl font-black tracking-tight block ${stats.lowStockCount > 0 ? 'text-amber-600' : 'text-slate-800'}`}>
+                            <span className={\	ext-2xl font-black tracking-tight block \\}>
                                 {stats.lowStockCount} Items
                             </span>
                         </div>
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stats.lowStockCount > 0 ? 'bg-amber-50 text-amber-600' : 'bg-slate-50 text-slate-400'}`}>
+                        <div className={\w-12 h-12 rounded-xl flex items-center justify-center \\}>
                             <AlertTriangle size={22} />
                         </div>
                     </div>
@@ -351,32 +257,21 @@ export default function InventoryPage() {
                             <Package size={22} />
                         </div>
                     </div>
+                </div>
+            )}
 
-                    {/* Tabs */}
-                    {!selectedParent && (
-                        <div className="col-span-1 md:col-span-3 flex items-center gap-2 overflow-x-auto pb-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                            {categoriesToDisplay.map((cat: string) => (
-                                <button
-                                    key={cat}
-                                    onClick={() => { setActiveCategory(cat); setSelectedParent(null); }}
-                                    className={`px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all whitespace-nowrap ${
-                                        activeCategory === cat 
-                                            ? 'bg-[#1a1a1a] text-[#f4f4f4] shadow-md shadow-slate-900/10' 
-                                            : 'bg-white text-slate-400 border border-slate-100 hover:border-slate-300 hover:text-slate-600'
-                                    }`}
-                                >
-                                    {cat}
-                                </button>
-                            ))}
-                            <button 
-                                onClick={() => setIsManageCategoryModalOpen(true)}
-                                className="p-2 ml-2 bg-slate-100 text-slate-500 rounded-xl hover:bg-slate-200 transition-colors shrink-0"
-                                title="Manage Categories"
-                            >
-                                <Settings size={18} />
-                            </button>
-                        </div>
-                    )}
+            {/* Tabs */}
+            {!selectedParent && (
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                    {PRIMARY_CATEGORIES.map(cat => (
+                        <button
+                            key={cat}
+                            onClick={() => { setActiveCategory(cat); setSelectedParent(null); }}
+                            className={\px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap \\}
+                        >
+                            {cat}
+                        </button>
+                    ))}
                 </div>
             )}
 
@@ -385,7 +280,7 @@ export default function InventoryPage() {
                 <Search className="text-slate-400" size={20} />
                 <input 
                     type="text" 
-                    placeholder={`Search ${selectedParent ? selectedParent.name + ' variants' : activeCategory}...`}
+                    placeholder={\Search \...\}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full bg-transparent border-none focus:outline-none text-slate-700 font-medium"
@@ -427,7 +322,7 @@ export default function InventoryPage() {
                                 <div>
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center">
-                                            {isParent ? <Layers className="text-slate-400" size={24} /> : <div className="w-8 h-8 rounded-full shadow-inner border" style={{ backgroundColor: getColorStyle(m.name) }} />}
+                                            {isParent ? <Layers className="text-slate-400" size={24} /> : <div className="w-8 h-8 rounded-full shadow-inner" style={{ backgroundColor: m.name.toLowerCase().includes('blue') ? '#60a5fa' : m.name.toLowerCase().includes('red') ? '#f87171' : '#e2e8f0' }} />}
                                         </div>
                                         <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <button onClick={() => { setSelectedMaterial(m); setEditFormData(m); setIsEditModalOpen(true); }} className="p-2 text-slate-400 hover:bg-slate-100 rounded-lg"><Edit2 size={14} /></button>
@@ -448,7 +343,7 @@ export default function InventoryPage() {
                                     <div className="flex items-center justify-between mb-4">
                                         <div>
                                             <span className="text-[10px] text-slate-400 font-bold uppercase block mb-0.5">Total Stock</span>
-                                            <span className={`text-sm font-black ${isLowStock ? 'text-amber-600' : 'text-emerald-600'}`}>
+                                            <span className={\	ext-sm font-black \\}>
                                                 {totalStock} {isParent ? 'Items' : m.unit}
                                             </span>
                                         </div>
@@ -495,51 +390,16 @@ export default function InventoryPage() {
                                     <label className="text-xs font-bold text-slate-500 uppercase">Name</label>
                                     <input type="text" required value={addFlowData.name} onChange={e => setAddFlowData({...addFlowData, name: e.target.value})} className="w-full mt-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb]" placeholder="e.g. Navy Blue" />
                                 </div>
-                                {!selectedParent && (
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-bold text-slate-500 uppercase">Category</label>
-                                        <select 
-                                            value={isNewCategory ? 'new' : addFlowData.category}
-                                            onChange={(e) => {
-                                                if (e.target.value === 'new') {
-                                                    setIsNewCategory(true);
-                                                    setAddFlowData({...addFlowData, category: ''});
-                                                } else {
-                                                    setIsNewCategory(false);
-                                                    setAddFlowData({...addFlowData, category: e.target.value});
-                                                }
-                                            }}
-                                            className="w-full mt-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb]"
-                                        >
-                                            {categoriesToDisplay.map((c: string) => <option key={c} value={c}>{c}</option>)}
-                                            <option value="new" className="font-bold text-purple-600">+ Add New Category</option>
-                                        </select>
-                                        
-                                        {isNewCategory && (
-                                            <input 
-                                                type="text" 
-                                                required 
-                                                value={newCategoryName} 
-                                                onChange={e => {
-                                                    setNewCategoryName(e.target.value);
-                                                    setAddFlowData({...addFlowData, category: e.target.value});
-                                                }}
-                                                placeholder="Type new category name..."
-                                                className="w-full mt-2 px-4 py-2 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb] animate-in fade-in slide-in-from-top-2"
-                                            />
-                                        )}
-                                    </div>
-                                )}
                                 {selectedParent && (
                                     <>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
                                                 <label className="text-xs font-bold text-slate-500 uppercase">Unit Price (₹)</label>
-                                                <input type="number" required value={addFlowData.defaultPrice} onWheel={(e) => (e.target as HTMLElement).blur()} onChange={e => setAddFlowData({...addFlowData, defaultPrice: e.target.value === '' ? '' : Number(e.target.value)})} className="w-full mt-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb]" />
+                                                <input type="number" required value={addFlowData.defaultPrice} onChange={e => setAddFlowData({...addFlowData, defaultPrice: Number(e.target.value)})} className="w-full mt-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb]" />
                                             </div>
                                             <div>
                                                 <label className="text-xs font-bold text-slate-500 uppercase">Initial Stock</label>
-                                                <input type="number" required value={addFlowData.currentStock} onWheel={(e) => (e.target as HTMLElement).blur()} onChange={e => setAddFlowData({...addFlowData, currentStock: e.target.value === '' ? '' : Number(e.target.value)})} className="w-full mt-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb]" />
+                                                <input type="number" required value={addFlowData.currentStock} onChange={e => setAddFlowData({...addFlowData, currentStock: Number(e.target.value)})} className="w-full mt-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb]" />
                                             </div>
                                         </div>
                                     </>
@@ -561,7 +421,7 @@ export default function InventoryPage() {
                             <form onSubmit={handleRestock} className="p-6 space-y-4">
                                 <div>
                                     <label className="text-xs font-bold text-slate-500 uppercase">Amount to add/remove</label>
-                                    <input type="number" required value={restockAmount} onWheel={(e) => (e.target as HTMLElement).blur()} onChange={e => setRestockAmount(e.target.value === '' ? 0 : Number(e.target.value))} className="w-full mt-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 text-lg font-bold text-center" placeholder="+/- amount" />
+                                    <input type="number" required value={restockAmount} onChange={e => setRestockAmount(Number(e.target.value))} className="w-full mt-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 text-lg font-bold text-center" placeholder="+/- amount" />
                                     <p className="text-[10px] text-slate-400 mt-2 text-center">Current: {selectedMaterial.currentStock}. New: {selectedMaterial.currentStock + restockAmount}</p>
                                 </div>
                                 <button type="submit" className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-colors">Confirm Adjustment</button>
@@ -571,11 +431,11 @@ export default function InventoryPage() {
                 )}
 
                 {/* Edit Modal */}
-                {isEditModalOpen && selectedMaterial && editFormData && (
+                {isEditModalOpen && editFormData && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
                         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
                             <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                                <h3 className="text-lg font-bold">Edit Material</h3>
+                                <h3 className="text-lg font-bold">Edit Properties</h3>
                                 <button onClick={() => setIsEditModalOpen(false)}><X size={20} className="text-slate-400 hover:text-slate-700" /></button>
                             </div>
                             <form onSubmit={handleUpdate} className="p-6 space-y-4">
@@ -587,7 +447,7 @@ export default function InventoryPage() {
                                     <div>
                                         <label className="text-xs font-bold text-slate-500 uppercase">Category</label>
                                         <select value={editFormData.category} onChange={e => setEditFormData({...editFormData, category: e.target.value})} className="w-full mt-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb]">
-                                            {categoriesToDisplay.map((c: string) => <option key={c} value={c}>{c}</option>)}
+                                            {PRIMARY_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                                         </select>
                                     </div>
                                 )}
@@ -595,11 +455,11 @@ export default function InventoryPage() {
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <label className="text-xs font-bold text-slate-500 uppercase">Price (₹)</label>
-                                            <input type="number" value={editFormData.defaultPrice} onWheel={(e) => (e.target as HTMLElement).blur()} onChange={e => setEditFormData({...editFormData, defaultPrice: e.target.value === '' ? '' : Number(e.target.value)})} className="w-full mt-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb]" />
+                                            <input type="number" value={editFormData.defaultPrice} onChange={e => setEditFormData({...editFormData, defaultPrice: Number(e.target.value)})} className="w-full mt-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb]" />
                                         </div>
                                         <div>
                                             <label className="text-xs font-bold text-slate-500 uppercase">Low Alert</label>
-                                            <input type="number" value={editFormData.lowStockThreshold} onWheel={(e) => (e.target as HTMLElement).blur()} onChange={e => setEditFormData({...editFormData, lowStockThreshold: e.target.value === '' ? '' : Number(e.target.value)})} className="w-full mt-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb]" />
+                                            <input type="number" value={editFormData.lowStockThreshold} onChange={e => setEditFormData({...editFormData, lowStockThreshold: Number(e.target.value)})} className="w-full mt-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb]" />
                                         </div>
                                     </div>
                                 )}
@@ -608,98 +468,11 @@ export default function InventoryPage() {
                         </motion.div>
                     </div>
                 )}
-
-                {/* Manage Categories Modal */}
-                {isManageCategoryModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col">
-                            <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-                                <h3 className="text-lg font-bold">Manage Categories</h3>
-                                <button onClick={() => { setIsManageCategoryModalOpen(false); setEditingCategory(null); }}><X size={20} className="text-slate-400 hover:text-slate-700" /></button>
-                            </div>
-                            
-                            <div className="p-6 flex-1">
-                                <div className="flex flex-wrap gap-3">
-                                    {dbCategories.map((cat: any) => (
-                                        <div key={cat._id} className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl transition-all">
-                                            {editingCategory?._id === cat._id ? (
-                                                <div className="flex items-center gap-2">
-                                                    <input 
-                                                        autoFocus
-                                                        type="text" 
-                                                        className="w-32 px-2 py-1 text-sm bg-white border border-[#ae7fcb] rounded-lg outline-none"
-                                                        value={editingCategory.name}
-                                                        onChange={(e) => setEditingCategory({...editingCategory, name: e.target.value})}
-                                                    />
-                                                    <button 
-                                                        onClick={() => saveCategoryMutation.mutate({ id: cat._id, name: editingCategory.name })}
-                                                        className="px-2 py-1 bg-[#ae7fcb] text-white text-xs font-bold rounded-lg"
-                                                    >
-                                                        Save
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => setEditingCategory(null)}
-                                                        className="px-2 py-1 bg-slate-200 text-slate-600 text-xs font-bold rounded-lg"
-                                                    >
-                                                        Cancel
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <span className="font-medium text-slate-700 text-sm whitespace-nowrap">{cat.name}</span>
-                                                    <div className="flex items-center gap-1 border-l border-slate-200 pl-2 ml-1">
-                                                        <button 
-                                                            onClick={() => setEditingCategory({ _id: cat._id, name: cat.name })}
-                                                            className="p-1 text-slate-400 hover:text-blue-500 bg-white rounded-md border border-slate-200 shadow-sm transition-colors"
-                                                            title="Edit"
-                                                        >
-                                                            <Edit2 size={12} />
-                                                        </button>
-                                                        <button 
-                                                            onClick={() => {
-                                                                if(confirm(`Are you sure you want to delete ${cat.name}?`)) {
-                                                                    deleteCategoryMutation.mutate(cat._id);
-                                                                }
-                                                            }}
-                                                            className="p-1 text-slate-400 hover:text-red-500 bg-white rounded-md border border-slate-200 shadow-sm transition-colors"
-                                                            title="Delete"
-                                                        >
-                                                            <Trash2 size={12} />
-                                                        </button>
-                                                    </div>
-                                                </>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            
-                            <div className="p-6 border-t border-slate-100 bg-slate-50">
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Add New Category</label>
-                                <div className="flex gap-2">
-                                    <input 
-                                        type="text" 
-                                        placeholder="Category name..."
-                                        value={newCategoryName}
-                                        onChange={e => setNewCategoryName(e.target.value)}
-                                        className="flex-1 px-4 py-2.5 bg-white border border-slate-200 rounded-xl outline-none focus:border-[#ae7fcb] text-sm"
-                                    />
-                                    <button 
-                                        onClick={() => {
-                                            if (!newCategoryName.trim()) return;
-                                            saveCategoryMutation.mutate({ name: newCategoryName });
-                                        }}
-                                        disabled={saveCategoryMutation.isPending || !newCategoryName.trim()}
-                                        className="px-5 py-2.5 bg-[#ae7fcb] hover:bg-[#9a6ab5] text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-50"
-                                    >
-                                        Add
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </div>
-                )}
             </AnimatePresence>
         </div>
     );
 }
+;
+
+fs.writeFileSync('src/app/admin/inventory/page.tsx', code, 'utf8');
+console.log('Refactored inventory page');

@@ -9,7 +9,8 @@ const PriceTierSchema = new mongoose.Schema({
 const AddOnSchema = new mongoose.Schema({
     label: { type: String, required: true },
     pricePerCard: { type: Number, required: true, default: 0 },
-    note: { type: String, default: '' } // e.g. "Free", "₹6 extra"
+    isFixedPrice: { type: Boolean, default: false },
+    note: { type: String, default: '' } // e.g. "Free", "₹6 extra", "One Time"
 }, { _id: false });
 
 const DesignMaterialSchema = new mongoose.Schema({

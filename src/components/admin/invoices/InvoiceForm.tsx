@@ -272,9 +272,23 @@ export default function InvoiceForm({ initialData, isEditing = false }: InvoiceF
                             </button>
                             <select onChange={(e) => { if(e.target.value) addMaterial(e.target.value); e.target.value=''; }} className="flex-1 sm:flex-none px-3.5 py-2 text-[10px] font-black bg-[#ae7fcb]/5 hover:bg-[#ae7fcb]/10 text-[#ae7fcb] rounded-xl cursor-pointer max-w-[160px] uppercase tracking-widest border border-[#ae7fcb]/10 outline-none transition-colors">
                                 <option value="">+ From Lib</option>
-                                {inventory.map((inv: any) => (
-                                    <option key={inv._id} value={inv._id}>{inv.name} {inv.size ? `(${inv.size})` : ''}</option>
-                                ))}
+                                {(() => {
+                                    const grouped: any = {};
+                                    inventory.forEach((inv: any) => {
+                                        const groupName = inv.parentMaterialId ? inv.parentMaterialId.name : inv.category;
+                                        if (!grouped[groupName]) grouped[groupName] = [];
+                                        grouped[groupName].push(inv);
+                                    });
+                                    return Object.entries(grouped).map(([group, items]: [string, any]) => (
+                                        <optgroup key={group} label={group}>
+                                            {items.map((inv: any) => (
+                                                <option key={inv._id} value={inv._id}>
+                                                    {inv.name} {inv.size ? `(${inv.size})` : ''}
+                                                </option>
+                                            ))}
+                                        </optgroup>
+                                    ));
+                                })()}
                             </select>
                         </div>
                     </div>

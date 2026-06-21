@@ -157,7 +157,7 @@ export default function DashboardPage() {
                             </div>
                         </div>
 
-                        <div className="overflow-x-auto">
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead className="bg-gray-50/50 text-gray-400 text-[9px] font-black uppercase tracking-[0.2em]">
                                     <tr>
@@ -221,7 +221,48 @@ export default function DashboardPage() {
                                 </tbody>
                             </table>
                         </div>
-                    </div>
+
+                        {/* Mobile Layout */}
+                        <div className="md:hidden p-5 space-y-4">
+                            {isLoading ? (
+                                [...Array(5)].map((_, i) => (
+                                    <div key={i} className="animate-pulse bg-gray-50 p-5 rounded-3xl h-24"></div>
+                                ))
+                            ) : filteredInvoices.length === 0 ? (
+                                <div className="py-10 text-center text-gray-400 font-bold uppercase text-[10px] tracking-widest">
+                                    No invoices matching search criteria
+                                </div>
+                            ) : (
+                                filteredInvoices.map((invoice: any) => (
+                                    <div key={invoice._id} className="bg-gray-50/50 p-4 rounded-[1.5rem] border border-gray-100 flex flex-col gap-3">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center flex-shrink-0 text-lavender">
+                                                    <FileText size={16} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm font-black text-charcoal line-clamp-1">{invoice.designName}</p>
+                                                    <p className="text-[10px] font-black text-[#6E4B8B] uppercase tracking-widest">{invoice.orderId}</p>
+                                                </div>
+                                            </div>
+                                            <Link href="/admin/invoices" className="p-2 bg-white rounded-lg border border-gray-100 text-gray-400 hover:text-lavender">
+                                                <ArrowRight size={14} />
+                                            </Link>
+                                        </div>
+                                        <div className="flex items-center justify-between border-t border-gray-100/50 pt-3">
+                                            <div>
+                                                <p className="text-xs font-black text-charcoal">{invoice.customerName}</p>
+                                                <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Qty: {invoice.quantity}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-xs font-black text-green-600">₹{invoice.grandTotal || 0}</p>
+                                                <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">Profit: ₹{invoice.profit || 0}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>                    </div>
                 </div>
 
                 {/* Quick Actions & Tips */}

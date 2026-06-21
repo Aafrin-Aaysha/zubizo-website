@@ -183,7 +183,7 @@ export default function CategoriesPage() {
                                     key={category._id}
                                     className="bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-lavender/5 transition-all group relative overflow-hidden"
                                 >
-                                    <div className="absolute top-0 right-0 p-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="absolute top-0 right-0 p-6 flex gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                         <button onClick={() => openModal(category)} className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:text-lavender transition-colors border border-gray-100"><Edit2 size={16} /></button>
                                         <button onClick={() => deleteCategory(category._id)} className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors border border-gray-100"><Trash2 size={16} /></button>
                                     </div>
@@ -202,7 +202,7 @@ export default function CategoriesPage() {
                                         </div>
 
                                         <h3 className="text-xl font-normal text-charcoal mb-2">{category.name}</h3>
-                                        <p className="text-sm text-gray-400 font-medium mb-6 line-clamp-2">/catalog/{category.slug}</p>
+                                        <p className="text-sm text-gray-400 font-medium mb-6 line-clamp-2 break-all">/catalog/{category.slug}</p>
 
                                         <div className="mt-auto flex items-center justify-between pt-6 border-t border-gray-50">
                                             <div className="flex items-center gap-2">

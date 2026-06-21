@@ -315,7 +315,7 @@ export default function DigitalInvitesAdminPage() {
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => openModal()}
-                        className="bg-lavender hover:bg-[#9a6ab5] text-white px-8 py-3.5 rounded-2xl font-black shadow-xl shadow-lavender/20 transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+                        className="bg-lavender hover:bg-[#9a6ab5] text-white px-8 py-3.5 rounded-2xl font-bold shadow-xl shadow-lavender/20 transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
                     >
                         <Plus size={20} />
                         New {activeTab} Invite
@@ -329,8 +329,8 @@ export default function DigitalInvitesAdminPage() {
                     <button
                         onClick={() => setActiveTab('Image')}
                         className={cn(
-                            "flex-1 xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all",
-                            activeTab === 'Image' ? "bg-white text-lavender shadow-sm" : "text-gray-400 hover:text-gray-600"
+                            "flex-1 xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all",
+                            activeTab === 'Image' ? "bg-white text-lavender shadow-sm" : "text-[#6E4B8B] hover:text-gray-600"
                         )}
                     >
                         <ImageIcon size={14} />
@@ -339,8 +339,8 @@ export default function DigitalInvitesAdminPage() {
                     <button
                         onClick={() => setActiveTab('Website')}
                         className={cn(
-                            "flex-1 xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all",
-                            activeTab === 'Website' ? "bg-white text-lavender shadow-sm" : "text-gray-400 hover:text-gray-600"
+                            "flex-1 xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all",
+                            activeTab === 'Website' ? "bg-white text-lavender shadow-sm" : "text-[#6E4B8B] hover:text-gray-600"
                         )}
                     >
                         <Globe size={14} />
@@ -349,7 +349,7 @@ export default function DigitalInvitesAdminPage() {
                 </div>
 
                 <div className="relative flex-1 group w-full">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-lavender transition-colors" size={18} />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6E4B8B] group-focus-within:text-lavender transition-colors" size={18} />
                     <input
                         type="text"
                         value={searchQuery}
@@ -362,9 +362,9 @@ export default function DigitalInvitesAdminPage() {
 
             {/* Design List */}
             <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden min-h-[400px]">
-                <div className="overflow-x-auto">
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50 text-gray-400 text-[10px] font-black uppercase tracking-widest border-b border-gray-100">
+                        <thead className="bg-gray-50 text-[#6E4B8B] text-[10px] font-bold uppercase tracking-widest border-b border-gray-100">
                             <tr>
                                 <th className="px-8 py-5">Invite</th>
                                 <th className="px-8 py-5">SKU</th>
@@ -410,14 +410,14 @@ export default function DigitalInvitesAdminPage() {
                                                  <div>
                                                      <p className="font-bold text-charcoal">{design.name}</p>
                                                      {design.packageName && (
-                                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
+                                                         <p className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest mt-0.5">
                                                              {design.packageName} Package • ₹{design.basePrice || getStartingPrice(design)}
                                                          </p>
                                                      )}
                                                  </div>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-5 text-xs font-black text-lavender uppercase tracking-widest">{design.sku}</td>
+                                        <td className="px-8 py-5 text-xs font-bold text-lavender uppercase tracking-widest">{design.sku}</td>
                                         <td className="px-8 py-5">
                                             {activeTab === 'Website' ? (
                                                 <a href={design.demoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold text-lavender hover:underline">
@@ -439,19 +439,19 @@ export default function DigitalInvitesAdminPage() {
                                                     <span className="bg-[#ae7fcb] text-white text-[10px] px-2 py-0.5 rounded font-bold">New Arrival</span>
                                                 )}
                                                 <div className={cn(
-                                                    "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                                                    design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-gray-400 bg-gray-50 border-gray-100"
+                                                    "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border",
+                                                    design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-[#6E4B8B] bg-gray-50 border-gray-100"
                                                 )}>
                                                     {design.isActive ? 'Active' : 'Draft'}
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-8 py-5 text-right">
-                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button onClick={() => openModal(design)} className="p-2.5 text-gray-400 hover:text-lavender hover:bg-lavender/5 rounded-xl transition-all border border-transparent hover:border-lavender/20">
+                                            <div className="flex items-center justify-end gap-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => openModal(design)} className="p-2.5 text-[#6E4B8B] hover:text-lavender hover:bg-lavender/5 rounded-xl transition-all border border-transparent hover:border-lavender/20">
                                                     <Edit2 size={18} />
                                                 </button>
-                                                <button onClick={() => deleteDesign(design._id)} className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100">
+                                                <button onClick={() => deleteDesign(design._id)} className="p-2.5 text-[#6E4B8B] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100">
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
@@ -461,6 +461,67 @@ export default function DigitalInvitesAdminPage() {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile/Tablet Card Layout */}
+                <div className="md:hidden p-5 space-y-4">
+                    {isLoading ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="animate-pulse bg-gray-50 p-5 rounded-3xl border border-gray-100 h-40"></div>
+                        ))
+                    ) : paginatedDesigns.length === 0 ? (
+                        <div className="py-16 text-center">
+                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-200 mx-auto mb-4">
+                                <Zap size={32} />
+                            </div>
+                            <p className="font-bold text-gray-900">No {activeTab} invites found</p>
+                            <button onClick={() => openModal()} className="text-lavender font-bold hover:underline text-sm mt-1">Create your first invite</button>
+                        </div>
+                    ) : (
+                        paginatedDesigns.map(design => (
+                            <div key={design._id} className="bg-gray-50/40 p-5 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-4">
+                                <div className="flex items-start gap-4">
+                                    <div className="w-16 h-16 rounded-2xl bg-gray-100 border border-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
+                                        {design.images?.[0] ? (
+                                            <img src={design.images[0]} alt="" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-gray-300"><ImageIcon size={16} /></div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-bold text-charcoal text-sm truncate">{design.name}</p>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            <span className="text-[10px] font-bold text-lavender bg-lavender/5 px-2.5 py-1 rounded-full border border-lavender/10 uppercase tracking-widest">
+                                                {design.sku}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex items-center justify-between border-t border-gray-100/60 pt-3">
+                                    <div className="flex items-center gap-2">
+                                        {design.isTrending && <span className="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold">Trending</span>}
+                                        {design.isFeatured && <span className="bg-lavender/10 text-lavender text-[10px] px-2 py-0.5 rounded font-bold">Featured</span>}
+                                        {design.isNewArrival && <span className="bg-[#ae7fcb] text-white text-[10px] px-2 py-0.5 rounded font-bold">New Arrival</span>}
+                                        <div className={cn(
+                                            "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border",
+                                            design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-[#6E4B8B] bg-gray-50 border-gray-100"
+                                        )}>
+                                            {design.isActive ? 'Active' : 'Draft'}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={() => openModal(design)} className="p-2 text-[#6E4B8B] hover:text-lavender hover:bg-lavender/5 rounded-xl transition-all">
+                                            <Edit2 size={16} />
+                                        </button>
+                                        <button onClick={() => deleteDesign(design._id)} className="p-2 text-[#6E4B8B] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
 
@@ -482,7 +543,7 @@ export default function DigitalInvitesAdminPage() {
                                     </div>
                                     <div>
                                         <h2 className="text-2xl font-normal text-charcoal">{editingDesign ? 'Edit' : 'Create'} {activeTab} Invite</h2>
-                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Specialized Digital Configuration</p>
+                                        <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest mt-1">Specialized Digital Configuration</p>
                                     </div>
                                 </div>
                                 <button onClick={closeModal} className="w-10 h-10 hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors"><X size={20} /></button>
@@ -493,28 +554,28 @@ export default function DigitalInvitesAdminPage() {
                                     {/* Left Column */}
                                     <div className="space-y-8">
                                         <section className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-5">
-                                             <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                             <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
                                                 <Info size={14} /> Essential Details
-                                            </h3>
+                                            </div>
                                             <div className="space-y-5">
                                                 <div>
-                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Name</label>
+                                                    <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">Name</label>
                                                     <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal" placeholder="e.g. Royal Marigold" />
                                                 </div>
                                                 <div>
-                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">SKU</label>
-                                                    <input type="text" required value={formData.sku} onChange={e => setFormData({ ...formData, sku: e.target.value })} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-black uppercase" placeholder="ZT-001" />
+                                                    <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">SKU</label>
+                                                    <input type="text" required value={formData.sku} onChange={e => setFormData({ ...formData, sku: e.target.value })} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold uppercase" placeholder="ZT-001" />
                                                 </div>
                                                 
                                                 {activeTab === 'Website' && (
                                                     <>
                                                         <div>
-                                                            <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Live Demo Link</label>
+                                                            <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">Live Demo Link</label>
                                                             <input type="url" required value={formData.demoUrl} onChange={e => setFormData({ ...formData, demoUrl: e.target.value })} className="w-full px-5 py-4 bg-lavender/5 border-2 border-lavender/20 rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold text-lavender text-xs" placeholder="https://..." />
                                                         </div>
                                                         <div className="grid grid-cols-2 gap-5">
                                                             <div>
-                                                                <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Package</label>
+                                                                <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">Package</label>
                                                                 <select 
                                                                     required 
                                                                     value={formData.packageName} 
@@ -529,14 +590,14 @@ export default function DigitalInvitesAdminPage() {
                                                                 </select>
                                                             </div>
                                                             <div>
-                                                                <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Price (₹)</label>
+                                                                <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">Price (₹)</label>
                                                                 <input 
                                                                     type="number" 
                                                                     required 
                                                                     value={formData.basePrice === 0 ? '' : formData.basePrice} 
                                                                     onChange={e => setFormData({ ...formData, basePrice: e.target.value === '' ? 0 : parseFloat(e.target.value) })} 
                                                                     onWheel={(e) => (e.target as HTMLInputElement).blur()} 
-                                                                    className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender font-black" 
+                                                                    className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender font-bold" 
                                                                     placeholder="e.g. 2499"
                                                                 />
                                                             </div>
@@ -549,7 +610,7 @@ export default function DigitalInvitesAdminPage() {
                                                         onClick={() => setFormData({ ...formData, isNewArrival: !formData.isNewArrival })}>
                                                         <div>
                                                             <p className="font-bold text-charcoal text-sm">Mark as New Arrival</p>
-                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Show in "Just Designed for You" section</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in "Just Designed for You" section</p>
                                                         </div>
                                                         <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isNewArrival ? "bg-lavender" : "bg-gray-200")}>
                                                             <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isNewArrival ? "left-5" : "left-1")} />
@@ -560,7 +621,7 @@ export default function DigitalInvitesAdminPage() {
                                                         onClick={() => setFormData({ ...formData, isTrending: !formData.isTrending })}>
                                                         <div>
                                                             <p className="font-bold text-charcoal text-sm">Mark as Trending</p>
-                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Show in trending sections</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in trending sections</p>
                                                         </div>
                                                         <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isTrending ? "bg-lavender" : "bg-gray-200")}>
                                                             <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isTrending ? "left-5" : "left-1")} />
@@ -571,7 +632,7 @@ export default function DigitalInvitesAdminPage() {
                                                         onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}>
                                                         <div>
                                                             <p className="font-bold text-charcoal text-sm">Mark as Featured</p>
-                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Show in featured home page section</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in featured home page section</p>
                                                         </div>
                                                         <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isFeatured ? "bg-lavender" : "bg-gray-200")}>
                                                             <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isFeatured ? "left-5" : "left-1")} />
@@ -580,8 +641,8 @@ export default function DigitalInvitesAdminPage() {
                                                 </div>
 
                                                 <div>
-                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Visibility</label>
-                                                    <button type="button" onClick={() => setFormData({ ...formData, isActive: !formData.isActive })} className={cn("w-full px-5 py-4 rounded-[1.25rem] border-2 flex items-center justify-between transition-all", formData.isActive ? "border-green-100 bg-green-50/50 text-green-700" : "border-gray-100 bg-gray-50 text-gray-400")}>
+                                                    <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">Visibility</label>
+                                                    <button type="button" onClick={() => setFormData({ ...formData, isActive: !formData.isActive })} className={cn("w-full px-5 py-4 rounded-[1.25rem] border-2 flex items-center justify-between transition-all", formData.isActive ? "border-green-100 bg-green-50/50 text-green-700" : "border-gray-100 bg-gray-50 text-[#6E4B8B]")}>
                                                         <span className="font-bold text-xs">{formData.isActive ? 'Active on Catalog' : 'Save as Draft'}</span>
                                                         <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", formData.isActive ? "bg-green-500" : "bg-gray-300")} />
                                                     </button>
@@ -593,14 +654,14 @@ export default function DigitalInvitesAdminPage() {
                                     {/* Right Column */}
                                     <div className="space-y-8">
                                         <section className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-6">
-                                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                            <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
                                                 <ImageIcon size={14} /> Showcase Images
-                                            </h3>
+                                            </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 {formData.images.map((img, idx) => (
                                                     <div key={idx} className="aspect-[3/4] rounded-2xl overflow-hidden relative group border border-gray-50 bg-gray-50">
                                                         <img src={img} alt="" className="w-full h-full object-cover" />
-                                                        <button type="button" onClick={() => setFormData({ ...formData, images: formData.images.filter((_, i) => i !== idx) })} className="absolute top-2 right-2 w-8 h-8 bg-black/60 backdrop-blur-md text-white rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all border border-white/20"><Trash2 size={14} /></button>
+                                                        <button type="button" onClick={() => setFormData({ ...formData, images: formData.images.filter((_, i) => i !== idx) })} className="absolute top-2 right-2 w-8 h-8 bg-black/60 backdrop-blur-md text-white rounded-xl flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-white/20"><Trash2 size={14} /></button>
                                                     </div>
                                                 ))}
                                                 <label className="aspect-[3/4] rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center gap-3 text-gray-300 hover:border-lavender hover:text-lavender transition-all cursor-pointer bg-gray-50/30 hover:bg-lavender/5 group">
@@ -608,7 +669,7 @@ export default function DigitalInvitesAdminPage() {
                                                     <div className="w-10 h-10 rounded-full bg-white group-hover:bg-lavender/10 flex items-center justify-center shadow-sm transition-all">
                                                         <Plus size={20} />
                                                     </div>
-                                                    <span className="text-[8px] font-black uppercase text-center px-4 tracking-widest">Add {activeTab === 'Website' ? 'Mockups' : 'Designs'}</span>
+                                                    <span className="text-[8px] font-bold uppercase text-center px-4 tracking-widest">Add {activeTab === 'Website' ? 'Mockups' : 'Designs'}</span>
                                                 </label>
                                             </div>
                                         </section>
@@ -617,8 +678,8 @@ export default function DigitalInvitesAdminPage() {
                             </form>
 
                             <div className="p-8 bg-white border-t border-gray-100 flex justify-between items-center shrink-0">
-                                <button onClick={closeModal} className="px-8 py-4 font-black text-[10px] uppercase tracking-widest text-gray-400 hover:text-charcoal transition-colors">Discard</button>
-                                <button type="submit" form="digital-form" disabled={isSubmitting} className="px-10 py-4 bg-charcoal hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-charcoal/20 transition-all flex items-center justify-center gap-3">
+                                <button onClick={closeModal} className="px-8 py-4 font-bold text-[10px] uppercase tracking-widest text-[#6E4B8B] hover:text-charcoal transition-colors">Discard</button>
+                                <button type="submit" form="digital-form" disabled={isSubmitting} className="px-10 py-4 bg-charcoal hover:bg-black text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-xl shadow-charcoal/20 transition-all flex items-center justify-center gap-3">
                                     {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : (editingDesign ? 'Update Invite' : `Publish ${activeTab} Invite`)}
                                 </button>
                             </div>

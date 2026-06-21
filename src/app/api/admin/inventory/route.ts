@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
             query = {};
         }
 
-        const materials = await Material.find(query).sort({ adminName: 1, name: 1 });
+        const materials = await Material.find(query).populate('parentMaterialId').sort({ adminName: 1, name: 1 });
         return NextResponse.json(materials);
     } catch (error) {
         return NextResponse.json({ message: 'Error fetching inventory' }, { status: 500 });
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
         const { 
             name, category, usageType, usageValue, currentStock, unit, 
             defaultPrice, lowStockThreshold, targetAdminId, targetAdminName, 
-            applyToAll, size, gsm, trackInventory 
+            applyToAll, size, gsm, trackInventory, parentMaterialId 
         } = body;
 
         await dbConnect();
@@ -64,7 +64,8 @@ export async function POST(req: NextRequest) {
                             lowStockThreshold: Number(lowStockThreshold) || 10,
                             size: size || '',
                             gsm: gsm || '',
-                            trackInventory: trackInventory !== undefined ? trackInventory : true
+                            trackInventory: trackInventory !== undefined ? trackInventory : true,
+                            parentMaterialId: parentMaterialId || null
                         });
                         createdMaterials.push(material);
                     }
@@ -83,10 +84,14 @@ export async function POST(req: NextRequest) {
         const finalAdminId = (admin.role === 'super-admin' && targetAdminId) ? targetAdminId : admin.id;
         const finalAdminName = (admin.role === 'super-admin' && targetAdminName) ? targetAdminName : admin.name;
 
-        // Ensure name is unique PER ADMIN
-        const existing = await Material.findOne({ adminId: finalAdminId, name });
+        // Ensure name is unique PER ADMIN within the same parent
+        const existing = await Material.findOne({ 
+            adminId: finalAdminId, 
+            name,
+            parentMaterialId: parentMaterialId || null
+        });
         if (existing) {
-            return NextResponse.json({ message: 'Material with this name already exists in your inventory' }, { status: 400 });
+            return NextResponse.json({ message: 'Material with this name already exists in this category/parent' }, { status: 400 });
         }
 
         const material = await Material.create({
@@ -102,11 +107,13 @@ export async function POST(req: NextRequest) {
             lowStockThreshold: lowStockThreshold || 10,
             size: size || '',
             gsm: gsm || '',
-            trackInventory: trackInventory !== undefined ? trackInventory : true
+            trackInventory: trackInventory !== undefined ? trackInventory : true,
+            parentMaterialId: parentMaterialId || null
         });
 
         return NextResponse.json(material, { status: 201 });
     } catch (error) {
+        console.error("POST /api/admin/inventory error:", error);
         return NextResponse.json({ message: 'Error creating material' }, { status: 500 });
     }
 }

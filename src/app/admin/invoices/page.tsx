@@ -28,87 +28,9 @@ export default function InvoicesHistoryPage() {
 
     const handleExportPDF = async (invoice: any) => {
         try {
-            // Dynamically import jsPDF and autoTable
-            const jsPDF = (await import('jspdf')).default;
-            const autoTable = (await import('jspdf-autotable')).default;
-
-            const doc = new jsPDF();
-            
-            // Header
-            doc.setFontSize(22);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor('#7C3AED'); // Lavender/Purple
-            doc.text('Zubizo', 14, 20);
-            
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor('#6b7280');
-            doc.text('Premium Wedding Invitations', 14, 26);
-            
-            doc.setFontSize(14);
-            doc.setFont("helvetica", "bold");
-            doc.setTextColor('#1f2937');
-            doc.text('INVOICE', 160, 20);
-            
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
-            doc.text(`Order ID: ${invoice.orderId}`, 160, 26);
-            doc.text(`Date: ${new Date(invoice.createdAt).toLocaleDateString()}`, 160, 32);
-
-            // Customer Details
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "bold");
-            doc.text('Billed To:', 14, 45);
-            
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "normal");
-            doc.text(`Name: ${invoice.customerName}`, 14, 52);
-            doc.text(`Phone: ${invoice.customerPhone}`, 14, 58);
-            doc.text(`Address: ${invoice.customerAddress || 'N/A'}`, 14, 64);
-
-            // Order Logic
-            const tableData = [
-                [
-                    `${invoice.designName} (SKU: ${invoice.designCode})`,
-                    invoice.quantity.toString(),
-                    `₹${invoice.pricePerCard}`,
-                    `₹${invoice.subtotal}`
-                ]
-            ];
-
-            if (invoice.designingCharge > 0) {
-                tableData.push(['Designing Charge', '-', '-', `₹${invoice.designingCharge}`]);
-            }
-            if (invoice.shippingCharge > 0) {
-                tableData.push(['Shipping Charge', '-', '-', `₹${invoice.shippingCharge}`]);
-            }
-            if (invoice.customCharges && invoice.customCharges.length > 0) {
-                invoice.customCharges.forEach((c: any) => {
-                    tableData.push([c.label, '-', '-', `₹${c.amount}`]);
-                });
-            }
-
-            // Using autoTable loosely
-            autoTable(doc, {
-                startY: 75,
-                head: [['Description', 'Quantity', 'Unit Price', 'Total']],
-                body: tableData,
-                theme: 'striped',
-                headStyles: { fillColor: '#7C3AED' },
-                margin: { left: 14 }
-            });
-
-            const finalY = (doc as any).lastAutoTable.finalY + 10;
-            
-            doc.setFont("helvetica", "bold");
-            doc.text('Grand Total:', 140, finalY);
-            doc.setTextColor('#7C3AED');
-            doc.text(`₹${invoice.grandTotal}`, 180, finalY);
-
-            // Save PDF
-            doc.save(`${invoice.orderId}_Invoice.pdf`);
+            const { generateInvoicePDF } = await import('@/lib/pdfGenerator');
+            await generateInvoicePDF(invoice);
             toast.success('Invoice downloaded successfully');
-
         } catch (error) {
             console.error(error);
             toast.error('Failed to generate PDF');
@@ -147,7 +69,7 @@ export default function InvoicesHistoryPage() {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 text-gray-500 text-xs font-bold uppercase tracking-wider">
                             <tr>
@@ -213,6 +135,56 @@ export default function InvoicesHistoryPage() {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile View */}
+                <div className="block md:hidden border-t border-gray-100 divide-y divide-gray-50">
+                    {isLoading ? (
+                        <div className="py-12 text-center">
+                            <Loader2 className="animate-spin mx-auto text-purple-500" size={32} />
+                        </div>
+                    ) : filteredInvoices.length === 0 ? (
+                        <div className="py-16 text-center text-gray-400 font-bold">
+                            No invoices found.
+                        </div>
+                    ) : (
+                        filteredInvoices.map((invoice: any) => (
+                            <div key={invoice._id} className="p-4 flex flex-col gap-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <div className="font-bold text-gray-900">{invoice.orderId}</div>
+                                        <div className="text-[10px] text-gray-400 font-bold uppercase mt-1">
+                                            {new Date(invoice.createdAt).toLocaleDateString()}
+                                        </div>
+                                    </div>
+                                    <div className="font-black text-gray-900">₹{invoice.grandTotal}</div>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <div className="font-bold text-gray-700">{invoice.customerName}</div>
+                                        <div className="text-xs text-gray-400">{invoice.customerPhone || 'No Phone'}</div>
+                                    </div>
+                                    <div className="font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded text-xs">
+                                        +₹{invoice.profit}
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-50">
+                                    <Link
+                                        href={`/admin/invoices/${invoice._id}/edit`}
+                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-2 text-sm font-bold"
+                                    >
+                                        <Edit2 size={16} /> Edit
+                                    </Link>
+                                    <button 
+                                        onClick={() => handleExportPDF(invoice)}
+                                        className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors flex items-center gap-2 text-sm font-bold"
+                                    >
+                                        <Download size={16} /> Download
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
         </div>

@@ -32,6 +32,7 @@ const sidebarItems = [
     { name: 'Digital Invites', href: '/admin/digital-invites', icon: Smartphone },
     { name: 'Bulk Import', href: '/admin/bulk-import', icon: Zap },
     { name: 'Categories', href: '/admin/categories', icon: FolderTree },
+    { name: 'Materials', href: '/admin/materials', icon: ImageIcon },
     { name: 'Invoice Generator', href: '/admin/invoices/new', icon: FileText },
     { name: 'Invoice History', href: '/admin/invoices', icon: History },
     { name: 'Inventory', href: '/admin/inventory', icon: Database },
