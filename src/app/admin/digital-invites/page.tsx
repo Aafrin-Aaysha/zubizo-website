@@ -21,7 +21,8 @@ import {
     ExternalLink,
     Image as ImageIcon,
     Globe,
-    PlayCircle
+    PlayCircle,
+    Star
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn, getStartingPrice } from '@/lib/utils';
@@ -36,6 +37,8 @@ export default function DigitalInvitesAdminPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<'Image' | 'Website'>('Image');
+    const [sortBy, setSortBy] = useState('newest');
+    const [filterStatus, setFilterStatus] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -115,7 +118,7 @@ export default function DigitalInvitesAdminPage() {
         }
     }, [formData.name, formData.sku]);
 
-    const filteredDesigns = designs.filter(design => {
+    let filteredDesigns = designs.filter(design => {
         const matchesSearch =
             design.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             design.sku.toLowerCase().includes(searchQuery.toLowerCase());
@@ -129,7 +132,21 @@ export default function DigitalInvitesAdminPage() {
             matchesTab = categoryName === 'Premium E-Website';
         }
 
-        return matchesSearch && matchesTab;
+        let matchesStatus = true;
+        if (filterStatus === 'best-seller') matchesStatus = design.isTrending === true;
+        if (filterStatus === 'trending') matchesStatus = design.isFeatured === true;
+        if (filterStatus === 'new-arrival') matchesStatus = design.isNewArrival === true;
+        if (filterStatus === 'active') matchesStatus = design.isActive === true;
+        if (filterStatus === 'draft') matchesStatus = design.isActive === false;
+
+        return matchesSearch && matchesTab && matchesStatus;
+    });
+
+    filteredDesigns = filteredDesigns.sort((a, b) => {
+        if (sortBy === 'price-high') return (b.basePrice || 0) - (a.basePrice || 0);
+        if (sortBy === 'price-low') return (a.basePrice || 0) - (b.basePrice || 0);
+        if (sortBy === 'oldest') return String(a.sku).localeCompare(String(b.sku));
+        return String(b.sku).localeCompare(String(a.sku)); // Default newest
     });
 
     const totalPages = Math.ceil(filteredDesigns.length / itemsPerPage);
@@ -175,6 +192,26 @@ export default function DigitalInvitesAdminPage() {
             setFormData(prev => ({ ...prev, images: uploadedUrls }));
         }
         setIsSubmitting(false);
+    };
+
+    const handleDragStart = (e: React.DragEvent, index: number) => {
+        e.dataTransfer.setData('imageIndex', index.toString());
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+    };
+
+    const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+        e.preventDefault();
+        const dragIndex = parseInt(e.dataTransfer.getData('imageIndex'));
+        if (dragIndex === dropIndex || isNaN(dragIndex)) return;
+
+        const newImages = [...formData.images];
+        const [draggedImage] = newImages.splice(dragIndex, 1);
+        newImages.splice(dropIndex, 0, draggedImage);
+
+        setFormData(prev => ({ ...prev, images: newImages }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -324,13 +361,14 @@ export default function DigitalInvitesAdminPage() {
             </div>
 
             {/* Tab Switched & Search */}
-            <div className="flex flex-col xl:flex-row items-center gap-6">
-                <div className="bg-gray-100 p-1.5 rounded-2xl flex items-center gap-1 w-full xl:w-auto">
+            <div className="bg-white p-5 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-4">
+                {/* Top Row: Tabs */}
+                <div className="flex items-center gap-2 overflow-x-auto w-full pb-2 scrollbar-hide">
                     <button
                         onClick={() => setActiveTab('Image')}
                         className={cn(
-                            "flex-1 xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all",
-                            activeTab === 'Image' ? "bg-white text-lavender shadow-sm" : "text-[#6E4B8B] hover:text-gray-600"
+                            "flex-1 md:flex-none xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all shrink-0",
+                            activeTab === 'Image' ? "bg-lavender text-white shadow-md shadow-lavender/20" : "bg-gray-50 text-gray-500 hover:text-gray-700"
                         )}
                     >
                         <ImageIcon size={14} />
@@ -339,8 +377,8 @@ export default function DigitalInvitesAdminPage() {
                     <button
                         onClick={() => setActiveTab('Website')}
                         className={cn(
-                            "flex-1 xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all",
-                            activeTab === 'Website' ? "bg-white text-lavender shadow-sm" : "text-[#6E4B8B] hover:text-gray-600"
+                            "flex-1 md:flex-none xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all shrink-0",
+                            activeTab === 'Website' ? "bg-lavender text-white shadow-md shadow-lavender/20" : "bg-gray-50 text-gray-500 hover:text-gray-700"
                         )}
                     >
                         <Globe size={14} />
@@ -348,15 +386,44 @@ export default function DigitalInvitesAdminPage() {
                     </button>
                 </div>
 
-                <div className="relative flex-1 group w-full">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6E4B8B] group-focus-within:text-lavender transition-colors" size={18} />
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={`Search ${activeTab} invites by SKU or Name...`}
-                        className="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender transition-all font-medium shadow-sm"
-                    />
+                {/* Bottom Row: Search, Status, Sort */}
+                <div className="flex flex-col xl:flex-row items-center justify-between gap-4 border-t border-gray-100 pt-4 w-full">
+                    <div className="relative w-full xl:w-96 group shrink-0">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6E4B8B] group-focus-within:text-lavender transition-colors" size={18} />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder={`Search ${activeTab} invites by SKU or Name...`}
+                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm text-charcoal focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender transition-all font-medium"
+                        />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
+                        <select
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                            className="w-full sm:w-auto px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender text-charcoal font-bold cursor-pointer"
+                        >
+                            <option value="all">All Status</option>
+                            <option value="best-seller">Best Seller</option>
+                            <option value="trending">Trending</option>
+                            <option value="new-arrival">New Arrival</option>
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                        </select>
+
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="w-full sm:w-auto px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender text-charcoal font-bold cursor-pointer"
+                        >
+                            <option value="newest">ID: Descending</option>
+                            <option value="oldest">ID: Ascending</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="price-low">Price: Low to High</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -430,10 +497,10 @@ export default function DigitalInvitesAdminPage() {
                                         <td className="px-8 py-5">
                                             <div className="flex flex-wrap gap-2 items-center">
                                                 {design.isTrending && (
-                                                    <span className="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold">Trending</span>
+                                                    <span className="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold">Best Seller</span>
                                                 )}
                                                 {design.isFeatured && (
-                                                    <span className="bg-lavender/10 text-lavender text-[10px] px-2 py-0.5 rounded font-bold">Featured</span>
+                                                    <span className="bg-lavender/10 text-lavender text-[10px] px-2 py-0.5 rounded font-bold">Trending</span>
                                                 )}
                                                 {design.isNewArrival && (
                                                     <span className="bg-[#ae7fcb] text-white text-[10px] px-2 py-0.5 rounded font-bold">New Arrival</span>
@@ -500,8 +567,8 @@ export default function DigitalInvitesAdminPage() {
                                 
                                 <div className="flex items-center justify-between border-t border-gray-100/60 pt-3">
                                     <div className="flex items-center gap-2">
-                                        {design.isTrending && <span className="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold">Trending</span>}
-                                        {design.isFeatured && <span className="bg-lavender/10 text-lavender text-[10px] px-2 py-0.5 rounded font-bold">Featured</span>}
+                                        {design.isTrending && <span className="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold">Best Seller</span>}
+                                        {design.isFeatured && <span className="bg-lavender/10 text-lavender text-[10px] px-2 py-0.5 rounded font-bold">Trending</span>}
                                         {design.isNewArrival && <span className="bg-[#ae7fcb] text-white text-[10px] px-2 py-0.5 rounded font-bold">New Arrival</span>}
                                         <div className={cn(
                                             "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border",
@@ -620,8 +687,8 @@ export default function DigitalInvitesAdminPage() {
                                                     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
                                                         onClick={() => setFormData({ ...formData, isTrending: !formData.isTrending })}>
                                                         <div>
-                                                            <p className="font-bold text-charcoal text-sm">Mark as Trending</p>
-                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in trending sections</p>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as Best Seller</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in best seller sections</p>
                                                         </div>
                                                         <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isTrending ? "bg-lavender" : "bg-gray-200")}>
                                                             <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isTrending ? "left-5" : "left-1")} />
@@ -631,8 +698,8 @@ export default function DigitalInvitesAdminPage() {
                                                     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
                                                         onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}>
                                                         <div>
-                                                            <p className="font-bold text-charcoal text-sm">Mark as Featured</p>
-                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in featured home page section</p>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as Trending</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in trending home page section</p>
                                                         </div>
                                                         <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isFeatured ? "bg-lavender" : "bg-gray-200")}>
                                                             <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isFeatured ? "left-5" : "left-1")} />
@@ -659,9 +726,19 @@ export default function DigitalInvitesAdminPage() {
                                             </div>
                                             <div className="grid grid-cols-2 gap-4">
                                                 {formData.images.map((img, idx) => (
-                                                    <div key={idx} className="aspect-[3/4] rounded-2xl overflow-hidden relative group border border-gray-50 bg-gray-50">
+                                                    <div 
+                                                        key={idx} 
+                                                        className="aspect-[3/4] rounded-2xl overflow-hidden relative group border border-gray-50 bg-gray-50 cursor-move"
+                                                        draggable
+                                                        onDragStart={(e) => handleDragStart(e, idx)}
+                                                        onDragOver={handleDragOver}
+                                                        onDrop={(e) => handleDrop(e, idx)}
+                                                    >
                                                         <img src={img} alt="" className="w-full h-full object-cover" />
                                                         <button type="button" onClick={() => setFormData({ ...formData, images: formData.images.filter((_, i) => i !== idx) })} className="absolute top-2 right-2 w-8 h-8 bg-black/60 backdrop-blur-md text-white rounded-xl flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-white/20"><Trash2 size={14} /></button>
+                                                        {idx > 0 && (
+                                                            <button type="button" onClick={() => setFormData({ ...formData, images: [img, ...formData.images.filter((_, i) => i !== idx)] })} className="absolute top-2 right-12 w-8 h-8 bg-black/60 backdrop-blur-md text-white rounded-xl flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-white/20 hover:text-yellow-400" title="Make Primary"><Star size={14} /></button>
+                                                        )}
                                                     </div>
                                                 ))}
                                                 <label className="aspect-[3/4] rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center gap-3 text-gray-300 hover:border-lavender hover:text-lavender transition-all cursor-pointer bg-gray-50/30 hover:bg-lavender/5 group">

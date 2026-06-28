@@ -57,10 +57,11 @@ interface Product {
 }
 
 interface RedesignedHomeProps {
-    bestSellers: Product[];
-    newArrivals: Product[];
+    bestSellers: any[];
+    trendingDesigns?: any[];
+    newArrivals: any[];
     categories: any[];
-    siteSettings: any;
+    siteSettings?: any;
 }
 
 const TempleIcon = ({ className, strokeWidth = 1.8 }: { className?: string; strokeWidth?: number | string }) => (
@@ -188,12 +189,6 @@ const NUMBER_CARDS_CONFIG = [
         sublabel: "International orders"
     },
     { 
-        icon: Palette, 
-        iconBg: "bg-rose-50", 
-        iconColor: "text-rose-600",
-        sublabel: "Unique creations crafted"
-    },
-    { 
         icon: Gem, 
         iconBg: "bg-amber-50", 
         iconColor: "text-amber-600",
@@ -201,7 +196,18 @@ const NUMBER_CARDS_CONFIG = [
     }
 ];
 
-export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: RedesignedHomeProps) {
+export function RedesignedHome({ bestSellers, trendingDesigns = [], newArrivals, siteSettings }: RedesignedHomeProps) {
+    const bestSellersRef = useRef<HTMLDivElement>(null);
+    const newArrivalsRef = useRef<HTMLDivElement>(null);
+    const trendingRef = useRef<HTMLDivElement>(null);
+
+    const scrollSlider = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
+        if (ref.current) {
+            const scrollAmount = ref.current.clientWidth * 0.8;
+            ref.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+        }
+    };
+
     const [isDesktop, setIsDesktop] = useState(true);
     useEffect(() => {
         const handleResize = () => {
@@ -315,7 +321,6 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
         { label: "HAPPY CLIENTS", target: 3000, value: 1 },
         { label: "INVITATIONS DELIVERED", target: 200000, value: 1 },
         { label: "COUNTRIES SERVED", target: 10, value: 1 },
-        { label: "CUSTOM DESIGNS", target: 300, value: 1 },
         { label: "PREMIUM MATERIALS", target: 20, value: 1 }
     ]);
 
@@ -532,13 +537,21 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800 mt-2">Chosen by Thousands of Families</h2>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-                        {bestSellers.map((product, idx) => (
-                            <motion.div 
-                                key={product._id}
-                                className="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
-                                style={{ transitionDelay: `${idx * 60}ms` }}
-                            >
+                    <div className="relative group">
+                        <button onClick={() => scrollSlider(bestSellersRef, 'left')} className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 bg-white shadow-md rounded-full p-2 hidden md:block opacity-0 group-hover:opacity-100 transition-opacity text-[#6E4B8B] hover:bg-lavender hover:text-white border border-slate-100">
+                            <ArrowLeft size={20} />
+                        </button>
+                        <button onClick={() => scrollSlider(bestSellersRef, 'right')} className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 bg-white shadow-md rounded-full p-2 hidden md:block opacity-0 group-hover:opacity-100 transition-opacity text-[#6E4B8B] hover:bg-lavender hover:text-white border border-slate-100">
+                            <ArrowRight size={20} />
+                        </button>
+                        
+                        <div ref={bestSellersRef} className="flex overflow-x-auto gap-4 md:gap-5 scrollbar-hide snap-x snap-mandatory pb-4">
+                            {bestSellers.map((product, idx) => (
+                                <motion.div 
+                                    key={product._id}
+                                    className="w-[calc(50%-0.5rem)] md:w-[calc(25%-0.9375rem)] shrink-0 snap-start bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
+                                    style={{ transitionDelay: `${idx * 60}ms` }}
+                                >
                                 {/* Image Zone */}
                                 <div className="aspect-square w-full overflow-hidden relative bg-slate-50">
                                     <img 
@@ -574,6 +587,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 </div>
                             </motion.div>
                         ))}
+                        </div>
                     </div>
                 </div>
             </section>
@@ -594,13 +608,21 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800 mt-2">Just Designed for You</h2>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-                        {newArrivals.map((product, idx) => (
-                            <motion.div 
-                                key={product._id}
-                                className="bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
-                                style={{ transitionDelay: `${idx * 60}ms` }}
-                            >
+                    <div className="relative group">
+                        <button onClick={() => scrollSlider(newArrivalsRef, 'left')} className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 bg-white shadow-md rounded-full p-2 hidden md:block opacity-0 group-hover:opacity-100 transition-opacity text-[#6E4B8B] hover:bg-lavender hover:text-white border border-slate-100">
+                            <ArrowLeft size={20} />
+                        </button>
+                        <button onClick={() => scrollSlider(newArrivalsRef, 'right')} className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 bg-white shadow-md rounded-full p-2 hidden md:block opacity-0 group-hover:opacity-100 transition-opacity text-[#6E4B8B] hover:bg-lavender hover:text-white border border-slate-100">
+                            <ArrowRight size={20} />
+                        </button>
+                        
+                        <div ref={newArrivalsRef} className="flex overflow-x-auto gap-4 md:gap-5 scrollbar-hide snap-x snap-mandatory pb-4">
+                            {newArrivals.map((product, idx) => (
+                                <motion.div 
+                                    key={product._id}
+                                    className="w-[calc(50%-0.5rem)] md:w-[calc(25%-0.9375rem)] shrink-0 snap-start bg-white border border-slate-100 rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col group iz-animate"
+                                    style={{ transitionDelay: `${idx * 60}ms` }}
+                                >
                                 {/* Image Zone */}
                                 <div className="aspect-square w-full overflow-hidden relative bg-slate-50">
                                     <img 
@@ -636,6 +658,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                 </div>
                             </motion.div>
                         ))}
+                        </div>
                     </div>
                 </div>
             </section>
@@ -711,14 +734,22 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800 mt-2">Invitations Worth Talking About</h2>
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        {bestSellers.map((product, idx) => (
-                            <Link 
-                                key={product._id} 
-                                href={`/catalog/${product.slug}`}
-                                className="aspect-square bg-slate-100 rounded-xl overflow-hidden relative border border-slate-100 group shadow-sm hover:shadow-md transition-all duration-300 iz-animate block"
-                                style={{ transitionDelay: `${idx * 60}ms` }}
-                            >
+                    <div className="relative group">
+                        <button onClick={() => scrollSlider(trendingRef, 'left')} className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-10 bg-white shadow-md rounded-full p-2 hidden md:block opacity-0 group-hover:opacity-100 transition-opacity text-[#6E4B8B] hover:bg-lavender hover:text-white border border-slate-100">
+                            <ArrowLeft size={20} />
+                        </button>
+                        <button onClick={() => scrollSlider(trendingRef, 'right')} className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-10 bg-white shadow-md rounded-full p-2 hidden md:block opacity-0 group-hover:opacity-100 transition-opacity text-[#6E4B8B] hover:bg-lavender hover:text-white border border-slate-100">
+                            <ArrowRight size={20} />
+                        </button>
+                        
+                        <div ref={trendingRef} className="flex overflow-x-auto gap-4 md:gap-5 scrollbar-hide snap-x snap-mandatory pb-4">
+                            {(trendingDesigns.length > 0 ? trendingDesigns : bestSellers).map((product, idx) => (
+                                <Link 
+                                    key={product._id} 
+                                    href={`/catalog/${product.slug}`}
+                                    className="w-[calc(50%-0.5rem)] md:w-[calc(25%-0.9375rem)] shrink-0 snap-start aspect-square bg-slate-100 rounded-xl overflow-hidden relative border border-slate-100 group shadow-sm hover:shadow-md transition-all duration-300 iz-animate block"
+                                    style={{ transitionDelay: `${idx * 60}ms` }}
+                                >
                                 <img src={product.images[0] || '/placeholder.png'} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-103" />
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4 text-center">
                                     <div className="text-white space-y-1 scale-95 group-hover:scale-100 transition-transform duration-300">
@@ -726,8 +757,9 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                                         <span className="text-[9px] font-medium tracking-widest uppercase block opacity-85 mt-1">View Design →</span>
                                     </div>
                                 </div>
-                            </Link>
-                        ))}
+                                </Link>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </section>
@@ -747,7 +779,7 @@ export function RedesignedHome({ bestSellers, newArrivals, siteSettings }: Redes
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
                         {numbers.map((num, idx) => {
                             const config = NUMBER_CARDS_CONFIG[idx];
                             const IconComponent = config.icon;

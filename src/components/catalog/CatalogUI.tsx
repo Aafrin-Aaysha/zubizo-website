@@ -30,10 +30,13 @@ function getPriceLabel(f?: { maxPrice: string; minPrice: string; priceRange: str
 }
 
 const SORT_OPTIONS = [
-    { label: 'Featured', value: 'featured' },
+    { label: 'New Arrivals', value: 'new_arrivals' },
+    { label: 'Best Seller', value: 'best_seller' },
+    { label: 'Trending', value: 'trending' },
     { label: 'Price: Low to High', value: 'price_asc' },
     { label: 'Price: High to Low', value: 'price_desc' },
-    { label: 'Newest First', value: 'newest' },
+    { label: 'ID: Low to High', value: 'id_asc' },
+    { label: 'ID: High to Low', value: 'id_desc' },
 ];
 
 export default function CatalogUI({ initialDesigns, categories, activePriceFilter }: CatalogUIProps) {
@@ -45,7 +48,7 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
     const [isFilterOpen, setIsFilterOpen] = React.useState(false);
 
     const activeCategory = searchParams.get('category') || "All";
-    const sortBy = searchParams.get('sort') || "featured";
+    const sortBy = searchParams.get('sort') || "newest";
 
     // Drawer temporary states
     const [tempCategory, setTempCategory] = React.useState(activeCategory);
@@ -94,7 +97,7 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
         setIsFilterOpen(false);
     };
 
-    const activeSortLabel = SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Featured';
+    const activeSortLabel = SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'All Designs';
     const priceLabel = getPriceLabel(activePriceFilter);
 
     const clearPriceFilter = () => {
@@ -139,30 +142,7 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
                 </div>
             </div>
 
-            {/* Customization Options Circles */}
-            <div className="mb-10 flex flex-col items-center">
-                <h3 className="text-sm font-italiana text-[#8aa3be] mb-6 text-center tracking-widest uppercase">Customization Options</h3>
-                <div className="flex items-center justify-center gap-8 overflow-x-auto pb-4 scrollbar-hide w-full">
-                    <Link href="/options/envelopes" target="_blank" className="flex flex-col items-center gap-3 group shrink-0">
-                        <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-200 group-hover:border-[#ae7fcb] transition-all shadow-sm">
-                            <img src="/envelope-icon.jpg.png" alt="Envelopes" className="w-full h-full object-cover" />
-                        </div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 group-hover:text-[#6E4B8B]">Envelopes</span>
-                    </Link>
-                    <Link href="/options/chart-sheets" target="_blank" className="flex flex-col items-center gap-3 group shrink-0">
-                        <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-200 group-hover:border-[#ae7fcb] transition-all shadow-sm">
-                            <img src="/chart-sheets-icon.jpg.png" alt="Chart Sheets" className="w-full h-full object-cover" />
-                        </div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 group-hover:text-[#6E4B8B]">Chart Sheets</span>
-                    </Link>
-                    <Link href="/options/wax-seals" target="_blank" className="flex flex-col items-center gap-3 group shrink-0">
-                        <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center overflow-hidden border border-slate-200 group-hover:border-[#ae7fcb] transition-all shadow-sm">
-                            <img src="/wax-seal-icon.jpg.png" alt="Wax Seal" className="w-full h-full object-cover" />
-                        </div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600 group-hover:text-[#6E4B8B]">Wax Seal</span>
-                    </Link>
-                </div>
-            </div>
+
 
             {/* Filter & Sort Controls Row */}
             <div className="flex items-center justify-between gap-4 mb-8 pb-4 border-b border-[#ae7fcb]/10">
@@ -184,7 +164,7 @@ export default function CatalogUI({ initialDesigns, categories, activePriceFilte
                             className="flex items-center gap-2 px-5 h-10 bg-white border border-slate-200 hover:border-[#ae7fcb]/45 rounded-full text-xs font-bold text-slate-700 hover:text-[#ae7fcb] transition-all shadow-sm cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
                         >
                             <ArrowUpDown size={14} className="text-[#6E4B8B]" />
-                            <span>Sort: {activeSortLabel} ▼</span>
+                            <span>{activeSortLabel} ▼</span>
                         </button>
                         <AnimatePresence>
                             {showSortMenu && (

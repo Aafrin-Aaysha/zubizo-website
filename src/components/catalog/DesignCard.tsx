@@ -12,10 +12,10 @@ export default function DesignCard({ design }: { design: any }) {
     // Badge configuration
     const badges = [];
     if (design.isTrending) {
-        badges.push({ text: "Trending", emoji: "🔥", color: "bg-amber-50/90 text-amber-700 border-amber-200" });
-    }
-    if (design.isBestSeller) {
         badges.push({ text: "Best Seller", emoji: "👑", color: "bg-emerald-50/90 text-emerald-700 border-emerald-200" });
+    }
+    if (design.isFeatured) {
+        badges.push({ text: "Trending", emoji: "🔥", color: "bg-amber-50/90 text-amber-700 border-amber-200" });
     }
 
     return (

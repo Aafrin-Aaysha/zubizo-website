@@ -25,7 +25,7 @@ export default async function CatalogPage({
     const params = await searchParams;
     const search = (params.search as string) || "";
     const category = (params.category as string) || "All";
-    const sort = (params.sort as string) || "featured";
+    const sort = (params.sort as string) || "newest";
     const priceRange = (params.priceRange as string) || "";
     const price = (params.price as string) || "";
     const maxPrice = (params.maxPrice as string) || "";
@@ -62,24 +62,38 @@ export default async function CatalogPage({
         }
     }
 
-    // 3. Fetch Designs (Querying DB for category and search only)
-    let designsQuery = Design.find(query).populate('categoryId');
+    // 3. Initialize Designs Query
+    let designsQuery;
 
-    // 4. Handle sorting
+    // 4. Handle sorting & specific status filters
     switch (sort) {
         case 'price_asc':
-            // Note: Since price is nested in packages, we usually sort in-memory or 
-            // use a more complex aggregation. For simplicity and catalog size, 
-            // in-memory sort or sorting by basePrice if available.
-            // As per schema, it's packages.pricePerCard.
-            break;
         case 'price_desc':
+            designsQuery = Design.find(query).populate('categoryId');
             break;
         case 'newest':
-            designsQuery = designsQuery.sort({ createdAt: -1 });
+            designsQuery = Design.find(query).populate('categoryId').sort({ sku: -1 });
+            break;
+        case 'new_arrivals':
+            query.isNewArrival = true;
+            designsQuery = Design.find(query).populate('categoryId').sort({ sku: -1 });
+            break;
+        case 'id_asc':
+            designsQuery = Design.find(query).populate('categoryId').sort({ sku: 1 });
+            break;
+        case 'id_desc':
+            designsQuery = Design.find(query).populate('categoryId').sort({ sku: -1 });
+            break;
+        case 'best_seller':
+            query.isTrending = true;
+            designsQuery = Design.find(query).populate('categoryId').sort({ sku: -1 });
+            break;
+        case 'trending':
+            query.isFeatured = true;
+            designsQuery = Design.find(query).populate('categoryId').sort({ sku: -1 });
             break;
         default:
-            designsQuery = designsQuery.sort({ isTrending: -1, createdAt: -1 });
+            designsQuery = Design.find(query).populate('categoryId').sort({ sku: -1 }); // Fallback to newest
             break;
     }
 

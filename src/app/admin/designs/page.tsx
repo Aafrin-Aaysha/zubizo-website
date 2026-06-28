@@ -38,6 +38,8 @@ export default function DesignsPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState('all');
+    const [sortBy, setSortBy] = useState('newest');
+    const [filterStatus, setFilterStatus] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
     const [activeFormTab, setActiveFormTab] = useState<'Details' | 'Pricing' | 'Media'>('Details');
     const itemsPerPage = 20;
@@ -116,7 +118,7 @@ export default function DesignsPage() {
 
     const nonDigitalCategories = categories.filter(c => !["Digital E-Invite", "Premium E-Website"].includes(c.name));
 
-    const filteredDesigns = designs.filter(design => {
+    let filteredDesigns = designs.filter(design => {
         const categoryName = design.categoryId?.name || "";
         if (["Digital E-Invite", "Premium E-Website"].includes(categoryName)) return false;
 
@@ -127,7 +129,21 @@ export default function DesignsPage() {
         const categoryId = design.categoryId?._id || design.categoryId;
         const matchesCategory = activeCategory === 'all' || categoryId === activeCategory;
 
-        return matchesSearch && matchesCategory;
+        let matchesStatus = true;
+        if (filterStatus === 'best-seller') matchesStatus = design.isTrending === true;
+        if (filterStatus === 'trending') matchesStatus = design.isFeatured === true;
+        if (filterStatus === 'new-arrival') matchesStatus = design.isNewArrival === true;
+        if (filterStatus === 'active') matchesStatus = design.isActive === true;
+        if (filterStatus === 'draft') matchesStatus = design.isActive === false;
+
+        return matchesSearch && matchesCategory && matchesStatus;
+    });
+
+    filteredDesigns = filteredDesigns.sort((a, b) => {
+        if (sortBy === 'price-high') return getStartingPrice(b) - getStartingPrice(a);
+        if (sortBy === 'price-low') return getStartingPrice(a) - getStartingPrice(b);
+        if (sortBy === 'oldest') return String(a.sku).localeCompare(String(b.sku));
+        return String(b.sku).localeCompare(String(a.sku)); // Default newest
     });
 
     const totalPages = Math.ceil(filteredDesigns.length / itemsPerPage);
@@ -217,7 +233,13 @@ export default function DesignsPage() {
         const url = isEditing ? `/api/designs/${editingDesign._id}` : '/api/designs';
         const method = isEditing ? 'PUT' : 'POST';
 
-        saveMutation.mutate({ isEditing, url, method, data: formData });
+        const payload = {
+            ...formData,
+            materials: formData.materials?.filter((m: any) => m.materialId) || [],
+            addOns: formData.addOns?.filter((a: any) => a.addOnId) || [],
+        };
+
+        saveMutation.mutate({ isEditing, url, method, data: payload });
     };
 
     const deleteMutation = useMutation({
@@ -410,25 +432,13 @@ export default function DesignsPage() {
             </div>
 
             {/* Filter Bar */}
-            <div className="bg-white p-5 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-5">
-                <div className="flex items-center gap-3 w-full md:w-auto">
-                    <div className="relative flex-1 md:w-80 group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6E4B8B] group-focus-within:text-lavender transition-colors" size={18} />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search by SKU or Name..."
-                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender transition-all font-medium"
-                        />
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
+            <div className="bg-white p-5 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-4">
+                {/* Top Row: Categories */}
+                <div className="flex items-center gap-2 overflow-x-auto w-full pb-2 scrollbar-hide">
                     <button
                         onClick={() => setActiveCategory('all')}
                         className={cn(
-                            "px-5 py-2.5 text-xs font-bold rounded-xl transition-all border uppercase tracking-widest",
+                            "px-5 py-2.5 text-xs font-bold rounded-xl transition-all border uppercase tracking-widest shrink-0",
                             activeCategory === 'all'
                                 ? "bg-lavender text-white border-lavender shadow-md shadow-lavender/20"
                                 : "text-gray-500 bg-gray-50 border-gray-100 hover:border-lavender/30"
@@ -441,7 +451,7 @@ export default function DesignsPage() {
                             key={cat._id}
                             onClick={() => setActiveCategory(cat._id)}
                             className={cn(
-                                "px-5 py-2.5 text-xs font-bold rounded-xl transition-all border whitespace-nowrap uppercase tracking-widest",
+                                "px-5 py-2.5 text-xs font-bold rounded-xl transition-all border whitespace-nowrap uppercase tracking-widest shrink-0",
                                 activeCategory === cat._id
                                     ? "bg-lavender text-white border-lavender shadow-md shadow-lavender/20"
                                     : "text-gray-500 bg-gray-50 border-gray-100 hover:border-lavender/30"
@@ -450,6 +460,46 @@ export default function DesignsPage() {
                             {cat.name}
                         </button>
                     ))}
+                </div>
+
+                {/* Bottom Row: Search, Status, Sort */}
+                <div className="flex flex-col xl:flex-row items-center justify-between gap-4 border-t border-gray-100 pt-4 w-full">
+                    <div className="relative w-full xl:w-96 group shrink-0">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6E4B8B] group-focus-within:text-lavender transition-colors" size={18} />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search by SKU or Name..."
+                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm text-charcoal focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender transition-all font-medium"
+                        />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
+                        <select
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                            className="w-full sm:w-auto px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender text-charcoal font-bold cursor-pointer"
+                        >
+                            <option value="all">All Status</option>
+                            <option value="best-seller">Best Seller</option>
+                            <option value="trending">Trending</option>
+                            <option value="new-arrival">New Arrival</option>
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                        </select>
+
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="w-full sm:w-auto px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender text-charcoal font-bold cursor-pointer"
+                        >
+                            <option value="newest">ID: Descending</option>
+                            <option value="oldest">ID: Ascending</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="price-low">Price: Low to High</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -529,10 +579,10 @@ export default function DesignsPage() {
                                         <td className="px-8 py-5">
                                             <div className="flex flex-wrap gap-2 items-center">
                                                 {design.isTrending && (
-                                                    <span className="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold">Trending</span>
+                                                    <span className="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold">Best Seller</span>
                                                 )}
                                                 {design.isFeatured && (
-                                                    <span className="bg-lavender/10 text-lavender text-[10px] px-2 py-0.5 rounded font-bold">Featured</span>
+                                                    <span className="bg-lavender/10 text-lavender text-[10px] px-2 py-0.5 rounded font-bold">Trending</span>
                                                 )}
                                                 {design.isNewArrival && (
                                                     <span className="bg-[#ae7fcb] text-white text-[10px] px-2 py-0.5 rounded font-bold">New Arrival</span>
@@ -609,8 +659,8 @@ export default function DesignsPage() {
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        {design.isTrending && <span className="text-sm" title="Trending">🔥</span>}
-                                        {design.isFeatured && <span className="text-sm" title="Featured">⭐</span>}
+                                        {design.isTrending && <span className="text-sm" title="Best Seller">🔥</span>}
+                                        {design.isFeatured && <span className="text-sm" title="Trending">⭐</span>}
                                         {design.isNewArrival && <span className="text-sm" title="New Arrival">✨</span>}
                                         <div className={cn(
                                             "px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border",
@@ -804,8 +854,8 @@ export default function DesignsPage() {
                                                     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
                                                         onClick={() => setFormData({ ...formData, isTrending: !formData.isTrending })}>
                                                         <div>
-                                                            <p className="font-bold text-charcoal text-sm">Mark as Trending</p>
-                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in trending sections</p>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as Best Seller</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in best seller sections</p>
                                                         </div>
                                                         <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isTrending ? "bg-lavender" : "bg-gray-200")}>
                                                             <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isTrending ? "left-5" : "left-1")} />
@@ -815,8 +865,8 @@ export default function DesignsPage() {
                                                     <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
                                                         onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}>
                                                         <div>
-                                                            <p className="font-bold text-charcoal text-sm">Mark as Featured</p>
-                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in featured home page section</p>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as Trending</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in trending home page section</p>
                                                         </div>
                                                         <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isFeatured ? "bg-lavender" : "bg-gray-200")}>
                                                             <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isFeatured ? "left-5" : "left-1")} />

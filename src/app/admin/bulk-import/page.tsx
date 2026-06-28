@@ -719,8 +719,6 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                     { label: 'Package:', desc: 'Package title' },
                                     { label: 'Included:', desc: "What's included" },
                                     { label: '50-100: 27', desc: 'Price tier' },
-                                    { label: 'Add-on:', desc: 'Optional feature' },
-                                    { label: 'Additional Charge:', desc: 'Optional feature' },
                                     { label: '---', desc: 'Design separator' },
                                 ].map((item, i) => (
                                     <div key={i} className="flex items-start gap-2">

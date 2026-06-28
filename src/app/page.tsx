@@ -22,14 +22,20 @@ async function getHomeData() {
         // 3. Fetch Best Sellers: designs flagged as isTrending
         const bestSellers = await Design.find({ isTrending: true, isDeleted: false, isActive: true })
             .populate('categoryId')
-            .limit(4)
+            .limit(12)
+            .lean();
+
+        // Fetch Trending Designs: designs flagged as isFeatured (we renamed the toggle to Trending)
+        const trendingDesigns = await Design.find({ isFeatured: true, isDeleted: false, isActive: true })
+            .populate('categoryId')
+            .limit(12)
             .lean();
 
         // 4. Fetch New Arrivals: sorted by newest
         const newArrivals = await Design.find({ isNewArrival: true, isDeleted: false, isActive: true })
             .sort({ createdAt: -1 })
             .populate('categoryId')
-            .limit(4)
+            .limit(12)
             .lean();
 
         // Map Category Name helper
@@ -46,6 +52,7 @@ async function getHomeData() {
             settings: settings ? JSON.parse(JSON.stringify(settings)) : null,
             categories: JSON.parse(JSON.stringify(categories)),
             bestSellers: mapProducts(JSON.parse(JSON.stringify(bestSellers))),
+            trendingDesigns: mapProducts(JSON.parse(JSON.stringify(trendingDesigns))),
             newArrivals: mapProducts(JSON.parse(JSON.stringify(newArrivals)))
         };
     } catch (error) {
@@ -54,6 +61,7 @@ async function getHomeData() {
             settings: null,
             categories: [],
             bestSellers: [],
+            trendingDesigns: [],
             newArrivals: []
         };
     }
@@ -80,12 +88,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-    const { settings, categories, bestSellers, newArrivals } = await getHomeData();
+    const { settings, categories, bestSellers, trendingDesigns, newArrivals } = await getHomeData();
 
     return (
         <main className="relative min-h-screen">
             <RedesignedHome 
                 bestSellers={bestSellers} 
+                trendingDesigns={trendingDesigns}
                 newArrivals={newArrivals} 
                 categories={categories}
                 siteSettings={settings}

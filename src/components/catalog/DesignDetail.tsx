@@ -768,9 +768,6 @@ I'm interested in:
 *SKU:* ${design.sku}
 *Link:* ${pageUrl}
 *Package:* ${selectedPackage.title}
-*Envelope:* ${envelopeStr}
-*Ribbon:* ${ribbonStr}
-*Wax Seal:* ${waxStr}
 *Quantity:* ${q} cards
 *Price Per Card:* ₹${cardPriceVal} (for ${q} cards${totalColourSurcharge > 0 ? ', incl. colour surcharge' : ''})${addOnText}
   
