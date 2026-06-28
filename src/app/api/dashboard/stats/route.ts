@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 import dbConnect from '@/lib/db';
 import Design from '@/models/Design';
-import Invoice from '@/models/Invoice';
+import Category from '@/models/Category';
 import { getAdminFromRequest, unauthorizedResponse } from '@/lib/api-auth';
 
 export async function GET(req: NextRequest) {
@@ -17,12 +17,8 @@ export async function GET(req: NextRequest) {
         const startDate = searchParams.get('startDate');
         const endDate = searchParams.get('endDate');
 
-        // Core filter for invoices
-        let query: any = {};
-        if (admin.role !== 'super-admin') {
-            query.adminId = admin.id;
-        }
-
+        // Core query for designs
+        let query: any = { isDeleted: false };
         if (startDate && endDate) {
             query.createdAt = {
                 $gte: new Date(startDate),
@@ -30,33 +26,37 @@ export async function GET(req: NextRequest) {
             };
         }
 
-        const [totalDesigns, allInvoices] = await Promise.all([
-            Design.countDocuments({ isDeleted: false }),
-            Invoice.find(query).sort({ createdAt: -1 }).lean()
+        // Fetch digital categories
+        const digitalCategories = await Category.find({
+            name: { $in: ["Digital E-Invite", "Premium E-Website"] }
+        }).select('_id');
+        const digitalCatIds = digitalCategories.map(c => c._id);
+
+        const [
+            physicalDesigns,
+            digitalDesigns,
+            bestSellers,
+            trendingDesigns,
+            newArrivals,
+            recentDesigns,
+        ] = await Promise.all([
+            Design.countDocuments({ ...query, categoryId: { $nin: digitalCatIds } }),
+            Design.countDocuments({ ...query, categoryId: { $in: digitalCatIds } }),
+            Design.countDocuments({ ...query, isTrending: true }),
+            Design.countDocuments({ ...query, isFeatured: true }),
+            Design.countDocuments({ ...query, isNewArrival: true }),
+            Design.find(query).sort({ createdAt: -1 }).limit(8).populate('categoryId', 'name').lean()
         ]);
-
-        let totalRevenue = 0;
-        let totalProfit = 0;
-        let totalMaterialsUsed = 0; // Just counting quantity of units deducted
-
-        for (const inv of allInvoices) {
-            totalRevenue += inv.grandTotal || 0;
-            totalProfit += inv.profit || 0;
-            if (inv.materialsUsed && Array.isArray(inv.materialsUsed)) {
-                for (const mat of inv.materialsUsed) {
-                    totalMaterialsUsed += mat.quantityUsed || 0;
-                }
-            }
-        }
 
         return NextResponse.json({
             stats: [
-                { label: 'Total Orders', value: allInvoices.length, trend: 'Generated', color: '#ae7fcb' },
-                { label: 'Total Revenue', value: '₹' + totalRevenue.toFixed(0), trend: 'Processed', color: '#10b981' },
-                { label: 'Net Profit', value: '₹' + totalProfit.toFixed(0), trend: 'Margin', color: '#059669' },
-                { label: 'Materials Used', value: totalMaterialsUsed, trend: 'Units', color: '#f59e0b' },
+                { label: 'Physical Designs', value: physicalDesigns, trend: 'Cards', color: '#ae7fcb' },
+                { label: 'Digital Designs', value: digitalDesigns, trend: 'E-Invites', color: '#8b5cf6' },
+                { label: 'Best Sellers', value: bestSellers, trend: 'Top Rated', color: '#10b981' },
+                { label: 'Trending Designs', value: trendingDesigns, trend: 'Popular', color: '#f59e0b' },
+                { label: 'New Arrivals', value: newArrivals, trend: 'Recent', color: '#3b82f6' },
             ],
-            recentInvoices: allInvoices.slice(0, 10), // only return top 10 for recent
+            recentDesigns: recentDesigns,
         }, { status: 200 });
     } catch (error) {
         console.error("Dashboard Stats Error:", error);
