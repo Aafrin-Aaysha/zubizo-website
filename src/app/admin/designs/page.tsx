@@ -27,6 +27,7 @@ import {
     ArrowRight,
     Sliders
 } from 'lucide-react';
+import { SortableImageGrid } from '@/components/SortableImageGrid';
 import toast from 'react-hot-toast';
 import { cn, getStartingPrice } from '@/lib/utils';
 
@@ -236,7 +237,7 @@ export default function DesignsPage() {
         const payload = {
             ...formData,
             materials: formData.materials?.filter((m: any) => m.materialId) || [],
-            addOns: formData.addOns?.filter((a: any) => a.addOnId) || [],
+            addOns: formData.addOns?.filter((a: any) => a.label && a.label.trim() !== '') || [],
         };
 
         saveMutation.mutate({ isEditing, url, method, data: payload });
@@ -986,11 +987,11 @@ export default function DesignsPage() {
                                                         {formData.addOns.map((addon, index) => (
                                                             <div key={index} className="flex flex-col sm:flex-row gap-3 bg-gray-50 p-4 rounded-[1.25rem] border border-gray-100 group/addon">
                                                                 <div className="flex-1 space-y-3">
-                                                                    <input type="text" required value={addon.name} onChange={e => { const newAddOns = [...formData.addOns]; newAddOns[index].name = e.target.value; setFormData({ ...formData, addOns: newAddOns }); }} className="w-full px-4 py-2.5 bg-white border border-gray-100 rounded-xl outline-none text-xs font-bold focus:border-lavender" placeholder="Add-on Name (e.g. Venue Map)" />
+                                                                    <input type="text" required value={addon.label || ''} onChange={e => { const newAddOns = [...formData.addOns]; newAddOns[index].label = e.target.value; setFormData({ ...formData, addOns: newAddOns }); }} className="w-full px-4 py-2.5 bg-white border border-gray-100 rounded-xl outline-none text-xs font-bold focus:border-lavender" placeholder="Add-on Name (e.g. Venue Map)" />
                                                                     <div className="flex items-center gap-3">
                                                                         <div className="relative w-32">
                                                                             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">₹</span>
-                                                                            <input type="number" required value={addon.price === 0 ? '' : addon.price} onChange={e => { const newAddOns = [...formData.addOns]; newAddOns[index].price = e.target.value === '' ? 0 : parseInt(e.target.value); setFormData({ ...formData, addOns: newAddOns }); }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full pl-7 pr-3 py-2 bg-white border border-gray-100 rounded-xl outline-none font-bold text-xs focus:border-lavender" placeholder="Price" />
+                                                                            <input type="number" required value={addon.pricePerCard === 0 ? '' : addon.pricePerCard} onChange={e => { const newAddOns = [...formData.addOns]; newAddOns[index].pricePerCard = e.target.value === '' ? 0 : parseInt(e.target.value); setFormData({ ...formData, addOns: newAddOns }); }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full pl-7 pr-3 py-2 bg-white border border-gray-100 rounded-xl outline-none font-bold text-xs focus:border-lavender" placeholder="Price" />
                                                                         </div>
                                                                         <label className="flex items-center gap-2 cursor-pointer">
                                                                             <input type="checkbox" checked={addon.isFixedPrice} onChange={e => { const newAddOns = [...formData.addOns]; newAddOns[index].isFixedPrice = e.target.checked; setFormData({ ...formData, addOns: newAddOns }); }} className="w-3.5 h-3.5 text-lavender rounded border-gray-300 focus:ring-lavender" />
@@ -1004,58 +1005,6 @@ export default function DesignsPage() {
                                                     </div>
                                                 )}
                                             </section>
-
-                                            <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
-                                                <div className="flex items-center justify-between">
-                                                    <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
-                                                        <PackageIcon size={14} /> Materials Mapping
-                                                    </div>
-                                                    <select 
-                                                        onChange={(e) => { 
-                                                            if(e.target.value) {
-                                                                setFormData({ ...formData, materials: [...formData.materials, { materialId: e.target.value, quantityPerCard: 1 }] });
-                                                                e.target.value=''; 
-                                                            }
-                                                        }}
-                                                        className="px-2 py-1 text-[10px] font-bold bg-lavender/10 text-lavender rounded outline-none cursor-pointer tracking-widest uppercase max-w-[120px] truncate"
-                                                    >
-                                                        <option value="">+ Add</option>
-                                                        {inventory.map((inv: any) => <option key={inv._id} value={inv._id}>{inv.name}</option>)}
-                                                    </select>
-                                                </div>
-
-                                                {formData.materials.length === 0 ? (
-                                                    <p className="text-[10px] text-[#6E4B8B] italic">No materials mapped for automated subtraction.</p>
-                                                ) : (
-                                                    <div className="space-y-3">
-                                                        {formData.materials.map((m: any, idx: number) => {
-                                                            const invItem = inventory.find(i => i._id === m.materialId);
-                                                            return (
-                                                                <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-100 group/mat">
-                                                                    <div className="flex-1">
-                                                                        <p className="text-xs font-bold text-charcoal">{invItem?.name || 'Unknown Material'}</p>
-                                                                        <p className="text-[9px] text-[#6E4B8B] font-bold uppercase tracking-widest">Rate: ₹{invItem?.defaultPrice || 0}/{invItem?.unit || 'pc'}</p>
-                                                                    </div>
-                                                                    <div className="flex items-center gap-2">
-                                                                        <span className="text-[9px] text-[#6E4B8B] font-bold uppercase tracking-widest">Qty Required:</span>
-                                                                        <input type="number" step="0.01" value={m.quantityPerCard === 0 ? '' : m.quantityPerCard} onChange={e => {
-                                                                            const copy = [...formData.materials];
-                                                                            copy[idx].quantityPerCard = e.target.value === '' ? 0 : Number(e.target.value);
-                                                                            setFormData({...formData, materials: copy});
-                                                                        }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 p-1.5 text-center text-xs font-bold bg-white border border-gray-200 rounded-lg outline-none focus:border-lavender"/>
-                                                                    </div>
-                                                                    <button type="button" onClick={() => {
-                                                                        const copy = formData.materials.filter((_, i) => i !== idx);
-                                                                        setFormData({...formData, materials: copy});
-                                                                    }} className="text-red-300 hover:text-red-500 p-1.5">
-                                                                        <Trash2 size={14}/>
-                                                                    </button>
-                                                                </div>
-                                                            )
-                                                        })}
-                                                    </div>
-                                                )}
-                                            </section>
                                         </div>
                                     )}
 
@@ -1066,21 +1015,11 @@ export default function DesignsPage() {
                                                 <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
                                                     <Upload size={14} /> Showcase Images
                                                 </div>
-                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                                    {formData.images.map((img, idx) => (
-                                                        <div key={idx} className="aspect-square rounded-2xl overflow-hidden relative group border border-gray-50 bg-gray-50">
-                                                            <img src={img} alt="" className="w-full h-full object-cover" />
-                                                            <button type="button" onClick={() => setFormData({ ...formData, images: formData.images.filter((_, i) => i !== idx) })} className="absolute top-2 right-2 w-8 h-8 bg-black/60 backdrop-blur-md text-white rounded-xl flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-white/20"><Trash2 size={14} /></button>
-                                                        </div>
-                                                    ))}
-                                                    <label className="aspect-square rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center gap-3 text-gray-300 hover:border-lavender hover:text-lavender transition-all cursor-pointer bg-gray-50/30 hover:bg-lavender/5 group">
-                                                        <input type="file" multiple className="hidden" onChange={(e) => handleMediaUpload(e, 'image')} accept="image/*" />
-                                                        <div className="w-12 h-12 rounded-full bg-white group-hover:bg-lavender/10 flex items-center justify-center shadow-sm transition-all">
-                                                            <Plus size={24} />
-                                                        </div>
-                                                        <span className="text-[9px] font-bold uppercase tracking-widest">Add Images</span>
-                                                    </label>
-                                                </div>
+                                                <SortableImageGrid 
+                                                    images={formData.images} 
+                                                    onChange={(images) => setFormData({ ...formData, images })} 
+                                                    onUpload={(e) => handleMediaUpload(e, 'image')} 
+                                                />
                                             </section>
                                         </div>
                                     )}

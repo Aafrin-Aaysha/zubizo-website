@@ -24,6 +24,7 @@ import {
     PlayCircle,
     Star
 } from 'lucide-react';
+import { SortableImageGrid } from '@/components/SortableImageGrid';
 import toast from 'react-hot-toast';
 import { cn, getStartingPrice } from '@/lib/utils';
 
@@ -194,25 +195,7 @@ export default function DigitalInvitesAdminPage() {
         setIsSubmitting(false);
     };
 
-    const handleDragStart = (e: React.DragEvent, index: number) => {
-        e.dataTransfer.setData('imageIndex', index.toString());
-    };
 
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-    };
-
-    const handleDrop = (e: React.DragEvent, dropIndex: number) => {
-        e.preventDefault();
-        const dragIndex = parseInt(e.dataTransfer.getData('imageIndex'));
-        if (dragIndex === dropIndex || isNaN(dragIndex)) return;
-
-        const newImages = [...formData.images];
-        const [draggedImage] = newImages.splice(dragIndex, 1);
-        newImages.splice(dropIndex, 0, draggedImage);
-
-        setFormData(prev => ({ ...prev, images: newImages }));
-    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -724,31 +707,14 @@ export default function DigitalInvitesAdminPage() {
                                             <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
                                                 <ImageIcon size={14} /> Showcase Images
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                {formData.images.map((img, idx) => (
-                                                    <div 
-                                                        key={idx} 
-                                                        className="aspect-[3/4] rounded-2xl overflow-hidden relative group border border-gray-50 bg-gray-50 cursor-move"
-                                                        draggable
-                                                        onDragStart={(e) => handleDragStart(e, idx)}
-                                                        onDragOver={handleDragOver}
-                                                        onDrop={(e) => handleDrop(e, idx)}
-                                                    >
-                                                        <img src={img} alt="" className="w-full h-full object-cover" />
-                                                        <button type="button" onClick={() => setFormData({ ...formData, images: formData.images.filter((_, i) => i !== idx) })} className="absolute top-2 right-2 w-8 h-8 bg-black/60 backdrop-blur-md text-white rounded-xl flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-white/20"><Trash2 size={14} /></button>
-                                                        {idx > 0 && (
-                                                            <button type="button" onClick={() => setFormData({ ...formData, images: [img, ...formData.images.filter((_, i) => i !== idx)] })} className="absolute top-2 right-12 w-8 h-8 bg-black/60 backdrop-blur-md text-white rounded-xl flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all border border-white/20 hover:text-yellow-400" title="Make Primary"><Star size={14} /></button>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                                <label className="aspect-[3/4] rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center gap-3 text-gray-300 hover:border-lavender hover:text-lavender transition-all cursor-pointer bg-gray-50/30 hover:bg-lavender/5 group">
-                                                    <input type="file" multiple className="hidden" onChange={(e) => handleMediaUpload(e, 'image')} accept="image/*" />
-                                                    <div className="w-10 h-10 rounded-full bg-white group-hover:bg-lavender/10 flex items-center justify-center shadow-sm transition-all">
-                                                        <Plus size={20} />
-                                                    </div>
-                                                    <span className="text-[8px] font-bold uppercase text-center px-4 tracking-widest">Add {activeTab === 'Website' ? 'Mockups' : 'Designs'}</span>
-                                                </label>
-                                            </div>
+                                                <SortableImageGrid 
+                                                    images={formData.images} 
+                                                    onChange={(images) => setFormData({ ...formData, images })} 
+                                                    onUpload={(e) => handleMediaUpload(e, 'image')} 
+                                                    aspectRatio="portrait"
+                                                    showPrimaryButton={true}
+                                                    uploadText={`Add ${activeTab === 'Website' ? 'Mockups' : 'Designs'}`}
+                                                />
                                         </section>
                                     </div>
                                 </div>
