@@ -41,12 +41,16 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         const { id } = await params;
         await dbConnect();
 
-        // Soft Delete
-        const deletedCategory = await Category.findByIdAndUpdate(id, { isDeleted: true });
-
-        if (!deletedCategory) {
+        // Soft Delete: append timestamp to name and slug to free up unique constraints
+        const category = await Category.findById(id);
+        if (!category) {
             return NextResponse.json({ message: 'Category not found' }, { status: 404 });
         }
+
+        category.isDeleted = true;
+        category.name = `${category.name} (Deleted ${Date.now()})`;
+        category.slug = `${category.slug}-deleted-${Date.now()}`;
+        await category.save();
 
         return NextResponse.json({ message: 'Category deleted successfully' });
     } catch (error) {
