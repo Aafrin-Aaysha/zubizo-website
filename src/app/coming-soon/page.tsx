@@ -504,7 +504,6 @@ export default function ComingSoonPage() {
                     View Our Policies
                 </Link>
             </motion.div>
->>>>>>> design-review
         </main>
     );
 }
