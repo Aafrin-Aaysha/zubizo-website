@@ -48,7 +48,7 @@ I would like to inquire about your services.`;
     };
 
     return (
-        <footer id="contact" className="bg-[#1A1A1A] pt-16 pb-8">
+        <footer id="contact" className="bg-[#111111] pt-16 pb-8">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Gold Divider */}
                 <div className="h-[1px] bg-gradient-to-r from-transparent via-[#D6BFA3]/30 to-transparent w-full mb-14" />
@@ -60,7 +60,7 @@ I would like to inquire about your services.`;
                             <div className="p-3 bg-[#D6BFA3]/8 rounded-xl text-[#D6BFA3]">
                                 <LogoIcon size={44} />
                             </div>
-                            <span className="text-[26px] text-[#ae7fcb] font-extrabold italic" style={{ fontFamily: 'var(--font-fraunces), serif' }}>
+                            <span className="text-[26px] text-[#ae7fcb] font-semibold italic" style={{ fontFamily: 'var(--font-fraunces), serif' }}>
                                 Zubizo
                             </span>
                         </Link>
@@ -77,7 +77,6 @@ I would like to inquire about your services.`;
                                 {[
                                     { name: "Catalogue", href: "/catalog" },
                                     { name: "Digital Invites", href: "/digital-invites" },
-                                    { name: "Our Story", href: "/#about" },
                                     { name: "Contact", href: "/#contact" },
                                 ].map((link) => (
                                     <li key={link.name}>
@@ -115,6 +114,14 @@ I would like to inquire about your services.`;
                     <div>
                         <h4 className="text-[11px] font-bold uppercase tracking-widest text-[#D6BFA3] mb-6">Connect</h4>
                         <ul className="space-y-5">
+                            <li>
+                                <span className="flex items-start gap-3 text-sm text-white/50 font-medium leading-relaxed">
+                                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#D6BFA3] shrink-0 mt-0.5">
+                                        <span className="text-sm">📍</span>
+                                    </div>
+                                    <span>SS Arcade, 3F, 3rd Floor, Convent Road,<br />Cantonment, Trichy 620001</span>
+                                </span>
+                            </li>
                             <li>
                                 <a href="tel:+918124548133" className="flex items-center gap-3 text-sm text-white/50 font-medium group transition-all hover:text-white/80">
                                     <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#D6BFA3] group-hover:bg-[#D6BFA3]/10 transition-all">

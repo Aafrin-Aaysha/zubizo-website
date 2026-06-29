@@ -208,12 +208,11 @@ const refundPoints = [
     "No refunds will be provided after final design approval.",
     "Orders cannot be refunded once production has begun.",
 ];
-
 export default function ComingSoonPage() {
     const waNumber = "918124548133";
     const instagramUrl = "https://instagram.com/zubizo.art";
     const phoneNumber = "+91 81245 48133";
-    const addressDetails = "SS Arcade, 3F, 3rd Floor, Convent Road, Cantonment, Trichy 620001.";
+    const addressDetails = "SS Arcade, 3F, Convent Road, Cantonment, Trichy 620001";
     const [isPoliciesOpen, setIsPoliciesOpen] = React.useState(false);
 
     const containerVariants = {
@@ -300,7 +299,6 @@ export default function ComingSoonPage() {
                             <Instagram size={18} className="text-pink-600" />
                             <span>Visit Instagram</span>
                         </a>
-
                         <button
                             onClick={() => setIsPoliciesOpen(true)}
                             className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-full border border-slate-200 transition-all shadow-md active:scale-98 cursor-pointer"
@@ -382,13 +380,12 @@ export default function ComingSoonPage() {
 
                             {/* Header */}
                             <div className="text-center mb-10">
-                                <span className="text-[#6E4B8B] tracking-[0.15em] font-bold uppercase text-[10px] mb-2 block">
-                                    LEGAL &amp; TRUST
-                                </span>
-                                <h2 className="text-3xl md:text-4xl font-italiana font-normal text-slate-800 mb-4">
-                                    Our Policies
+                                <div className="w-16 h-16 rounded-3xl bg-white border border-[#ae7fcb]/20 shadow-md flex items-center justify-center mx-auto mb-5 rotate-3">
+                                    <FileText size={28} className="text-[#ae7fcb] -rotate-3" />
+                                </div>
+                                <h2 className="text-3xl font-normal tracking-tight text-slate-800" style={{ fontFamily: 'var(--font-italiana), serif' }}>
+                                    Zubizo Policies
                                 </h2>
-                                <p className="text-slate-505 text-xs md:text-sm max-w-lg mx-auto leading-relaxed font-light">
                                     Transparency and trust at the heart of Zubizo. Please review our terms, shipping, and refund policies.
                                 </p>
                             </div>
@@ -491,6 +488,22 @@ export default function ComingSoonPage() {
                     </motion.div>
                 )}
             </AnimatePresence>
+=======
+            {/* Bottom policies link */}
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.6 }}
+                className="absolute bottom-6 left-0 right-0 text-center z-10"
+            >
+                <Link 
+                    href="/policies" 
+                    className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#6E4B8B]/60 hover:text-[#6E4B8B] transition-colors border-b border-transparent hover:border-[#6E4B8B]/40 pb-0.5"
+                >
+                    View Our Policies
+                </Link>
+            </motion.div>
+>>>>>>> design-review
         </main>
     );
 }

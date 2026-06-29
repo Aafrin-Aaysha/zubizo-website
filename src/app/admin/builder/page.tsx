@@ -113,7 +113,7 @@ export default function HomepageBuilder() {
         <div className="max-w-5xl mx-auto py-8">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2 font-serif">Homepage Builder</h1>
+                    <h1 className="text-2xl font-normal text-charcoal mb-2">Homepage Builder</h1>
                     <p className="text-gray-500">Design and organize your website's home page sections.</p>
                 </div>
                 <div className="flex gap-4">
@@ -268,7 +268,7 @@ const HeroEditor = ({ data, onChange }: { data: any, onChange: (newData: any) =>
                         <button
                             onClick={() => removeSlide(idx)}
                             type="button"
-                            className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                            className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
                         >
                             <X size={14} />
                         </button>
@@ -382,7 +382,7 @@ const PriceSlabEditor = ({ data, onChange }: { data: any, onChange: (newData: an
                         <button
                             onClick={() => removeSlab(idx)}
                             type="button"
-                            className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                            className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
                         >
                             <X size={14} />
                         </button>
@@ -546,7 +546,7 @@ const StoryEditor = ({ data, onChange }: { data: any, onChange: (newData: any) =
                         <button
                             onClick={() => removeParagraph(idx)}
                             type="button"
-                            className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10"
+                            className="absolute top-2 right-2 p-1 text-gray-400 hover:text-red-500 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all z-10"
                         >
                             <X size={14} />
                         </button>
@@ -579,7 +579,7 @@ const StoryEditor = ({ data, onChange }: { data: any, onChange: (newData: any) =
                             <button
                                 onClick={() => removeHighlight(idx)}
                                 type="button"
-                                className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                                className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
                             >
                                 <X size={14} />
                             </button>
@@ -659,7 +659,7 @@ const ArtisanProcessEditor = ({ data, onChange }: { data: any, onChange: (newDat
                         <button
                             onClick={() => removeStep(idx)}
                             type="button"
-                            className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                            className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
                         >
                             <X size={14} />
                         </button>
@@ -739,7 +739,7 @@ const TestimonialEditor = ({ data, onChange }: { data: any, onChange: (newData: 
                         <button
                             onClick={() => removeTestimonial(idx)}
                             type="button"
-                            className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                            className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
                         >
                             <X size={14} />
                         </button>

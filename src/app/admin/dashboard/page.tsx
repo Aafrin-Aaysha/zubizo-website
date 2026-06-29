@@ -5,18 +5,22 @@ import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
     Search,
-    Download,
-    ExternalLink,
     Package,
-    Layers,
-    CheckCircle2,
     ArrowRight,
-    FileText,
-    ShieldCheck
+    ShieldCheck,
+    CheckCircle2,
+    Database,
+    Zap,
+    TrendingUp,
+    Crown,
+    Star,
+    Image as ImageIcon,
+    Clock
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
+import { cn, getStartingPrice } from '@/lib/utils';
+import Image from 'next/image';
 
 export default function DashboardPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -36,80 +40,42 @@ export default function DashboardPage() {
     }, [isError]);
 
     const stats = data?.stats || [];
-    const recentInvoices = data?.recentInvoices || [];
+    const recentDesigns = data?.recentDesigns || [];
 
-    const filteredInvoices = recentInvoices.filter((inv: any) => {
+    const filteredDesigns = recentDesigns.filter((design: any) => {
         const searchLower = searchQuery.toLowerCase();
         return (
-            (inv.designName || '').toLowerCase().includes(searchLower) ||
-            (inv.designCode || '').toLowerCase().includes(searchLower) ||
-            (inv.customerName || '').toLowerCase().includes(searchLower) ||
-            (inv.orderId || '').toLowerCase().includes(searchLower)
+            (design.name || '').toLowerCase().includes(searchLower) ||
+            (design.sku || '').toLowerCase().includes(searchLower)
         );
     });
 
-    const exportToCSV = () => {
-        if (recentInvoices.length === 0) return;
-
-        const headers = ["Date", "Order ID", "Customer", "Design", "SKU", "Qty", "Total Revenue", "Profit"];
-        const rows = recentInvoices.map((inv: any) => [
-            new Date(inv.createdAt).toLocaleString(),
-            inv.orderId,
-            inv.customerName || 'N/A',
-            inv.designName || 'N/A',
-            inv.designCode || 'N/A',
-            inv.quantity || 1,
-            inv.grandTotal || 0,
-            inv.profit || 0
-        ]);
-
-        const csvContent = [
-            headers.join(','),
-            ...rows.map((row: any) => row.map((cell: any) => `"${cell}"`).join(','))
-        ].join('\n');
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", `zubizo_invoices_${new Date().toISOString().split('T')[0]}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        toast.success("CSV Exported successfully");
+    const getIconForStat = (label: string) => {
+        switch (label) {
+            case 'Physical Designs': return <Package className="w-5 h-5" />;
+            case 'Digital Designs': return <Zap className="w-5 h-5" />;
+            case 'Best Sellers': return <Crown className="w-5 h-5" />;
+            case 'Trending Designs': return <TrendingUp className="w-5 h-5" />;
+            case 'New Arrivals': return <Star className="w-5 h-5" />;
+            default: return <Package className="w-5 h-5" />;
+        }
     };
 
     return (
-        <div className="space-y-10 pb-10">
+        <div className="space-y-8 pb-10 max-w-7xl mx-auto">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-charcoal tracking-tight">Business Overview</h1>
-                    <p className="text-gray-500 mt-1 font-medium">Insights into your revenue and inventory consumption.</p>
-                </div>
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={exportToCSV}
-                        className="bg-white hover:bg-gray-50 text-charcoal px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest border border-gray-100 shadow-sm transition-all flex items-center gap-2"
-                    >
-                        <Download size={16} />
-                        Export Data
-                    </button>
-                    <Link
-                        href="/admin/invoices/new"
-                        className="bg-lavender hover:bg-[#9a6ab5] text-white px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-lavender/20 transition-all flex items-center gap-2"
-                    >
-                        <FileText size={16} />
-                        New Invoice
-                    </Link>
+                    <h2 className="text-3xl font-serif text-charcoal">Design Overview</h2>
+                    <p className="text-gray-500 mt-1 font-medium">Insights into your catalog and active designs.</p>
                 </div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {/* Stats Ribbon */}
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6">
                 {isLoading ? (
-                    [...Array(4)].map((_, i) => (
-                        <div key={i} className="h-28 md:h-32 bg-white border border-gray-50 rounded-[1.5rem] md:rounded-[2rem] animate-pulse" />
+                    [...Array(5)].map((_, i) => (
+                        <div key={i} className="h-32 bg-white border border-gray-100 rounded-3xl animate-pulse shadow-sm" />
                     ))
                 ) : (
                     stats.map((stat: any, index: number) => (
@@ -118,16 +84,24 @@ export default function DashboardPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
                             key={index}
-                            className="bg-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border border-gray-100 shadow-sm"
+                            className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
                         >
-                            <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest mb-1 text-gray-400">
-                                {stat.label}
-                            </p>
-                            <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
-                                <h3 className="text-xl md:text-3xl font-black text-charcoal">
+                            <div className="absolute top-0 right-0 w-24 h-24 rounded-full -mr-8 -mt-8 opacity-10 transition-transform group-hover:scale-110" style={{ backgroundColor: stat.color }} />
+                            
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 rounded-xl" style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
+                                    {getIconForStat(stat.label)}
+                                </div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                                    {stat.label}
+                                </p>
+                            </div>
+                            
+                            <div className="flex items-baseline gap-2">
+                                <h3 className="text-3xl font-bold text-charcoal">
                                     {stat.value}
                                 </h3>
-                                <span className={cn("text-[8px] md:text-[10px] font-bold uppercase", `text-[${stat.color}]`)} style={{ color: stat.color }}>
+                                <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: stat.color }}>
                                     {stat.trend}
                                 </span>
                             </div>
@@ -137,86 +111,98 @@ export default function DashboardPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Recent Invoices */}
+                {/* Main Content Area: Recent Designs */}
                 <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden min-h-[500px]">
-                        <div className="p-5 md:p-8 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden flex flex-col h-full min-h-[500px]">
+                        <div className="p-6 md:p-8 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/30">
                             <div>
-                                <h2 className="text-xl font-black text-charcoal">Recent Invoices</h2>
-                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Generated Orders</p>
+                                <h2 className="text-xl font-bold text-charcoal flex items-center gap-2">
+                                    <Clock className="w-5 h-5 text-lavender" />
+                                    Recently Added
+                                </h2>
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Latest catalog updates</p>
                             </div>
                             <div className="relative group sm:w-64">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-lavender transition-colors" size={16} />
                                 <input
                                     type="text"
+                                    placeholder="Search by ID, Name..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Search by ID, Name..."
-                                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-transparent rounded-xl text-[11px] font-bold focus:bg-white focus:border-lavender outline-none transition-all uppercase tracking-wider"
+                                    className="w-full bg-white border border-gray-200 focus:border-lavender focus:ring-4 focus:ring-lavender/10 rounded-2xl py-2.5 pl-11 pr-4 text-sm outline-none transition-all placeholder:text-gray-400 font-medium"
                                 />
                             </div>
                         </div>
 
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-gray-50/50 text-gray-400 text-[9px] font-black uppercase tracking-[0.2em]">
-                                    <tr>
-                                        <th className="px-8 py-5 min-w-[200px]">Design Info</th>
-                                        <th className="px-8 py-5 min-w-[150px]">Customer</th>
-                                        <th className="px-8 py-5 min-w-[120px]">Revenue</th>
-                                        <th className="px-8 py-5 text-right">Action</th>
+                        <div className="overflow-x-auto flex-1">
+                            <table className="w-full min-w-[600px] text-left">
+                                <thead>
+                                    <tr className="border-b border-gray-100 bg-gray-50/50">
+                                        <th className="pb-4 pt-5 px-6 font-bold text-[10px] uppercase tracking-widest text-gray-400">Design Info</th>
+                                        <th className="pb-4 pt-5 px-6 font-bold text-[10px] uppercase tracking-widest text-gray-400 text-center">Badges</th>
+                                        <th className="pb-4 pt-5 px-6 font-bold text-[10px] uppercase tracking-widest text-gray-400 text-center">Price</th>
+                                        <th className="pb-4 pt-5 px-6 font-bold text-[10px] uppercase tracking-widest text-gray-400 text-right">Date</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
                                     {isLoading ? (
                                         [...Array(5)].map((_, i) => (
                                             <tr key={i} className="animate-pulse">
-                                                <td colSpan={4} className="px-8 py-6"><div className="h-4 bg-gray-50 rounded w-full" /></td>
+                                                <td colSpan={4} className="px-6 py-5"><div className="h-12 bg-gray-50 rounded-xl w-full" /></td>
                                             </tr>
                                         ))
-                                    ) : filteredInvoices.length === 0 ? (
+                                    ) : filteredDesigns.length > 0 ? (
+                                        filteredDesigns.map((design: any) => (
+                                            <tr key={design._id} className="hover:bg-gray-50/40 transition-colors group">
+                                                <td className="py-4 px-6">
+                                                    <div className="flex items-center gap-4">
+                                                        {design.images && design.images.length > 0 ? (
+                                                            <div className="w-12 h-12 rounded-xl overflow-hidden relative shadow-sm border border-gray-100 flex-shrink-0">
+                                                                <Image src={design.images[0]} alt={design.name} fill className="object-cover" />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 border border-gray-100 flex-shrink-0">
+                                                                <ImageIcon size={20} />
+                                                            </div>
+                                                        )}
+                                                        <div>
+                                                            <Link href={`/admin/designs?edit=${design._id}`} className="text-sm font-bold text-charcoal hover:text-lavender transition-colors line-clamp-1">
+                                                                {design.name || 'Unnamed'}
+                                                            </Link>
+                                                            <div className="flex items-center gap-2 mt-0.5">
+                                                                <span className="text-[10px] font-black text-lavender uppercase tracking-widest bg-lavender/10 px-1.5 py-0.5 rounded">
+                                                                    {design.sku || '-'}
+                                                                </span>
+                                                                <span className="text-xs text-gray-400">{design.categoryId?.name || 'Uncategorized'}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="py-4 px-6 text-center">
+                                                    <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                                                        {design.isTrending && <span className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border border-emerald-100">Best Seller</span>}
+                                                        {design.isFeatured && <span className="bg-amber-50 text-amber-600 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border border-amber-100">Trending</span>}
+                                                        {design.isNewArrival && <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border border-blue-100">New</span>}
+                                                        {!design.isTrending && !design.isFeatured && !design.isNewArrival && <span className="text-gray-300 text-xs">-</span>}
+                                                    </div>
+                                                </td>
+                                                <td className="py-4 px-6 text-center">
+                                                    <p className="text-sm font-bold text-charcoal">₹{getStartingPrice(design)}</p>
+                                                </td>
+                                                <td className="py-4 px-6 text-right">
+                                                    <p className="text-xs font-semibold text-gray-500">
+                                                        {new Date(design.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
                                         <tr>
-                                            <td colSpan={4} className="px-8 py-32 text-center text-gray-400 font-bold uppercase text-[10px] tracking-widest">
-                                                No invoices matching search criteria
+                                            <td colSpan={4} className="py-20 text-center text-gray-400">
+                                                <Package size={48} className="mx-auto mb-4 opacity-20" />
+                                                <p className="text-sm font-medium">No recent designs found.</p>
                                             </td>
                                         </tr>
-                                    ) : (
-                                        filteredInvoices.map((invoice: any) => (
-                                            <tr key={invoice._id} className="hover:bg-gray-50/30 transition-colors group">
-                                                <td className="px-8 py-5">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0 text-gray-300">
-                                                            <FileText size={20} />
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-sm font-black text-charcoal line-clamp-1">{invoice.designName}</p>
-                                                            <p className="text-[10px] font-black text-lavender uppercase tracking-widest">{invoice.orderId}</p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-8 py-5">
-                                                    <div className="flex flex-col gap-0.5">
-                                                        <p className="text-sm font-black text-charcoal">{invoice.customerName}</p>
-                                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
-                                                            Qty: {invoice.quantity}
-                                                        </p>
-                                                    </div>
-                                                </td>
-                                                <td className="px-8 py-5">
-                                                    <div className="flex flex-col gap-0.5">
-                                                        <p className="text-sm font-black text-green-600">₹{invoice.grandTotal || 0}</p>
-                                                        <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">
-                                                            Profit: ₹{invoice.profit || 0}
-                                                        </p>
-                                                    </div>
-                                                </td>
-                                                <td className="px-8 py-5 text-right">
-                                                    <Link href="/admin/invoices" className="p-2.5 text-gray-300 hover:text-lavender hover:bg-lavender/5 rounded-xl transition-all border border-transparent hover:border-lavender/20 inline-block">
-                                                        <ArrowRight size={18} />
-                                                    </Link>
-                                                </td>
-                                            </tr>
-                                        ))
                                     )}
                                 </tbody>
                             </table>
@@ -224,56 +210,60 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Quick Actions & Tips */}
-                <div className="space-y-8">
-                    <section className="bg-charcoal p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-lavender/10 rounded-full -translate-y-16 translate-x-16 blur-3xl" />
-                        <h2 className="text-xl font-black mb-1">Quick Links</h2>
-                        <p className="text-[10px] text-white/40 font-bold uppercase tracking-[0.2em] mb-8">Instant Admin Access</p>
+                {/* Sidebar: Quick Actions & Health */}
+                <div className="space-y-6">
+                    <section className="bg-charcoal p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-lavender/20 to-transparent rounded-full -translate-y-16 translate-x-16 blur-2xl" />
+                        <h2 className="text-2xl font-serif mb-1">Quick Links</h2>
+                        <p className="text-[10px] text-white/50 font-bold uppercase tracking-[0.2em] mb-8">Instant Access</p>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {[
-                                { label: 'New Collection', href: '/admin/categories', icon: Layers },
-                                { label: 'Invoice History', href: '/admin/invoices', icon: FileText },
-                                { label: 'Account Settings', href: '/admin/account', icon: ShieldCheck },
+                                { label: 'Upload Designs', href: '/admin/bulk-import', icon: Package, desc: 'Batch import new SKUs' },
+                                { label: 'Account Settings', href: '/admin/account', icon: ShieldCheck, desc: 'Manage profile & security' },
                             ].map((link, idx) => (
                                 <Link
                                     key={idx}
                                     href={link.href}
                                     className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all group"
                                 >
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-white/10 rounded-lg text-lavender"><link.icon size={16} /></div>
-                                        <span className="text-sm font-bold">{link.label}</span>
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-2.5 bg-white/10 rounded-xl text-lavender"><link.icon size={18} /></div>
+                                        <div>
+                                            <p className="text-sm font-bold text-white group-hover:text-lavender transition-colors">{link.label}</p>
+                                            <p className="text-[10px] text-white/50 mt-0.5">{link.desc}</p>
+                                        </div>
                                     </div>
-                                    <ArrowRight size={16} className="text-white/20 group-hover:text-white transition-all group-hover:translate-x-1" />
+                                    <ArrowRight size={16} className="text-white/20 group-hover:text-lavender transition-all group-hover:translate-x-1" />
                                 </Link>
                             ))}
                         </div>
                     </section>
 
-                    <section className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-lavender/10 text-lavender rounded-xl flex items-center justify-center">
-                                <CheckCircle2 size={24} />
+                    <section className="bg-white p-7 rounded-[2.5rem] border border-gray-100 shadow-sm relative overflow-hidden">
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center">
+                                <Database size={24} />
                             </div>
                             <div>
                                 <h3 className="text-sm font-black text-charcoal">System Health</h3>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Inventory sync active</p>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">All systems operational</p>
                             </div>
                         </div>
-                        <ul className="space-y-4">
-                            <li className="flex items-center gap-3 text-xs font-bold text-gray-500">
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                                Auto-Deductions Working
+                        <ul className="space-y-3">
+                            <li className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                    <span className="text-xs font-bold text-gray-600">Database Connection</span>
+                                </div>
+                                <CheckCircle2 size={14} className="text-emerald-500" />
                             </li>
-                            <li className="flex items-center gap-3 text-xs font-bold text-gray-500">
-                                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                                Invoices Connected
-                            </li>
-                            <li className="flex items-center gap-3 text-xs font-bold text-gray-500">
-                                <div className="w-1.5 h-1.5 rounded-full bg-lavender" />
-                                Analytics Synced
+                            <li className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                    <span className="text-xs font-bold text-gray-600">Asset CDN Synced</span>
+                                </div>
+                                <CheckCircle2 size={14} className="text-emerald-500" />
                             </li>
                         </ul>
                     </section>

@@ -134,7 +134,7 @@ export default function EmployeesPage() {
         <div className="space-y-8 pb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-900 tracking-tight">Employee Management</h1>
+                    <h1 className="text-2xl font-normal text-charcoal tracking-tight">Employee Management</h1>
                     <p className="text-gray-500 mt-1 font-medium">Manage team access and production roles.</p>
                 </div>
                 <button
@@ -178,7 +178,7 @@ export default function EmployeesPage() {
                             layout
                             className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-lavender/5 transition-all group relative overflow-hidden"
                         >
-                            <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2">
+                            <div className="absolute top-0 right-0 p-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center gap-2">
                                 <button onClick={() => openModal(emp)} className="p-2.5 bg-gray-50 text-gray-400 hover:text-lavender rounded-xl transition-all"><Edit2 size={16} /></button>
                                 <button onClick={() => deleteEmployee(emp._id)} className="p-2.5 bg-gray-50 text-gray-400 hover:text-red-500 rounded-xl transition-all"><Trash2 size={16} /></button>
                             </div>

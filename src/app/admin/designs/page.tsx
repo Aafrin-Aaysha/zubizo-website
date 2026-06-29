@@ -24,8 +24,10 @@ import {
     Zap,
     Star,
     ArrowLeft,
-    ArrowRight
+    ArrowRight,
+    Sliders
 } from 'lucide-react';
+import { SortableImageGrid } from '@/components/SortableImageGrid';
 import toast from 'react-hot-toast';
 import { cn, getStartingPrice } from '@/lib/utils';
 
@@ -37,7 +39,10 @@ export default function DesignsPage() {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState('all');
+    const [sortBy, setSortBy] = useState('newest');
+    const [filterStatus, setFilterStatus] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
+    const [activeFormTab, setActiveFormTab] = useState<'Details' | 'Pricing' | 'Media'>('Details');
     const itemsPerPage = 20;
 
     // Form State
@@ -54,10 +59,22 @@ export default function DesignsPage() {
         materials: [] as any[],
         isTrending: false,
         isFeatured: false,
+        isNewArrival: false,
         isActive: true,
         images: [] as string[],
         videoUrl: '',
-        demoUrl: ''
+        demoUrl: '',
+        options: {
+            hasEnvelope: false,
+            hasRibbon: false,
+            hasWaxSeal: false,
+            hasChart: false,
+            displayModelColours: '',
+            envelopeTierBSurcharge: 3,
+            envelopeTierCSurcharge: 6,
+            ribbonPremiumSurcharge: 2,
+            images: {} as { [key: string]: string }
+        }
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -100,7 +117,12 @@ export default function DesignsPage() {
         }
     }, [formData.name, formData.sku, editingDesign]);
 
-    const filteredDesigns = designs.filter(design => {
+    const nonDigitalCategories = categories.filter(c => !["Digital E-Invite", "Premium E-Website"].includes(c.name));
+
+    let filteredDesigns = designs.filter(design => {
+        const categoryName = design.categoryId?.name || "";
+        if (["Digital E-Invite", "Premium E-Website"].includes(categoryName)) return false;
+
         const matchesSearch =
             design.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             design.sku.toLowerCase().includes(searchQuery.toLowerCase());
@@ -108,7 +130,21 @@ export default function DesignsPage() {
         const categoryId = design.categoryId?._id || design.categoryId;
         const matchesCategory = activeCategory === 'all' || categoryId === activeCategory;
 
-        return matchesSearch && matchesCategory;
+        let matchesStatus = true;
+        if (filterStatus === 'best-seller') matchesStatus = design.isTrending === true;
+        if (filterStatus === 'trending') matchesStatus = design.isFeatured === true;
+        if (filterStatus === 'new-arrival') matchesStatus = design.isNewArrival === true;
+        if (filterStatus === 'active') matchesStatus = design.isActive === true;
+        if (filterStatus === 'draft') matchesStatus = design.isActive === false;
+
+        return matchesSearch && matchesCategory && matchesStatus;
+    });
+
+    filteredDesigns = filteredDesigns.sort((a, b) => {
+        if (sortBy === 'price-high') return getStartingPrice(b) - getStartingPrice(a);
+        if (sortBy === 'price-low') return getStartingPrice(a) - getStartingPrice(b);
+        if (sortBy === 'oldest') return String(a.sku).localeCompare(String(b.sku));
+        return String(b.sku).localeCompare(String(a.sku)); // Default newest
     });
 
     const totalPages = Math.ceil(filteredDesigns.length / itemsPerPage);
@@ -142,6 +178,8 @@ export default function DesignsPage() {
                         setFormData(prev => ({ ...prev, videoUrl: result.url }));
                         toast.success('Video uploaded successfully');
                     }
+                } else {
+                    toast.error(result.message || `Failed to upload ${type}`);
                 }
             } catch (error) {
                 toast.error(`Failed to upload ${type}`);
@@ -196,7 +234,13 @@ export default function DesignsPage() {
         const url = isEditing ? `/api/designs/${editingDesign._id}` : '/api/designs';
         const method = isEditing ? 'PUT' : 'POST';
 
-        saveMutation.mutate({ isEditing, url, method, data: formData });
+        const payload = {
+            ...formData,
+            materials: formData.materials?.filter((m: any) => m.materialId) || [],
+            addOns: formData.addOns?.filter((a: any) => a.label && a.label.trim() !== '') || [],
+        };
+
+        saveMutation.mutate({ isEditing, url, method, data: payload });
     };
 
     const deleteMutation = useMutation({
@@ -264,7 +308,7 @@ export default function DesignsPage() {
     const addAddOn = () => {
         setFormData({
             ...formData,
-            addOns: [...formData.addOns, { label: '', pricePerCard: 0, note: '' }]
+            addOns: [...formData.addOns, { label: '', pricePerCard: 0, isFixedPrice: false, note: '' }]
         });
     };
 
@@ -301,10 +345,22 @@ export default function DesignsPage() {
                 materials: design.materials?.map((m: any) => ({ materialId: m.materialId?._id || m.materialId, quantityPerCard: m.quantityPerCard })) || [],
                 isTrending: design.isTrending || false,
                 isFeatured: design.isFeatured || false,
+                isNewArrival: design.isNewArrival || false,
                 isActive: design.isActive !== undefined ? design.isActive : true,
                 images: design.images || [],
                 videoUrl: design.videoUrl || '',
-                demoUrl: design.demoUrl || ''
+                demoUrl: design.demoUrl || '',
+                options: {
+                    hasEnvelope: design.options?.hasEnvelope || false,
+                    hasRibbon: design.options?.hasRibbon || false,
+                    hasWaxSeal: design.options?.hasWaxSeal || false,
+                    hasChart: design.options?.hasChart || false,
+                    displayModelColours: design.options?.displayModelColours || '',
+                    envelopeTierBSurcharge: design.options?.envelopeTierBSurcharge !== undefined ? design.options.envelopeTierBSurcharge : 3,
+                    envelopeTierCSurcharge: design.options?.envelopeTierCSurcharge !== undefined ? design.options.envelopeTierCSurcharge : 6,
+                    ribbonPremiumSurcharge: design.options?.ribbonPremiumSurcharge !== undefined ? design.options.ribbonPremiumSurcharge : 2,
+                    images: design.options?.images || {}
+                }
             });
         } else {
             setEditingDesign(null);
@@ -325,10 +381,22 @@ export default function DesignsPage() {
                 materials: [],
                 isTrending: false,
                 isFeatured: false,
+                isNewArrival: false,
                 isActive: true,
                 images: [],
                 videoUrl: '',
-                demoUrl: ''
+                demoUrl: '',
+                options: {
+                    hasEnvelope: false,
+                    hasRibbon: false,
+                    hasWaxSeal: false,
+                    hasChart: false,
+                    displayModelColours: '',
+                    envelopeTierBSurcharge: 3,
+                    envelopeTierCSurcharge: 6,
+                    ribbonPremiumSurcharge: 2,
+                    images: {}
+                }
             });
         }
         setIsModalOpen(true);
@@ -343,20 +411,20 @@ export default function DesignsPage() {
         <div className="space-y-8 pb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-900 tracking-tight">Design Management</h1>
+                    <h2 className="text-2xl font-normal text-charcoal">Design Management</h2>
                     <p className="text-gray-500 mt-1 font-medium">Manage your invitation catalogue and package pricing.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <Link
                         href="/admin/bulk-import"
-                        className="bg-white border border-gray-200 hover:border-lavender text-charcoal px-6 py-3.5 rounded-2xl font-black shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+                        className="bg-white border border-gray-200 hover:border-lavender text-charcoal px-6 py-3.5 rounded-2xl font-bold shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
                     >
                         <Zap size={18} />
                         Bulk Import
                     </Link>
                     <button
                         onClick={() => openModal()}
-                        className="bg-lavender hover:bg-[#9a6ab5] text-white px-8 py-3.5 rounded-2xl font-black shadow-xl shadow-lavender/20 transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+                        className="bg-lavender hover:bg-[#9a6ab5] text-white px-8 py-3.5 rounded-2xl font-bold shadow-xl shadow-lavender/20 transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
                     >
                         <Plus size={20} />
                         New Design
@@ -365,25 +433,13 @@ export default function DesignsPage() {
             </div>
 
             {/* Filter Bar */}
-            <div className="bg-white p-5 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-5">
-                <div className="flex items-center gap-3 w-full md:w-auto">
-                    <div className="relative flex-1 md:w-80 group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-lavender transition-colors" size={18} />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search by SKU or Name..."
-                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender transition-all font-medium"
-                        />
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 scrollbar-hide">
+            <div className="bg-white p-5 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-4">
+                {/* Top Row: Categories */}
+                <div className="flex items-center gap-2 overflow-x-auto w-full pb-2 scrollbar-hide">
                     <button
                         onClick={() => setActiveCategory('all')}
                         className={cn(
-                            "px-5 py-2.5 text-xs font-black rounded-xl transition-all border uppercase tracking-widest",
+                            "px-5 py-2.5 text-xs font-bold rounded-xl transition-all border uppercase tracking-widest shrink-0",
                             activeCategory === 'all'
                                 ? "bg-lavender text-white border-lavender shadow-md shadow-lavender/20"
                                 : "text-gray-500 bg-gray-50 border-gray-100 hover:border-lavender/30"
@@ -391,12 +447,12 @@ export default function DesignsPage() {
                     >
                         All
                     </button>
-                    {categories.map(cat => (
+                    {nonDigitalCategories.map(cat => (
                         <button
                             key={cat._id}
                             onClick={() => setActiveCategory(cat._id)}
                             className={cn(
-                                "px-5 py-2.5 text-xs font-black rounded-xl transition-all border whitespace-nowrap uppercase tracking-widest",
+                                "px-5 py-2.5 text-xs font-bold rounded-xl transition-all border whitespace-nowrap uppercase tracking-widest shrink-0",
                                 activeCategory === cat._id
                                     ? "bg-lavender text-white border-lavender shadow-md shadow-lavender/20"
                                     : "text-gray-500 bg-gray-50 border-gray-100 hover:border-lavender/30"
@@ -406,13 +462,54 @@ export default function DesignsPage() {
                         </button>
                     ))}
                 </div>
+
+                {/* Bottom Row: Search, Status, Sort */}
+                <div className="flex flex-col xl:flex-row items-center justify-between gap-4 border-t border-gray-100 pt-4 w-full">
+                    <div className="relative w-full xl:w-96 group shrink-0">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6E4B8B] group-focus-within:text-lavender transition-colors" size={18} />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search by SKU or Name..."
+                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm text-charcoal focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender transition-all font-medium"
+                        />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
+                        <select
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                            className="w-full sm:w-auto px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender text-charcoal font-bold cursor-pointer"
+                        >
+                            <option value="all">All Status</option>
+                            <option value="best-seller">Best Seller</option>
+                            <option value="trending">Trending</option>
+                            <option value="new-arrival">New Arrival</option>
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                        </select>
+
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="w-full sm:w-auto px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender text-charcoal font-bold cursor-pointer"
+                        >
+                            <option value="newest">ID: Descending</option>
+                            <option value="oldest">ID: Ascending</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="price-low">Price: Low to High</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             {/* Table */}
             <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden min-h-[400px]">
-                <div className="overflow-x-auto">
+                {/* Desktop View Table */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left min-w-[1000px] lg:min-w-0">
-                        <thead className="bg-gray-50/50 text-gray-400 text-[10px] font-black uppercase tracking-widest border-b border-gray-100">
+                        <thead className="bg-gray-50/50 text-[#6E4B8B] text-[10px] font-bold uppercase tracking-widest border-b border-gray-100">
                             <tr>
                                 <th className="px-8 py-5">Design</th>
                                 <th className="px-8 py-5">SKU</th>
@@ -455,12 +552,12 @@ export default function DesignsPage() {
                                                 </div>
                                                 <div>
                                                     <p className="font-bold text-charcoal">{design.name}</p>
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">/catalog/{design.slug}</p>
+                                                    <p className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest">/catalog/{design.slug}</p>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-8 py-5">
-                                            <span className="text-xs font-black text-lavender bg-lavender/5 px-3 py-1.5 rounded-full border border-lavender/10 uppercase tracking-widest">
+                                            <span className="text-xs font-bold text-lavender bg-lavender/5 px-3 py-1.5 rounded-full border border-lavender/10 uppercase tracking-widest">
                                                 {design.sku}
                                             </span>
                                         </td>
@@ -471,41 +568,40 @@ export default function DesignsPage() {
                                         </td>
                                         <td className="px-8 py-5">
                                             <div className="flex flex-col gap-1">
-                                                <p className="text-xs font-black text-gray-900">
+                                                <p className="text-xs font-bold text-gray-900">
                                                     ₹{getStartingPrice(design)}
-                                                    <span className="text-[10px] text-gray-400 font-medium ml-1">Starting</span>
+                                                    <span className="text-[10px] text-[#6E4B8B] font-medium ml-1">Starting</span>
                                                 </p>
-                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                                                <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-wider">
                                                     {design.packages?.length || 0} Options
                                                 </p>
                                             </div>
                                         </td>
                                         <td className="px-8 py-5">
-                                            <div className="flex items-center gap-3">
+                                            <div className="flex flex-wrap gap-2 items-center">
                                                 {design.isTrending && (
-                                                    <div className="w-7 h-7 bg-amber-50 rounded-full flex items-center justify-center text-amber-500" title="Trending">
-                                                        🔥
-                                                    </div>
+                                                    <span className="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold">Best Seller</span>
                                                 )}
                                                 {design.isFeatured && (
-                                                    <div className="w-7 h-7 bg-purple-50 rounded-full flex items-center justify-center text-lavender" title="Featured">
-                                                        ✨
-                                                    </div>
+                                                    <span className="bg-lavender/10 text-lavender text-[10px] px-2 py-0.5 rounded font-bold">Trending</span>
+                                                )}
+                                                {design.isNewArrival && (
+                                                    <span className="bg-[#ae7fcb] text-white text-[10px] px-2 py-0.5 rounded font-bold">New Arrival</span>
                                                 )}
                                                 <div className={cn(
-                                                    "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                                                    design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-gray-400 bg-gray-50 border-gray-100"
+                                                    "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border",
+                                                    design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-[#6E4B8B] bg-gray-50 border-gray-100"
                                                 )}>
                                                     {design.isActive ? 'Live' : 'Hidden'}
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="px-8 py-5 text-right">
-                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button onClick={() => openModal(design)} className="p-2.5 text-gray-400 hover:text-lavender hover:bg-lavender/5 rounded-xl transition-all border border-transparent hover:border-lavender/20">
+                                            <div className="flex items-center justify-end gap-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => openModal(design)} className="p-2.5 text-[#6E4B8B] hover:text-lavender hover:bg-lavender/5 rounded-xl transition-all border border-transparent hover:border-lavender/20">
                                                     <Edit2 size={18} />
                                                 </button>
-                                                <button onClick={() => deleteDesign(design._id)} className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100">
+                                                <button onClick={() => deleteDesign(design._id)} className="p-2.5 text-[#6E4B8B] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100">
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
@@ -516,23 +612,104 @@ export default function DesignsPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Mobile/Tablet Card Layout */}
+                <div className="md:hidden p-5 space-y-4">
+                    {isLoading ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="animate-pulse bg-gray-50 p-5 rounded-3xl border border-gray-100 h-40"></div>
+                        ))
+                    ) : paginatedDesigns.length === 0 ? (
+                        <div className="py-16 text-center">
+                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-200 mx-auto mb-4">
+                                <PackageIcon size={32} />
+                            </div>
+                            <p className="font-bold text-gray-900">No designs found</p>
+                            <button onClick={() => openModal()} className="text-lavender font-bold hover:underline text-sm mt-1">Create your first design</button>
+                        </div>
+                    ) : (
+                        paginatedDesigns.map(design => (
+                            <div key={design._id} className="bg-gray-50/40 p-5 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-4">
+                                <div className="flex items-start gap-4">
+                                    <div className="w-16 h-16 rounded-2xl bg-gray-100 border border-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
+                                        {design.images?.[0] ? (
+                                            <img src={design.images[0]} alt="" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-gray-300"><Upload size={16} /></div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-bold text-charcoal text-sm truncate">{design.name}</p>
+                                        <p className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest truncate">/catalog/{design.slug}</p>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            <span className="text-[10px] font-bold text-lavender bg-lavender/5 px-2.5 py-1 rounded-full border border-lavender/10 uppercase tracking-widest">
+                                                {design.sku}
+                                            </span>
+                                            <span className="text-[10px] font-bold text-gray-500 bg-white px-2.5 py-1 rounded-full border border-gray-100">
+                                                {design.categoryId?.name || design.categoryId || 'General'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex items-center justify-between border-t border-gray-100/60 pt-3">
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-wider">Starting Price</span>
+                                        <span className="text-sm font-bold text-gray-900">
+                                            ₹{getStartingPrice(design)}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {design.isTrending && <span className="text-sm" title="Best Seller">🔥</span>}
+                                        {design.isFeatured && <span className="text-sm" title="Trending">⭐</span>}
+                                        {design.isNewArrival && <span className="text-sm" title="New Arrival">✨</span>}
+                                        <div className={cn(
+                                            "px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border",
+                                            design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-[#6E4B8B] bg-gray-50 border-gray-100"
+                                        )}>
+                                            {design.isActive ? 'Live' : 'Hidden'}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3 border-t border-gray-100/60 pt-3">
+                                    <button 
+                                        type="button"
+                                        onClick={() => openModal(design)} 
+                                        className="flex-1 py-3 bg-lavender/10 hover:bg-lavender/25 text-lavender rounded-2xl font-bold text-xs flex items-center justify-center gap-2 transition-all border border-lavender/15"
+                                    >
+                                        <Edit2 size={14} /> Edit
+                                    </button>
+                                    <button 
+                                        type="button"
+                                        onClick={() => deleteDesign(design._id)} 
+                                        className="p-3 bg-red-50 text-red-400 hover:text-red-500 hover:bg-red-100 rounded-2xl transition-all border border-red-100 hover:border-red-200"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
                 {/* Pagination */}
                 {totalPages > 1 && (
-                    <div className="flex items-center justify-center gap-3 p-8">
+                    <div className="flex items-center justify-center gap-3 p-8 border-t border-gray-50">
                         <button
                             disabled={currentPage === 1}
                             onClick={() => setCurrentPage(p => p - 1)}
-                            className="w-12 h-12 rounded-2xl border border-gray-100 bg-white flex items-center justify-center text-gray-400 hover:text-lavender transition-all disabled:opacity-30"
+                            className="w-12 h-12 rounded-2xl border border-gray-100 bg-white flex items-center justify-center text-[#6E4B8B] hover:text-lavender transition-all disabled:opacity-30"
                         >
                             <ChevronLeft size={20} />
                         </button>
-                        <span className="text-sm font-black text-gray-400 mx-4">
+                        <span className="text-sm font-bold text-[#6E4B8B] mx-4">
                             Page {currentPage} of {totalPages}
                         </span>
                         <button
                             disabled={currentPage === totalPages}
                             onClick={() => setCurrentPage(p => p + 1)}
-                            className="w-12 h-12 rounded-2xl border border-gray-100 bg-white flex items-center justify-center text-gray-400 hover:text-lavender transition-all disabled:opacity-30"
+                            className="w-12 h-12 rounded-2xl border border-gray-100 bg-white flex items-center justify-center text-[#6E4B8B] hover:text-lavender transition-all disabled:opacity-30"
                         >
                             <ChevronRight size={20} />
                         </button>
@@ -543,7 +720,7 @@ export default function DesignsPage() {
             {/* Design Form Modal — Refactored to Centered Modal for better UX */}
             <AnimatePresence>
                 {isModalOpen && (
-                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-6 overflow-hidden">
+                    <div className="fixed inset-0 z-[110] flex overflow-hidden">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -552,522 +729,315 @@ export default function DesignsPage() {
                             className="absolute inset-0 bg-charcoal/40 backdrop-blur-md"
                         />
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            initial={{ opacity: 0, x: '100%' }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: '100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="relative w-full max-w-5xl bg-gray-50 max-h-[90vh] shadow-2xl rounded-[2.5rem] flex flex-col overflow-hidden"
+                            className="relative ml-auto w-full max-w-2xl bg-gray-50 h-full shadow-2xl flex flex-col overflow-hidden"
                         >
-                            <div className="p-8 bg-white border-b border-gray-100 flex items-center justify-between shrink-0">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-lavender/10 text-lavender flex items-center justify-center">
-                                        <PackageIcon size={24} />
+                            <div className="p-6 md:p-8 bg-white border-b border-gray-100 flex flex-col shrink-0">
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-12 h-12 rounded-2xl bg-lavender/10 text-lavender flex items-center justify-center">
+                                            <PackageIcon size={24} />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-xl md:text-2xl font-normal text-charcoal">{editingDesign ? 'Update Design' : 'New Collection'}</h2>
+                                            <p className="text-[10px] md:text-xs text-[#6E4B8B] font-bold uppercase tracking-widest mt-1">Configure your artisanal invitation</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h2 className="text-2xl font-black text-charcoal">{editingDesign ? 'Update Design' : 'New Collection'}</h2>
-                                        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Configure your artisanal invitation</p>
-                                    </div>
+                                    <button type="button" onClick={closeModal} className="w-10 h-10 hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors"><X size={20} /></button>
                                 </div>
-                                <button onClick={closeModal} className="w-10 h-10 hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors"><X size={20} /></button>
+                                
+                                {/* Tabs */}
+                                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                                    {['Details', 'Pricing', 'Media'].map((tab) => (
+                                        <button
+                                            key={tab}
+                                            type="button"
+                                            onClick={() => setActiveFormTab(tab as any)}
+                                            className={cn(
+                                                "px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap",
+                                                activeFormTab === tab 
+                                                ? "bg-lavender text-white shadow-md" 
+                                                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                            )}
+                                        >
+                                            {tab}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
 
-                            <form id="design-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-8 space-y-10">
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-                                    {/* Column 1: Core Details */}
-                                    <div className="space-y-8">
-                                        <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
-                                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                                <Info size={14} /> Basic Information
-                                            </h3>
-
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="col-span-2">
-                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-1.5 block">Design Name</label>
-                                                    <input
-                                                        type="text" required value={formData.name}
-                                                        onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                                        className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal"
-                                                        placeholder="Vibrant Marigold..."
-                                                    />
+                            <form id="design-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 md:p-8">
+                                <div className="max-w-xl mx-auto space-y-8">
+                                    {/* DETAILS TAB */}
+                                    {activeFormTab === 'Details' && (
+                                        <div className="space-y-8 animate-in fade-in duration-500">
+                                            <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-5">
+                                                <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
+                                                    <Info size={14} /> Basic Information
                                                 </div>
-                                                <div>
-                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-1.5 block">SKU Code</label>
-                                                    <input
-                                                        type="text" required value={formData.sku}
-                                                        onChange={e => setFormData({ ...formData, sku: e.target.value })}
-                                                        className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-black text-charcoal"
-                                                        placeholder="ZB_1001"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-1.5 block">Slug URL</label>
-                                                    <input
-                                                        type="text" required value={formData.slug}
-                                                        onChange={e => setFormData({ ...formData, slug: e.target.value })}
-                                                        className="w-full px-5 py-3.5 bg-gray-100/50 border border-transparent rounded-2xl text-gray-400 font-bold outline-none cursor-not-allowed"
-                                                        readOnly
-                                                    />
-                                                </div>
-                                                <div className="col-span-2">
-                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-1.5 block">Demo Link (for E-Websites)</label>
-                                                    <input
-                                                        type="text" value={formData.demoUrl}
-                                                        onChange={e => setFormData({ ...formData, demoUrl: e.target.value })}
-                                                        className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal"
-                                                        placeholder="https://demo.zubizo.com/invitation-name"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-1.5 block">Category</label>
-                                                <select
-                                                    required value={formData.categoryId}
-                                                    onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
-                                                    className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal appearance-none"
-                                                >
-                                                    {categories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
-                                                </select>
-                                            </div>
-
-                                            <div>
-                                                <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-1.5 block">Description</label>
-                                                <textarea
-                                                    value={formData.description}
-                                                    onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                                    className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-medium text-gray-600 min-h-[120px] resize-none"
-                                                    placeholder="Describe the elegance and craft..."
-                                                />
-                                            </div>
-                                        </section>
-
-                                        <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                                    <Settings size={14} /> Inventory & Status
-                                                </h3>
-                                            </div>
-
-                                            <div className="space-y-4">
-                                                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
-                                                    onClick={() => setFormData({ ...formData, isTrending: !formData.isTrending })}>
-                                                    <div>
-                                                        <p className="font-bold text-charcoal text-sm">Mark as Trending</p>
-                                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Show in trending sections</p>
-                                                    </div>
-                                                    <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isTrending ? "bg-lavender" : "bg-gray-200")}>
-                                                        <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isTrending ? "left-5" : "left-1")} />
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
-                                                    onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}>
-                                                    <div>
-                                                        <p className="font-bold text-charcoal text-sm">Mark as Featured</p>
-                                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Show in featured home page section</p>
-                                                    </div>
-                                                    <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isFeatured ? "bg-lavender" : "bg-gray-200")}>
-                                                        <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isFeatured ? "left-5" : "left-1")} />
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
-                                                    onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}>
-                                                    <div>
-                                                        <p className="font-bold text-charcoal text-sm">Active & Visible</p>
-                                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Live on the public website</p>
-                                                    </div>
-                                                    <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isActive ? "bg-green-500" : "bg-gray-200")}>
-                                                        <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isActive ? "left-5" : "left-1")} />
-                                                    </div>
-                                                </div>
-
-                                                <div className="pt-2">
-                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-1.5 block">Minimum Order Quantity</label>
-                                                    <input
-                                                        type="number" required value={formData.minQuantity === 0 ? '' : formData.minQuantity}
-                                                        onChange={e => setFormData({ ...formData, minQuantity: e.target.value === '' ? 0 : parseInt(e.target.value) })}
-                                                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                                        className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-black text-charcoal"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </section>
-
-                                        <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                                    <PackageIcon size={14} /> Materials Mapping
-                                                </h3>
-                                                <select 
-                                                    onChange={(e) => { 
-                                                        if(e.target.value) {
-                                                            setFormData({ ...formData, materials: [...formData.materials, { materialId: e.target.value, quantityPerCard: 1 }] });
-                                                            e.target.value=''; 
-                                                        }
-                                                    }}
-                                                    className="px-2 py-1 text-[10px] font-bold bg-lavender/10 text-lavender rounded outline-none cursor-pointer tracking-widest uppercase"
-                                                >
-                                                    <option value="">+ Add</option>
-                                                    {inventory.map((inv: any) => <option key={inv._id} value={inv._id}>{inv.name}</option>)}
-                                                </select>
-                                            </div>
-
-                                            {formData.materials.length === 0 ? (
-                                                <p className="text-[10px] text-gray-400 italic">No materials mapped for automated subtraction.</p>
-                                            ) : (
-                                                <div className="space-y-3">
-                                                    {formData.materials.map((m: any, idx: number) => {
-                                                        const invItem = inventory.find(i => i._id === m.materialId);
-                                                        return (
-                                                            <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-100 group/mat">
-                                                                <div className="flex-1">
-                                                                    <p className="text-xs font-bold text-charcoal">{invItem?.name || 'Unknown Material'}</p>
-                                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Rate: ₹{invItem?.defaultPrice || 0}/{invItem?.unit || 'pc'}</p>
-                                                                </div>
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Qty Required:</span>
-                                                                    <input type="number" step="0.01" value={m.quantityPerCard === 0 ? '' : m.quantityPerCard} onChange={e => {
-                                                                        const copy = [...formData.materials];
-                                                                        copy[idx].quantityPerCard = e.target.value === '' ? 0 : Number(e.target.value);
-                                                                        setFormData({...formData, materials: copy});
-                                                                    }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-16 p-1.5 text-center text-xs font-bold bg-white border border-gray-200 rounded-lg outline-none focus:border-lavender"/>
-                                                                </div>
-                                                                <button type="button" onClick={() => {
-                                                                    const copy = formData.materials.filter((_, i) => i !== idx);
-                                                                    setFormData({...formData, materials: copy});
-                                                                }} className="text-red-300 hover:text-red-500 p-1.5">
-                                                                    <Trash2 size={14}/>
-                                                                </button>
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-                                            )}
-                                        </section>
-                                    </div>
-
-                                    {/* Column 2: Pricing & Packages */}
-                                    <div className="space-y-8">
-                                        <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                                    <PackageIcon size={14} /> Package &amp; Pricing
-                                                </h3>
-                                                <button
-                                                    type="button"
-                                                    onClick={addPackage}
-                                                    className="text-lavender font-black text-[10px] uppercase tracking-widest hover:underline flex items-center gap-1"
-                                                >
-                                                    <Plus size={14} /> Add Package
-                                                </button>
-                                            </div>
-
-                                            {formData.packages.length === 0 ? (
-                                                <div className="py-10 border-2 border-dashed border-gray-100 rounded-[1.5rem] flex flex-col items-center justify-center gap-2 text-gray-300">
-                                                    <AlertCircle size={32} strokeWidth={1.5} />
-                                                    <p className="text-xs font-bold uppercase tracking-widest">No Packages Added</p>
-                                                </div>
-                                            ) : (
-                                                <div className="space-y-6">
-                                                    {(formData.packages as any[]).map((pkg: any, idx) => (
-                                                        <div key={idx} className="p-5 bg-gray-50 rounded-[2rem] border border-transparent hover:border-lavender/10 relative group transition-all space-y-5">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => removePackage(idx)}
-                                                                className="absolute -top-2 -right-2 w-7 h-7 bg-white shadow-md border border-gray-100 rounded-full flex items-center justify-center text-red-400 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-500"
-                                                            >
-                                                                <Trash2 size={14} />
-                                                            </button>
-
-                                                            {/* Package Title */}
-                                                            <div>
-                                                                <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 block">Package Title</label>
-                                                                <input
-                                                                    type="text" required value={pkg.title}
-                                                                    onChange={e => updatePackage(idx, 'title', e.target.value)}
-                                                                    className="w-full px-4 py-2 bg-white border border-gray-100 rounded-xl font-bold text-charcoal text-sm outline-none focus:border-lavender"
-                                                                    placeholder="Glass Invitation Premium..."
-                                                                />
-                                                            </div>
-
-                                                            {/* Inclusions */}
-                                                            <div className="space-y-2 bg-white/60 p-4 rounded-2xl border border-gray-100/50">
-                                                                <div className="flex items-center justify-between mb-1">
-                                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">What's Included</label>
-                                                                    <button type="button" onClick={() => {
-                                                                        const newInclusions = [...(pkg.inclusions || []), ''];
-                                                                        updatePackage(idx, 'inclusions', newInclusions);
-                                                                    }} className="text-lavender font-black text-[8px] uppercase tracking-wider hover:underline flex items-center gap-1">
-                                                                        <Plus size={10} /> Add
-                                                                    </button>
-                                                                </div>
-                                                                {(pkg.inclusions || []).map((inc: string, incIdx: number) => (
-                                                                    <div key={incIdx} className="flex gap-2">
-                                                                        <input
-                                                                            type="text" required value={inc}
-                                                                            onChange={e => {
-                                                                                const newInc = [...pkg.inclusions];
-                                                                                newInc[incIdx] = e.target.value;
-                                                                                updatePackage(idx, 'inclusions', newInc);
-                                                                            }}
-                                                                            className="flex-1 px-3 py-1.5 bg-white border border-gray-100 rounded-lg text-xs font-medium text-gray-600 outline-none focus:border-lavender"
-                                                                            placeholder="Portrait Premium Envelope..."
-                                                                        />
-                                                                        <button type="button" onClick={() => {
-                                                                            const newInc = pkg.inclusions.filter((_: any, i: number) => i !== incIdx);
-                                                                            updatePackage(idx, 'inclusions', newInc);
-                                                                        }} className="p-1.5 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
-                                                                            <X size={14} />
-                                                                        </button>
-                                                                    </div>
-                                                                ))}
-                                                                {(!pkg.inclusions || pkg.inclusions.length === 0) && (
-                                                                    <p className="text-[9px] text-gray-300 italic">No inclusions yet</p>
-                                                                )}
-                                                            </div>
-
-                                                            {/* Price Tiers */}
-                                                            <div className="space-y-2">
-                                                                <div className="flex items-center justify-between">
-                                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Price Tiers</label>
-                                                                    <button type="button" onClick={() => addTier(idx)} className="text-lavender font-black text-[8px] uppercase tracking-wider hover:underline flex items-center gap-1">
-                                                                        <Plus size={10} /> Add Tier
-                                                                    </button>
-                                                                </div>
-                                                                <div className="space-y-3">
-                                                                    {(pkg.priceTiers || []).map((tier: any, tIdx: number) => (
-                                                                        <div key={tIdx} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-white p-4 rounded-2xl border border-gray-100 relative group/tier">
-                                                                            <div className="grid grid-cols-2 sm:flex sm:items-center gap-3 flex-1 w-full">
-                                                                                <div className="space-y-1">
-                                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Min Qty</label>
-                                                                                    <input
-                                                                                        type="number" placeholder="Min" value={tier.minQty === 0 ? '' : tier.minQty}
-                                                                                        onChange={e => updateTier(idx, tIdx, 'minQty', e.target.value === '' ? 0 : parseInt(e.target.value))}
-                                                                                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                                                                        className="w-full sm:w-[100px] px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
-                                                                                    />
-                                                                                </div>
-                                                                                <div className="space-y-1">
-                                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Max Qty</label>
-                                                                                    <input
-                                                                                        type="number" placeholder="Max" value={tier.maxQty === 0 || tier.maxQty === null ? '' : tier.maxQty}
-                                                                                        onChange={e => updateTier(idx, tIdx, 'maxQty', e.target.value === '' ? 0 : parseInt(e.target.value))}
-                                                                                        onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                                                                        className="w-full sm:w-[100px] px-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
-                                                                                    />
-                                                                                </div>
-                                                                                <div className="hidden sm:block text-gray-300 text-[10px] mt-4">→</div>
-                                                                                <div className="col-span-2 sm:col-auto space-y-1 flex-1 min-w-[100px]">
-                                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Price / Card</label>
-                                                                                    <div className="relative">
-                                                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">₹</span>
-                                                                                        <input
-                                                                                            type="number" placeholder="0.00" value={tier.pricePerCard ?? ''}
-                                                                                            onChange={e => updateTier(idx, tIdx, 'pricePerCard', e.target.value === '' ? '' : parseFloat(e.target.value))}
-                                                                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                                                                            className="w-full pl-7 pr-3 py-2 bg-gray-50 border border-transparent rounded-xl text-xs font-black text-charcoal outline-none focus:bg-white focus:border-lavender transition-all"
-                                                                                        />
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() => removeTier(idx, tIdx)}
-                                                                                className="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto p-2 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shrink-0"
-                                                                            >
-                                                                                <Trash2 size={14} />
-                                                                            </button>
-                                                                        </div>
-                                                                    ))}
-                                                                    {(!pkg.priceTiers || pkg.priceTiers.length === 0) && (
-                                                                        <p className="text-[9px] text-gray-300 italic">No tiers. Add at least one tier.</p>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </section>
-
-                                        {/* Add-ons section */}
-                                        <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-4">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                                    <Plus size={14} /> Optional Add-ons
-                                                </h3>
-                                                <button type="button" onClick={addAddOn} className="text-lavender font-black text-[10px] uppercase tracking-widest hover:underline flex items-center gap-1">
-                                                    <Plus size={14} /> Add
-                                                </button>
-                                            </div>
-
-                                            {(formData.addOns as any[]).length === 0 ? (
-                                                <p className="text-[10px] text-gray-400 italic">No add-ons (e.g., Feather, Colour upgrade)</p>
-                                            ) : (
-                                                <div className="space-y-3">
-                                                    {(formData.addOns as any[]).map((addOn: any, idx: number) => (
-                                                        <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 bg-gray-50 p-4 rounded-2xl border border-gray-100 relative group/addon">
-                                                            <div className="grid grid-cols-1 sm:grid-cols-[1.5fr_1fr_1fr] gap-3 flex-1 w-full">
-                                                                <div className="space-y-1">
-                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Add-on Label</label>
-                                                                    <input
-                                                                        type="text" placeholder="Label (e.g. Feather Add-on)" value={addOn.label}
-                                                                        onChange={e => updateAddOn(idx, 'label', e.target.value)}
-                                                                        className="w-full px-4 py-2 bg-white border border-transparent rounded-xl text-xs font-bold text-charcoal outline-none focus:border-lavender transition-all"
-                                                                    />
-                                                                </div>
-                                                                <div className="space-y-1">
-                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Price / Card</label>
-                                                                    <div className="relative">
-                                                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">₹</span>
-                                                                        <input
-                                                                            type="number" placeholder="0" value={addOn.pricePerCard === 0 ? '' : addOn.pricePerCard}
-                                                                            onChange={e => updateAddOn(idx, 'pricePerCard', e.target.value === '' ? 0 : parseFloat(e.target.value))}
-                                                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
-                                                                            className="w-full px-8 py-2 bg-white border border-transparent rounded-xl text-xs font-black text-charcoal outline-none focus:border-lavender transition-all"
-                                                                        />
-                                                                    </div>
-                                                                </div>
-                                                                <div className="space-y-1">
-                                                                    <label className="text-[8px] font-black text-gray-400 uppercase tracking-widest block pl-1">Internal Note</label>
-                                                                    <input
-                                                                        type="text" placeholder="Note (optional)" value={addOn.note}
-                                                                        onChange={e => updateAddOn(idx, 'note', e.target.value)}
-                                                                        className="w-full px-4 py-2 bg-white border border-transparent rounded-xl text-xs font-medium text-gray-500 outline-none focus:border-lavender transition-all"
-                                                                    />
-                                                                </div>
-                                                            </div>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => removeAddOn(idx)}
-                                                                className="absolute top-2 right-2 sm:relative sm:top-auto sm:right-auto p-2 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shrink-0"
-                                                            >
-                                                                <Trash2 size={14} />
-                                                            </button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </section>
-
-                                        <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
-                                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                                                <Upload size={14} /> Design Gallery
-                                            </h3>
-
-                                            <div className="space-y-4">
-                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest italic">Tip: Drag images to reorder. The first image will be the primary thumbnail.</p>
                                                 
-                                                <Reorder.Group 
-                                                    axis="x" 
-                                                    values={formData.images} 
-                                                    onReorder={(newImages) => setFormData({ ...formData, images: newImages })}
-                                                    className="grid grid-cols-2 sm:grid-cols-3 gap-4"
-                                                >
-                                                    {formData.images.map((img, idx) => (
-                                                        <Reorder.Item 
-                                                            key={img} 
-                                                            value={img}
-                                                            className="aspect-[3/4] rounded-2xl overflow-hidden relative group border border-gray-100 bg-white cursor-grab active:cursor-grabbing touch-none"
+                                                <div className="space-y-5">
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-1.5 block">Design Name</label>
+                                                        <input
+                                                            type="text" required value={formData.name}
+                                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                                            className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal"
+                                                            placeholder="Vibrant Marigold..."
+                                                        />
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-5">
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-1.5 block">SKU Code</label>
+                                                            <input
+                                                                type="text" required value={formData.sku}
+                                                                onChange={e => setFormData({ ...formData, sku: e.target.value })}
+                                                                className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal"
+                                                                placeholder="ZB_1001"
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-1.5 block">Slug URL</label>
+                                                            <input
+                                                                type="text" required value={formData.slug}
+                                                                onChange={e => setFormData({ ...formData, slug: e.target.value })}
+                                                                className="w-full px-5 py-3.5 bg-gray-100/50 border border-transparent rounded-2xl text-[#6E4B8B] font-bold outline-none cursor-not-allowed"
+                                                                readOnly
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-1.5 block">Category</label>
+                                                        <select
+                                                            required value={formData.categoryId}
+                                                            onChange={e => setFormData({ ...formData, categoryId: e.target.value })}
+                                                            className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal appearance-none"
                                                         >
-                                                            <img src={img} alt="" className="w-full h-full object-cover pointer-events-none" />
-                                                            
-                                                            {/* Index Badge */}
-                                                            <div className="absolute top-2 left-2 w-6 h-6 rounded-lg bg-black/40 backdrop-blur-md text-white text-[10px] font-black flex items-center justify-center z-10">
-                                                                {idx + 1}
-                                                            </div>
+                                                            {nonDigitalCategories.map(cat => <option key={cat._id} value={cat._id}>{cat.name}</option>)}
+                                                        </select>
+                                                    </div>
 
-                                                            {idx === 0 && (
-                                                                <div className="absolute top-2 right-2 bg-lavender text-white px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest z-10 shadow-lg flex items-center gap-1">
-                                                                    <Star size={8} fill="currentColor" /> Primary
-                                                                </div>
-                                                            )}
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-1.5 block">Description</label>
+                                                        <textarea
+                                                            value={formData.description}
+                                                            onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                                            className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-medium text-gray-600 min-h-[120px] resize-none"
+                                                            placeholder="Describe the elegance and craft..."
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </section>
 
-                                                            <div className="absolute inset-0 bg-charcoal/60 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-                                                                {idx > 0 && (
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => {
-                                                                            const images = [...formData.images];
-                                                                            const [moved] = images.splice(idx, 1);
-                                                                            images.unshift(moved);
-                                                                            setFormData({ ...formData, images });
-                                                                            toast.success('Moved to front');
-                                                                        }}
-                                                                        className="px-3 py-1.5 bg-white text-charcoal rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 hover:bg-lavender hover:text-white transition-all"
-                                                                    >
-                                                                        <Star size={12} /> Make First
-                                                                    </button>
-                                                                )}
-                                                                <button
-                                                                    type="button" onClick={() => {
-                                                                        const images = [...formData.images];
-                                                                        images.splice(idx, 1);
-                                                                        setFormData({ ...formData, images });
-                                                                    }}
-                                                                    className="w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
-                                                                >
-                                                                    <Trash2 size={18} />
-                                                                </button>
-                                                            </div>
-                                                        </Reorder.Item>
-                                                    ))}
-                                                    
-                                                    <label className="aspect-[3/4] rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center gap-3 text-gray-300 hover:border-lavender hover:text-lavender transition-all cursor-pointer bg-gray-50/50">
-                                                        <input type="file" multiple className="hidden" onChange={(e) => handleMediaUpload(e, 'image')} accept="image/*" />
-                                                        <Upload size={24} strokeWidth={1.5} />
-                                                        <span className="text-[10px] font-black uppercase tracking-widest text-center">Add Images</span>
-                                                    </label>
-                                                </Reorder.Group>
-                                            </div>
+                                            <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
+                                                        <Settings size={14} /> Inventory & Status
+                                                    </div>
+                                                </div>
 
-                                            <div className="pt-6 border-t border-gray-50">
-                                                <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Video Highlight (Optional)</h4>
-                                                {formData.videoUrl ? (
-                                                    <div className="relative aspect-video rounded-2xl overflow-hidden border border-gray-100 bg-black group">
-                                                        <video src={formData.videoUrl} className="w-full h-full object-cover" controls muted />
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setFormData({ ...formData, videoUrl: '' })}
-                                                            className="absolute top-3 right-3 w-8 h-8 bg-black/40 hover:bg-red-500 text-white rounded-lg flex items-center justify-center backdrop-blur-md transition-all opacity-0 group-hover:opacity-100"
-                                                        >
-                                                            <X size={16} />
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ ...formData, isNewArrival: !formData.isNewArrival })}>
+                                                        <div>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as New Arrival</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in "Just Designed for You" section</p>
+                                                        </div>
+                                                        <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isNewArrival ? "bg-lavender" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isNewArrival ? "left-5" : "left-1")} />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ ...formData, isTrending: !formData.isTrending })}>
+                                                        <div>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as Best Seller</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in best seller sections</p>
+                                                        </div>
+                                                        <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isTrending ? "bg-lavender" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isTrending ? "left-5" : "left-1")} />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}>
+                                                        <div>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as Trending</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in trending home page section</p>
+                                                        </div>
+                                                        <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isFeatured ? "bg-lavender" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isFeatured ? "left-5" : "left-1")} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="pt-4 border-t border-gray-50 space-y-4">
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">Visibility</label>
+                                                        <button type="button" onClick={() => setFormData({ ...formData, isActive: !formData.isActive })} className={cn("w-full px-5 py-4 rounded-[1.25rem] border-2 flex items-center justify-between transition-all", formData.isActive ? "border-green-100 bg-green-50/50 text-green-700" : "border-gray-100 bg-gray-50 text-[#6E4B8B]")}>
+                                                            <span className="font-bold text-xs">{formData.isActive ? 'Active on Catalog' : 'Save as Draft'}</span>
+                                                            <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", formData.isActive ? "bg-green-500" : "bg-gray-300")} />
                                                         </button>
                                                     </div>
+                                                    
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-1.5 block">Minimum Order Quantity</label>
+                                                        <input
+                                                            type="number" required value={formData.minQuantity === 0 ? '' : formData.minQuantity}
+                                                            onChange={e => setFormData({ ...formData, minQuantity: e.target.value === '' ? 0 : parseInt(e.target.value) })}
+                                                            onWheel={(e) => (e.target as HTMLInputElement).blur()}
+                                                            className="w-full px-5 py-3.5 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    )}
+
+                                    {/* PRICING TAB */}
+                                    {activeFormTab === 'Pricing' && (
+                                        <div className="space-y-8 animate-in fade-in duration-500">
+                                            <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
+                                                        <PackageIcon size={14} /> Packages & Pricing
+                                                    </div>
+                                                    <button type="button" onClick={addPackage} className="text-[10px] font-bold text-lavender hover:text-charcoal uppercase tracking-widest flex items-center gap-1 transition-colors">
+                                                        <Plus size={12} /> Add Package
+                                                    </button>
+                                                </div>
+                                                
+                                                <div className="space-y-6">
+                                                    {formData.packages.map((pkg, pkgIndex) => (
+                                                        <div key={pkgIndex} className="p-5 bg-gray-50/50 rounded-[1.5rem] border border-gray-100 space-y-5 relative group">
+                                                            {formData.packages.length > 1 && (
+                                                                <button type="button" onClick={() => removePackage(pkgIndex)} className="absolute -top-3 -right-3 w-8 h-8 bg-white border border-red-100 text-red-500 rounded-full flex items-center justify-center hover:bg-red-50 hover:scale-110 shadow-sm transition-all z-10"><Trash2 size={14} /></button>
+                                                            )}
+                                                            <div>
+                                                                <label className="text-[9px] font-bold text-[#6E4B8B] uppercase tracking-widest mb-1.5 block">Package Title</label>
+                                                                <input type="text" required value={pkg.title} onChange={e => { const newPkgs = [...formData.packages]; newPkgs[pkgIndex].title = e.target.value; setFormData({ ...formData, packages: newPkgs }); }} className="w-full px-4 py-3 bg-white border border-gray-100 rounded-xl focus:border-lavender outline-none font-bold text-sm text-charcoal" placeholder="e.g. Premium Board" />
+                                                            </div>
+
+                                                            <div>
+                                                                <div className="flex items-center justify-between mb-2">
+                                                                    <label className="text-[9px] font-bold text-[#6E4B8B] uppercase tracking-widest">What's Included</label>
+                                                                    <button type="button" onClick={() => { const newPkgs = [...formData.packages]; newPkgs[pkgIndex].inclusions.push(''); setFormData({ ...formData, packages: newPkgs }); }} className="text-[9px] font-bold text-lavender hover:text-charcoal uppercase tracking-widest flex items-center gap-1"><Plus size={10} /> Add</button>
+                                                                </div>
+                                                                <div className="space-y-2">
+                                                                    {pkg.inclusions.map((inc: string, incIndex: number) => (
+                                                                        <div key={incIndex} className="flex gap-2">
+                                                                            <input type="text" required value={inc} onChange={e => { const newPkgs = [...formData.packages]; newPkgs[pkgIndex].inclusions[incIndex] = e.target.value; setFormData({ ...formData, packages: newPkgs }); }} className="flex-1 px-4 py-2.5 bg-white border border-gray-100 rounded-xl focus:border-lavender outline-none text-xs text-charcoal" placeholder="e.g. Single Side Print + Cover Print" />
+                                                                            <button type="button" onClick={() => { const newPkgs = [...formData.packages]; newPkgs[pkgIndex].inclusions.splice(incIndex, 1); setFormData({ ...formData, packages: newPkgs }); }} className="w-10 flex items-center justify-center text-red-300 hover:text-red-500 bg-white border border-gray-100 rounded-xl"><X size={14} /></button>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="pt-2">
+                                                                <div className="flex items-center justify-between mb-3">
+                                                                    <label className="text-[9px] font-bold text-[#6E4B8B] uppercase tracking-widest">Price Tiers</label>
+                                                                    <button type="button" onClick={() => addPriceTier(pkgIndex)} className="text-[9px] font-bold text-lavender hover:text-charcoal uppercase tracking-widest flex items-center gap-1"><Plus size={10} /> Add Tier</button>
+                                                                </div>
+                                                                <div className="space-y-2">
+                                                                    <div className="grid grid-cols-12 gap-2 px-1">
+                                                                        <div className="col-span-3 text-[8px] font-bold text-gray-400 uppercase tracking-widest">Min Qty</div>
+                                                                        <div className="col-span-3 text-[8px] font-bold text-gray-400 uppercase tracking-widest">Max Qty</div>
+                                                                        <div className="col-span-1"></div>
+                                                                        <div className="col-span-4 text-[8px] font-bold text-gray-400 uppercase tracking-widest">Price / Card</div>
+                                                                    </div>
+                                                                    {pkg.priceTiers.map((tier: any, tierIndex: number) => (
+                                                                        <div key={tierIndex} className="grid grid-cols-12 gap-2 items-center">
+                                                                            <input type="number" required value={tier.minQty === 0 ? '' : tier.minQty} onChange={e => { const newPkgs = [...formData.packages]; newPkgs[pkgIndex].priceTiers[tierIndex].minQty = e.target.value === '' ? 0 : parseInt(e.target.value); setFormData({ ...formData, packages: newPkgs }); }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="col-span-3 px-3 py-2.5 bg-white border border-gray-100 rounded-xl outline-none font-bold text-xs text-center focus:border-lavender" placeholder="Min" />
+                                                                            <input type="number" value={tier.maxQty === null ? '' : tier.maxQty} onChange={e => { const newPkgs = [...formData.packages]; newPkgs[pkgIndex].priceTiers[tierIndex].maxQty = e.target.value === '' ? null : parseInt(e.target.value); setFormData({ ...formData, packages: newPkgs }); }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="col-span-3 px-3 py-2.5 bg-white border border-gray-100 rounded-xl outline-none font-bold text-xs text-center focus:border-lavender" placeholder="Max" />
+                                                                            <div className="col-span-1 flex justify-center text-gray-300"><ArrowRight size={12} /></div>
+                                                                            <div className="col-span-4 relative">
+                                                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">₹</span>
+                                                                                <input type="number" required value={tier.pricePerCard === 0 ? '' : tier.pricePerCard} onChange={e => { const newPkgs = [...formData.packages]; newPkgs[pkgIndex].priceTiers[tierIndex].pricePerCard = e.target.value === '' ? 0 : parseInt(e.target.value); setFormData({ ...formData, packages: newPkgs }); }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full pl-7 pr-3 py-2.5 bg-white border border-gray-100 rounded-xl outline-none font-bold text-xs focus:border-lavender" placeholder="Price" />
+                                                                            </div>
+                                                                            <div className="col-span-1 flex justify-center">
+                                                                                <button type="button" onClick={() => removePriceTier(pkgIndex, tierIndex)} className="text-red-300 hover:text-red-500"><Trash2 size={14} /></button>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </section>
+
+                                            <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
+                                                        <Plus size={14} /> Optional Add-ons
+                                                    </div>
+                                                    <button type="button" onClick={addAddOn} className="text-[10px] font-bold text-lavender hover:text-charcoal uppercase tracking-widest flex items-center gap-1 transition-colors">
+                                                        <Plus size={12} /> Add Custom
+                                                    </button>
+                                                </div>
+                                                
+                                                {formData.addOns.length === 0 ? (
+                                                    <p className="text-[10px] text-[#6E4B8B] italic">No add-ons configured.</p>
                                                 ) : (
-                                                    <label className="w-full h-32 rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center gap-2 text-gray-300 hover:border-lavender hover:text-lavender transition-all cursor-pointer bg-gray-50/50">
-                                                        <input type="file" className="hidden" onChange={(e) => handleMediaUpload(e, 'video')} accept="video/*" />
-                                                        <Upload size={20} strokeWidth={1.5} />
-                                                        <span className="text-[10px] font-black uppercase tracking-widest">Upload Video Reel</span>
-                                                    </label>
+                                                    <div className="space-y-3">
+                                                        {formData.addOns.map((addon, index) => (
+                                                            <div key={index} className="flex flex-col sm:flex-row gap-3 bg-gray-50 p-4 rounded-[1.25rem] border border-gray-100 group/addon">
+                                                                <div className="flex-1 space-y-3">
+                                                                    <input type="text" required value={addon.label || ''} onChange={e => { const newAddOns = [...formData.addOns]; newAddOns[index].label = e.target.value; setFormData({ ...formData, addOns: newAddOns }); }} className="w-full px-4 py-2.5 bg-white border border-gray-100 rounded-xl outline-none text-xs font-bold focus:border-lavender" placeholder="Add-on Name (e.g. Venue Map)" />
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className="relative w-32">
+                                                                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">₹</span>
+                                                                            <input type="number" required value={addon.pricePerCard === 0 ? '' : addon.pricePerCard} onChange={e => { const newAddOns = [...formData.addOns]; newAddOns[index].pricePerCard = e.target.value === '' ? 0 : parseInt(e.target.value); setFormData({ ...formData, addOns: newAddOns }); }} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full pl-7 pr-3 py-2 bg-white border border-gray-100 rounded-xl outline-none font-bold text-xs focus:border-lavender" placeholder="Price" />
+                                                                        </div>
+                                                                        <label className="flex items-center gap-2 cursor-pointer">
+                                                                            <input type="checkbox" checked={addon.isFixedPrice} onChange={e => { const newAddOns = [...formData.addOns]; newAddOns[index].isFixedPrice = e.target.checked; setFormData({ ...formData, addOns: newAddOns }); }} className="w-3.5 h-3.5 text-lavender rounded border-gray-300 focus:ring-lavender" />
+                                                                            <span className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest">One Time (Fixed)</span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <button type="button" onClick={() => removeAddOn(index)} className="self-start sm:self-center p-2 text-red-300 hover:text-red-500 hover:bg-white rounded-xl transition-all"><Trash2 size={16} /></button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 )}
-                                            </div>
-                                        </section>
-                                    </div>
+                                            </section>
+                                        </div>
+                                    )}
+
+                                    {/* MEDIA TAB */}
+                                    {activeFormTab === 'Media' && (
+                                        <div className="space-y-8 animate-in fade-in duration-500">
+                                            <section className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-6">
+                                                <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
+                                                    <Upload size={14} /> Showcase Images
+                                                </div>
+                                                <SortableImageGrid 
+                                                    images={formData.images} 
+                                                    onChange={(images) => setFormData({ ...formData, images })} 
+                                                    onUpload={(e) => handleMediaUpload(e, 'image')} 
+                                                />
+                                            </section>
+                                        </div>
+                                    )}
                                 </div>
                             </form>
 
-                            <div className="p-8 bg-white border-t border-gray-100 w-full flex items-center justify-between shrink-0">
-                                <div className="hidden sm:flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-green-50 text-green-500 flex items-center justify-center">
-                                        <Check size={20} className="" />
-                                    </div>
-                                    <p className="text-xs font-bold text-gray-500">Auto-saved as draft in browser RAM</p>
+                            <div className="p-6 md:p-8 bg-white border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center shrink-0 gap-4">
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                    <div className="w-5 h-5 rounded-full bg-green-50 text-green-500 flex items-center justify-center"><Check size={12} /></div>
+                                    Auto-saved as draft
                                 </div>
-                                <div className="flex gap-4 w-full sm:w-auto">
-                                    <button
-                                        type="button"
-                                        onClick={closeModal}
-                                        className="flex-1 sm:flex-none px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-gray-400 hover:text-charcoal transition-colors"
-                                    >
-                                        Discard
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        form="design-form"
+                                <div className="flex w-full sm:w-auto items-center gap-4">
+                                    <button type="button" onClick={closeModal} className="flex-1 sm:flex-none px-8 py-4 font-bold text-[10px] uppercase tracking-widest text-[#6E4B8B] hover:text-charcoal transition-colors">Discard</button>
+                                    <button 
+                                        type="submit" 
+                                        form="design-form" 
                                         disabled={isSubmitting}
-                                        className="flex-1 sm:flex-none px-10 py-4 bg-charcoal hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-charcoal/20 transition-all flex items-center justify-center gap-2"
+                                        className="flex-1 sm:flex-none px-10 py-4 bg-charcoal hover:bg-black text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-xl shadow-charcoal/20 transition-all flex items-center justify-center gap-2"
                                     >
                                         {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : (editingDesign ? 'Update Design' : 'Publish Design')}
                                     </button>

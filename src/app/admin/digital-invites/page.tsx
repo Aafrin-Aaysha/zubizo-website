@@ -21,8 +21,10 @@ import {
     ExternalLink,
     Image as ImageIcon,
     Globe,
-    PlayCircle
+    PlayCircle,
+    Star
 } from 'lucide-react';
+import { SortableImageGrid } from '@/components/SortableImageGrid';
 import toast from 'react-hot-toast';
 import { cn, getStartingPrice } from '@/lib/utils';
 
@@ -35,7 +37,9 @@ export default function DigitalInvitesAdminPage() {
     const [editingDesign, setEditingDesign] = useState<any>(null);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState<'Image' | 'Video' | 'Website'>('Image');
+    const [activeTab, setActiveTab] = useState<'Image' | 'Website'>('Image');
+    const [sortBy, setSortBy] = useState('newest');
+    const [filterStatus, setFilterStatus] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -52,10 +56,12 @@ export default function DigitalInvitesAdminPage() {
         addOns: [] as any[],
         isTrending: false,
         isFeatured: false,
+        isNewArrival: false,
         isActive: true,
         images: [] as string[],
         videoUrl: '',
-        demoUrl: ''
+        demoUrl: '',
+        packageName: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -63,8 +69,8 @@ export default function DigitalInvitesAdminPage() {
         setIsLoading(true);
         try {
             const [designsRes, catsRes] = await Promise.all([
-                fetch('/api/designs?showInactive=true'),
-                fetch('/api/categories')
+                fetch(`/api/designs?showInactive=true&_t=${Date.now()}`, { cache: 'no-store' }),
+                fetch(`/api/categories?_t=${Date.now()}`, { cache: 'no-store' })
             ]);
             const designsData = await designsRes.json();
             const catsData = await catsRes.json();
@@ -113,7 +119,7 @@ export default function DigitalInvitesAdminPage() {
         }
     }, [formData.name, formData.sku]);
 
-    const filteredDesigns = designs.filter(design => {
+    let filteredDesigns = designs.filter(design => {
         const matchesSearch =
             design.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             design.sku.toLowerCase().includes(searchQuery.toLowerCase());
@@ -122,14 +128,26 @@ export default function DigitalInvitesAdminPage() {
         
         let matchesTab = false;
         if (activeTab === 'Image') {
-            matchesTab = categoryName === 'Digital E-Invite' && (!design.videoUrl || design.videoUrl.trim() === '');
-        } else if (activeTab === 'Video') {
-            matchesTab = categoryName === 'Digital E-Invite' && (design.videoUrl && design.videoUrl.trim() !== '');
+            matchesTab = categoryName === 'Digital E-Invite';
         } else {
             matchesTab = categoryName === 'Premium E-Website';
         }
 
-        return matchesSearch && matchesTab;
+        let matchesStatus = true;
+        if (filterStatus === 'best-seller') matchesStatus = design.isTrending === true;
+        if (filterStatus === 'trending') matchesStatus = design.isFeatured === true;
+        if (filterStatus === 'new-arrival') matchesStatus = design.isNewArrival === true;
+        if (filterStatus === 'active') matchesStatus = design.isActive === true;
+        if (filterStatus === 'draft') matchesStatus = design.isActive === false;
+
+        return matchesSearch && matchesTab && matchesStatus;
+    });
+
+    filteredDesigns = filteredDesigns.sort((a, b) => {
+        if (sortBy === 'price-high') return (b.basePrice || 0) - (a.basePrice || 0);
+        if (sortBy === 'price-low') return (a.basePrice || 0) - (b.basePrice || 0);
+        if (sortBy === 'oldest') return String(a.sku).localeCompare(String(b.sku));
+        return String(b.sku).localeCompare(String(a.sku)); // Default newest
     });
 
     const totalPages = Math.ceil(filteredDesigns.length / itemsPerPage);
@@ -163,6 +181,8 @@ export default function DigitalInvitesAdminPage() {
                         setFormData(prev => ({ ...prev, videoUrl: result.url }));
                         toast.success('Video uploaded successfully');
                     }
+                } else {
+                    toast.error(result.message || `Failed to upload ${type}`);
                 }
             } catch (error) {
                 toast.error(`Failed to upload ${type}`);
@@ -174,6 +194,8 @@ export default function DigitalInvitesAdminPage() {
         }
         setIsSubmitting(false);
     };
+
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -262,10 +284,12 @@ export default function DigitalInvitesAdminPage() {
                 addOns: design.addOns || [],
                 isTrending: design.isTrending || false,
                 isFeatured: design.isFeatured || false,
+                isNewArrival: design.isNewArrival || false,
                 isActive: design.isActive !== undefined ? design.isActive : true,
                 images: design.images || [],
                 videoUrl: design.videoUrl || '',
-                demoUrl: design.demoUrl || ''
+                demoUrl: design.demoUrl || '',
+                packageName: design.packageName || ''
             });
         } else {
             setEditingDesign(null);
@@ -285,10 +309,12 @@ export default function DigitalInvitesAdminPage() {
                 addOns: [],
                 isTrending: false,
                 isFeatured: false,
+                isNewArrival: false,
                 isActive: true,
                 images: [],
                 videoUrl: '',
-                demoUrl: ''
+                demoUrl: '',
+                packageName: ''
             });
         }
         setIsModalOpen(true);
@@ -303,13 +329,13 @@ export default function DigitalInvitesAdminPage() {
         <div className="space-y-8 pb-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-gray-900 tracking-tight">Digital Invite Management</h1>
-                    <p className="text-gray-500 mt-1 font-medium">Manage Image, Video, and Website Invitations.</p>
+                    <h2 className="text-2xl font-normal text-charcoal">Digital Invite Management</h2>
+                    <p className="text-gray-500 mt-1 font-medium">Manage Image and Website Invitations.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => openModal()}
-                        className="bg-lavender hover:bg-[#9a6ab5] text-white px-8 py-3.5 rounded-2xl font-black shadow-xl shadow-lavender/20 transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
+                        className="bg-lavender hover:bg-[#9a6ab5] text-white px-8 py-3.5 rounded-2xl font-bold shadow-xl shadow-lavender/20 transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest text-xs"
                     >
                         <Plus size={20} />
                         New {activeTab} Invite
@@ -318,33 +344,24 @@ export default function DigitalInvitesAdminPage() {
             </div>
 
             {/* Tab Switched & Search */}
-            <div className="flex flex-col xl:flex-row items-center gap-6">
-                <div className="bg-gray-100 p-1.5 rounded-2xl flex items-center gap-1 w-full xl:w-auto">
+            <div className="bg-white p-5 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-4">
+                {/* Top Row: Tabs */}
+                <div className="flex items-center gap-2 overflow-x-auto w-full pb-2 scrollbar-hide">
                     <button
                         onClick={() => setActiveTab('Image')}
                         className={cn(
-                            "flex-1 xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all",
-                            activeTab === 'Image' ? "bg-white text-lavender shadow-sm" : "text-gray-400 hover:text-gray-600"
+                            "flex-1 md:flex-none xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all shrink-0",
+                            activeTab === 'Image' ? "bg-lavender text-white shadow-md shadow-lavender/20" : "bg-gray-50 text-gray-500 hover:text-gray-700"
                         )}
                     >
                         <ImageIcon size={14} />
                         Image
                     </button>
                     <button
-                        onClick={() => setActiveTab('Video')}
-                        className={cn(
-                            "flex-1 xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all",
-                            activeTab === 'Video' ? "bg-white text-lavender shadow-sm" : "text-gray-400 hover:text-gray-600"
-                        )}
-                    >
-                        <PlayCircle size={14} />
-                        Video
-                    </button>
-                    <button
                         onClick={() => setActiveTab('Website')}
                         className={cn(
-                            "flex-1 xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest transition-all",
-                            activeTab === 'Website' ? "bg-white text-lavender shadow-sm" : "text-gray-400 hover:text-gray-600"
+                            "flex-1 md:flex-none xl:w-40 px-6 py-3 rounded-xl flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest transition-all shrink-0",
+                            activeTab === 'Website' ? "bg-lavender text-white shadow-md shadow-lavender/20" : "bg-gray-50 text-gray-500 hover:text-gray-700"
                         )}
                     >
                         <Globe size={14} />
@@ -352,23 +369,52 @@ export default function DigitalInvitesAdminPage() {
                     </button>
                 </div>
 
-                <div className="relative flex-1 group w-full">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-lavender transition-colors" size={18} />
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={`Search ${activeTab} invites by SKU or Name...`}
-                        className="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender transition-all font-medium shadow-sm"
-                    />
+                {/* Bottom Row: Search, Status, Sort */}
+                <div className="flex flex-col xl:flex-row items-center justify-between gap-4 border-t border-gray-100 pt-4 w-full">
+                    <div className="relative w-full xl:w-96 group shrink-0">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6E4B8B] group-focus-within:text-lavender transition-colors" size={18} />
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder={`Search ${activeTab} invites by SKU or Name...`}
+                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm text-charcoal focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender transition-all font-medium"
+                        />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
+                        <select
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                            className="w-full sm:w-auto px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender text-charcoal font-bold cursor-pointer"
+                        >
+                            <option value="all">All Status</option>
+                            <option value="best-seller">Best Seller</option>
+                            <option value="trending">Trending</option>
+                            <option value="new-arrival">New Arrival</option>
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                        </select>
+
+                        <select
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                            className="w-full sm:w-auto px-4 py-3 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:outline-none focus:ring-4 focus:ring-lavender/10 focus:border-lavender text-charcoal font-bold cursor-pointer"
+                        >
+                            <option value="newest">ID: Descending</option>
+                            <option value="oldest">ID: Ascending</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="price-low">Price: Low to High</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             {/* Design List */}
             <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden min-h-[400px]">
-                <div className="overflow-x-auto">
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50 text-gray-400 text-[10px] font-black uppercase tracking-widest border-b border-gray-100">
+                        <thead className="bg-gray-50 text-[#6E4B8B] text-[10px] font-bold uppercase tracking-widest border-b border-gray-100">
                             <tr>
                                 <th className="px-8 py-5">Invite</th>
                                 <th className="px-8 py-5">SKU</th>
@@ -411,40 +457,51 @@ export default function DigitalInvitesAdminPage() {
                                                         <div className="w-full h-full flex items-center justify-center text-gray-200"><ImageIcon size={16} /></div>
                                                     )}
                                                 </div>
-                                                <div>
-                                                    <p className="font-bold text-charcoal">{design.name}</p>
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">₹{design.basePrice || getStartingPrice(design)}</p>
-                                                </div>
+                                                 <div>
+                                                     <p className="font-bold text-charcoal">{design.name}</p>
+                                                     {design.packageName && (
+                                                         <p className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest mt-0.5">
+                                                             {design.packageName} Package • ₹{design.basePrice || getStartingPrice(design)}
+                                                         </p>
+                                                     )}
+                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-5 text-xs font-black text-lavender uppercase tracking-widest">{design.sku}</td>
+                                        <td className="px-8 py-5 text-xs font-bold text-lavender uppercase tracking-widest">{design.sku}</td>
                                         <td className="px-8 py-5">
                                             {activeTab === 'Website' ? (
                                                 <a href={design.demoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold text-lavender hover:underline">
                                                     <ExternalLink size={14} /> View Live
-                                                </a>
-                                            ) : activeTab === 'Video' ? (
-                                                <a href={design.videoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs font-bold text-blue-500 hover:underline">
-                                                    <PlayCircle size={14} /> Play Video
                                                 </a>
                                             ) : (
                                                 <span className="text-xs font-medium text-gray-500">{design.images?.length || 0} Images</span>
                                             )}
                                         </td>
                                         <td className="px-8 py-5">
-                                            <div className={cn(
-                                                "inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
-                                                design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-gray-400 bg-gray-50 border-gray-100"
-                                            )}>
-                                                {design.isActive ? 'Active' : 'Draft'}
+                                            <div className="flex flex-wrap gap-2 items-center">
+                                                {design.isTrending && (
+                                                    <span className="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold">Best Seller</span>
+                                                )}
+                                                {design.isFeatured && (
+                                                    <span className="bg-lavender/10 text-lavender text-[10px] px-2 py-0.5 rounded font-bold">Trending</span>
+                                                )}
+                                                {design.isNewArrival && (
+                                                    <span className="bg-[#ae7fcb] text-white text-[10px] px-2 py-0.5 rounded font-bold">New Arrival</span>
+                                                )}
+                                                <div className={cn(
+                                                    "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border",
+                                                    design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-[#6E4B8B] bg-gray-50 border-gray-100"
+                                                )}>
+                                                    {design.isActive ? 'Active' : 'Draft'}
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-8 py-5 text-right">
-                                            <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button onClick={() => openModal(design)} className="p-2.5 text-gray-400 hover:text-lavender hover:bg-lavender/5 rounded-xl transition-all border border-transparent hover:border-lavender/20">
+                                            <div className="flex items-center justify-end gap-3 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                                <button onClick={() => openModal(design)} className="p-2.5 text-[#6E4B8B] hover:text-lavender hover:bg-lavender/5 rounded-xl transition-all border border-transparent hover:border-lavender/20">
                                                     <Edit2 size={18} />
                                                 </button>
-                                                <button onClick={() => deleteDesign(design._id)} className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100">
+                                                <button onClick={() => deleteDesign(design._id)} className="p-2.5 text-[#6E4B8B] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100">
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
@@ -454,6 +511,67 @@ export default function DigitalInvitesAdminPage() {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile/Tablet Card Layout */}
+                <div className="md:hidden p-5 space-y-4">
+                    {isLoading ? (
+                        [...Array(3)].map((_, i) => (
+                            <div key={i} className="animate-pulse bg-gray-50 p-5 rounded-3xl border border-gray-100 h-40"></div>
+                        ))
+                    ) : paginatedDesigns.length === 0 ? (
+                        <div className="py-16 text-center">
+                            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-200 mx-auto mb-4">
+                                <Zap size={32} />
+                            </div>
+                            <p className="font-bold text-gray-900">No {activeTab} invites found</p>
+                            <button onClick={() => openModal()} className="text-lavender font-bold hover:underline text-sm mt-1">Create your first invite</button>
+                        </div>
+                    ) : (
+                        paginatedDesigns.map(design => (
+                            <div key={design._id} className="bg-gray-50/40 p-5 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-4">
+                                <div className="flex items-start gap-4">
+                                    <div className="w-16 h-16 rounded-2xl bg-gray-100 border border-gray-100 overflow-hidden flex-shrink-0 shadow-sm">
+                                        {design.images?.[0] ? (
+                                            <img src={design.images[0]} alt="" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-gray-300"><ImageIcon size={16} /></div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-bold text-charcoal text-sm truncate">{design.name}</p>
+                                        <div className="flex flex-wrap gap-2 mt-2">
+                                            <span className="text-[10px] font-bold text-lavender bg-lavender/5 px-2.5 py-1 rounded-full border border-lavender/10 uppercase tracking-widest">
+                                                {design.sku}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex items-center justify-between border-t border-gray-100/60 pt-3">
+                                    <div className="flex items-center gap-2">
+                                        {design.isTrending && <span className="bg-orange-100 text-orange-800 text-[10px] px-2 py-0.5 rounded font-bold">Best Seller</span>}
+                                        {design.isFeatured && <span className="bg-lavender/10 text-lavender text-[10px] px-2 py-0.5 rounded font-bold">Trending</span>}
+                                        {design.isNewArrival && <span className="bg-[#ae7fcb] text-white text-[10px] px-2 py-0.5 rounded font-bold">New Arrival</span>}
+                                        <div className={cn(
+                                            "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border",
+                                            design.isActive ? "text-green-600 bg-green-50 border-green-100" : "text-[#6E4B8B] bg-gray-50 border-gray-100"
+                                        )}>
+                                            {design.isActive ? 'Active' : 'Draft'}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={() => openModal(design)} className="p-2 text-[#6E4B8B] hover:text-lavender hover:bg-lavender/5 rounded-xl transition-all">
+                                            <Edit2 size={16} />
+                                        </button>
+                                        <button onClick={() => deleteDesign(design._id)} className="p-2 text-[#6E4B8B] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
 
@@ -471,11 +589,11 @@ export default function DigitalInvitesAdminPage() {
                             <div className="p-8 bg-white border-b border-gray-100 flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-2xl bg-lavender/10 text-lavender flex items-center justify-center">
-                                        {activeTab === 'Image' ? <ImageIcon size={24} /> : activeTab === 'Video' ? <PlayCircle size={24} /> : <Globe size={24} />}
+                                        {activeTab === 'Image' ? <ImageIcon size={24} /> : <Globe size={24} />}
                                     </div>
                                     <div>
-                                        <h2 className="text-2xl font-black text-charcoal">{editingDesign ? 'Edit' : 'Create'} {activeTab} Invite</h2>
-                                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-1">Specialized Digital Configuration</p>
+                                        <h2 className="text-2xl font-normal text-charcoal">{editingDesign ? 'Edit' : 'Create'} {activeTab} Invite</h2>
+                                        <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest mt-1">Specialized Digital Configuration</p>
                                     </div>
                                 </div>
                                 <button onClick={closeModal} className="w-10 h-10 hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors"><X size={20} /></button>
@@ -486,56 +604,95 @@ export default function DigitalInvitesAdminPage() {
                                     {/* Left Column */}
                                     <div className="space-y-8">
                                         <section className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-5">
-                                             <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                             <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
                                                 <Info size={14} /> Essential Details
-                                            </h3>
+                                            </div>
                                             <div className="space-y-5">
                                                 <div>
-                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Name</label>
+                                                    <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">Name</label>
                                                     <input type="text" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal" placeholder="e.g. Royal Marigold" />
                                                 </div>
-                                                <div className="grid grid-cols-2 gap-5">
-                                                    <div>
-                                                        <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">SKU</label>
-                                                        <input type="text" required value={formData.sku} onChange={e => setFormData({ ...formData, sku: e.target.value })} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-black uppercase" placeholder="ZT-001" />
-                                                    </div>
-                                                    <div>
-                                                        <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Price (₹)</label>
-                                                        <input type="number" required value={formData.basePrice === 0 ? '' : formData.basePrice} onChange={e => setFormData({ ...formData, basePrice: e.target.value === '' ? 0 : parseFloat(e.target.value) })} onWheel={(e) => (e.target as HTMLInputElement).blur()} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender font-black" />
-                                                    </div>
+                                                <div>
+                                                    <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">SKU</label>
+                                                    <input type="text" required value={formData.sku} onChange={e => setFormData({ ...formData, sku: e.target.value })} className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold uppercase" placeholder="ZT-001" />
                                                 </div>
                                                 
-                                                {activeTab === 'Video' && (
-                                                    <div>
-                                                        <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Video Resource</label>
-                                                        <div className="space-y-3">
-                                                            <div className="flex items-center gap-3">
-                                                                <input type="text" value={formData.videoUrl} onChange={e => setFormData({ ...formData, videoUrl: e.target.value })} className="flex-1 px-5 py-4 bg-blue-50/50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-blue-500 outline-none transition-all font-bold text-blue-600 text-xs" placeholder="Video URL or Upload..." />
-                                                                <label className="w-14 h-14 bg-white border border-gray-100 rounded-[1.25rem] flex items-center justify-center text-blue-500 hover:border-blue-300 cursor-pointer shadow-sm">
-                                                                    <input type="file" className="hidden" onChange={(e) => handleMediaUpload(e, 'video')} accept="video/*" />
-                                                                    <Upload size={20} />
-                                                                </label>
+                                                {activeTab === 'Website' && (
+                                                    <>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">Live Demo Link</label>
+                                                            <input type="url" required value={formData.demoUrl} onChange={e => setFormData({ ...formData, demoUrl: e.target.value })} className="w-full px-5 py-4 bg-lavender/5 border-2 border-lavender/20 rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold text-lavender text-xs" placeholder="https://..." />
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-5">
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">Package</label>
+                                                                <select 
+                                                                    required 
+                                                                    value={formData.packageName} 
+                                                                    onChange={e => setFormData({ ...formData, packageName: e.target.value })} 
+                                                                    className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold text-charcoal"
+                                                                >
+                                                                    <option value="">Select Package</option>
+                                                                    <option value="Starter">Starter</option>
+                                                                    <option value="Value">Value</option>
+                                                                    <option value="Premium">Premium</option>
+                                                                    <option value="Ultra">Ultra</option>
+                                                                </select>
                                                             </div>
-                                                            {formData.videoUrl && (
-                                                                <div className="px-4 py-2 bg-blue-50 rounded-xl flex items-center justify-between">
-                                                                    <span className="text-[9px] font-black uppercase text-blue-400">Clip Linked</span>
-                                                                    <button type="button" onClick={() => setFormData({ ...formData, videoUrl: '' })} className="text-blue-600 hover:text-red-500"><Trash2 size={14} /></button>
-                                                                </div>
-                                                            )}
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">Price (₹)</label>
+                                                                <input 
+                                                                    type="number" 
+                                                                    required 
+                                                                    value={formData.basePrice === 0 ? '' : formData.basePrice} 
+                                                                    onChange={e => setFormData({ ...formData, basePrice: e.target.value === '' ? 0 : parseFloat(e.target.value) })} 
+                                                                    onWheel={(e) => (e.target as HTMLInputElement).blur()} 
+                                                                    className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-[1.25rem] focus:bg-white focus:border-lavender font-bold" 
+                                                                    placeholder="e.g. 2499"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </>
+                                                )}
+
+                                                <div className="space-y-3 mb-6">
+                                                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ ...formData, isNewArrival: !formData.isNewArrival })}>
+                                                        <div>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as New Arrival</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in "Just Designed for You" section</p>
+                                                        </div>
+                                                        <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isNewArrival ? "bg-lavender" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isNewArrival ? "left-5" : "left-1")} />
                                                         </div>
                                                     </div>
-                                                )}
 
-                                                {activeTab === 'Website' && (
-                                                    <div>
-                                                        <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Live Demo Link</label>
-                                                        <input type="url" required value={formData.demoUrl} onChange={e => setFormData({ ...formData, demoUrl: e.target.value })} className="w-full px-5 py-4 bg-lavender/5 border-2 border-lavender/20 rounded-[1.25rem] focus:bg-white focus:border-lavender outline-none transition-all font-bold text-lavender text-xs" placeholder="https://..." />
+                                                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ ...formData, isTrending: !formData.isTrending })}>
+                                                        <div>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as Best Seller</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in best seller sections</p>
+                                                        </div>
+                                                        <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isTrending ? "bg-lavender" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isTrending ? "left-5" : "left-1")} />
+                                                        </div>
                                                     </div>
-                                                )}
+
+                                                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-transparent hover:border-lavender/20 transition-all cursor-pointer"
+                                                        onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}>
+                                                        <div>
+                                                            <p className="font-bold text-charcoal text-sm">Mark as Trending</p>
+                                                            <p className="text-[10px] text-[#6E4B8B] font-bold uppercase tracking-widest">Show in trending home page section</p>
+                                                        </div>
+                                                        <div className={cn("w-10 h-6 rounded-full relative transition-all", formData.isFeatured ? "bg-lavender" : "bg-gray-200")}>
+                                                            <div className={cn("absolute top-1 w-4 h-4 bg-white rounded-full transition-all", formData.isFeatured ? "left-5" : "left-1")} />
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                                 <div>
-                                                    <label className="text-[10px] font-black text-charcoal uppercase tracking-widest mb-2 block">Visibility</label>
-                                                    <button type="button" onClick={() => setFormData({ ...formData, isActive: !formData.isActive })} className={cn("w-full px-5 py-4 rounded-[1.25rem] border-2 flex items-center justify-between transition-all", formData.isActive ? "border-green-100 bg-green-50/50 text-green-700" : "border-gray-100 bg-gray-50 text-gray-400")}>
+                                                    <label className="text-[10px] font-bold text-charcoal uppercase tracking-widest mb-2 block">Visibility</label>
+                                                    <button type="button" onClick={() => setFormData({ ...formData, isActive: !formData.isActive })} className={cn("w-full px-5 py-4 rounded-[1.25rem] border-2 flex items-center justify-between transition-all", formData.isActive ? "border-green-100 bg-green-50/50 text-green-700" : "border-gray-100 bg-gray-50 text-[#6E4B8B]")}>
                                                         <span className="font-bold text-xs">{formData.isActive ? 'Active on Catalog' : 'Save as Draft'}</span>
                                                         <div className={cn("w-1.5 h-1.5 rounded-full shrink-0", formData.isActive ? "bg-green-500" : "bg-gray-300")} />
                                                     </button>
@@ -547,32 +704,25 @@ export default function DigitalInvitesAdminPage() {
                                     {/* Right Column */}
                                     <div className="space-y-8">
                                         <section className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm space-y-6">
-                                            <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                            <div className="text-[10px] font-bold text-[#6E4B8B] uppercase tracking-widest flex items-center gap-2">
                                                 <ImageIcon size={14} /> Showcase Images
-                                            </h3>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                {formData.images.map((img, idx) => (
-                                                    <div key={idx} className="aspect-[3/4] rounded-2xl overflow-hidden relative group border border-gray-50 bg-gray-50">
-                                                        <img src={img} alt="" className="w-full h-full object-cover" />
-                                                        <button type="button" onClick={() => setFormData({ ...formData, images: formData.images.filter((_, i) => i !== idx) })} className="absolute top-2 right-2 w-8 h-8 bg-black/60 backdrop-blur-md text-white rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all border border-white/20"><Trash2 size={14} /></button>
-                                                    </div>
-                                                ))}
-                                                <label className="aspect-[3/4] rounded-2xl border-2 border-dashed border-gray-100 flex flex-col items-center justify-center gap-3 text-gray-300 hover:border-lavender hover:text-lavender transition-all cursor-pointer bg-gray-50/30 hover:bg-lavender/5 group">
-                                                    <input type="file" multiple className="hidden" onChange={(e) => handleMediaUpload(e, 'image')} accept="image/*" />
-                                                    <div className="w-10 h-10 rounded-full bg-white group-hover:bg-lavender/10 flex items-center justify-center shadow-sm transition-all">
-                                                        <Plus size={20} />
-                                                    </div>
-                                                    <span className="text-[8px] font-black uppercase text-center px-4 tracking-widest">Add {activeTab === 'Website' ? 'Mockups' : 'Designs'}</span>
-                                                </label>
                                             </div>
+                                                <SortableImageGrid 
+                                                    images={formData.images} 
+                                                    onChange={(images) => setFormData({ ...formData, images })} 
+                                                    onUpload={(e) => handleMediaUpload(e, 'image')} 
+                                                    aspectRatio="portrait"
+                                                    showPrimaryButton={true}
+                                                    uploadText={`Add ${activeTab === 'Website' ? 'Mockups' : 'Designs'}`}
+                                                />
                                         </section>
                                     </div>
                                 </div>
                             </form>
 
                             <div className="p-8 bg-white border-t border-gray-100 flex justify-between items-center shrink-0">
-                                <button onClick={closeModal} className="px-8 py-4 font-black text-[10px] uppercase tracking-widest text-gray-400 hover:text-charcoal transition-colors">Discard</button>
-                                <button type="submit" form="digital-form" disabled={isSubmitting} className="px-10 py-4 bg-charcoal hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-charcoal/20 transition-all flex items-center justify-center gap-3">
+                                <button onClick={closeModal} className="px-8 py-4 font-bold text-[10px] uppercase tracking-widest text-[#6E4B8B] hover:text-charcoal transition-colors">Discard</button>
+                                <button type="submit" form="digital-form" disabled={isSubmitting} className="px-10 py-4 bg-charcoal hover:bg-black text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-xl shadow-charcoal/20 transition-all flex items-center justify-center gap-3">
                                     {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : (editingDesign ? 'Update Invite' : `Publish ${activeTab} Invite`)}
                                 </button>
                             </div>

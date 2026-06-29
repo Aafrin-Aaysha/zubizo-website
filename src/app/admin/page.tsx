@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
                     <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm text-lavender">
                         <Lock className="h-8 w-8" />
                     </div>
-                    <h1 className="text-3xl font-bold font-serif text-charcoal">Admin Portal</h1>
+                    <h1 className="text-xl font-bold font-serif text-charcoal">Admin Portal</h1>
                     <p className="mt-2 text-sm text-charcoal/40 uppercase tracking-widest font-semibold">
                         Restricted Access
                     </p>

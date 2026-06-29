@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X } from 'lucide-react';
+import { WhatsAppIcon } from './whatsapp-icon';
 import { getWhatsAppNumber, sanitizeWhatsAppNumber } from '@/lib/utils';
 import { LeadCaptureModal, LeadData } from './LeadCaptureModal';
 
@@ -83,7 +84,7 @@ I'm interested in your Digital Invitations. Can you help me choose the best one?
                     className="w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center text-white shadow-[0_10px_30px_-5px_rgba(37,211,102,0.5)] pointer-events-auto transition-transform relative"
                 >
                     <div className="absolute inset-0 bg-[#25D366] rounded-full animate-ping opacity-25" />
-                    <MessageCircle size={32} fill="white" className="relative z-10" />
+                    <WhatsAppIcon size={32} className="relative z-10 text-white" />
                 </motion.button>
             </div>
 

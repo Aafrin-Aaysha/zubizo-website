@@ -19,7 +19,8 @@ import {
     Database,
     BarChart,
     FileText,
-    History
+    History,
+    Smartphone
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LogoIcon } from '@/components/ui/logo-icon';
@@ -27,16 +28,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const sidebarItems = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-    { name: 'Homepage Builder', href: '/admin/builder', icon: FolderTree },
     { name: 'Manage Designs', href: '/admin/designs', icon: ImageIcon },
-    { name: 'Digital Invites', href: '/admin/digital-invites', icon: Zap },
+    { name: 'Digital Invites', href: '/admin/digital-invites', icon: Smartphone },
     { name: 'Bulk Import', href: '/admin/bulk-import', icon: Zap },
-    { name: 'Team Management', href: '/admin/employees', icon: User },
     { name: 'Categories', href: '/admin/categories', icon: FolderTree },
-    { name: 'Invoice Generator', href: '/admin/invoices/new', icon: FileText },
-    { name: 'Invoice History', href: '/admin/invoices', icon: History },
-    { name: 'Inventory', href: '/admin/inventory', icon: Database },
-    { name: 'Website Settings', href: '/admin/settings', icon: Settings },
     { name: 'Account', href: '/admin/account', icon: User },
 ];
 
@@ -86,7 +81,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (pathname === '/admin/login') return <>{children}</>;
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-gray-50 flex admin-layout">
             {/* Sidebar Overlay for Mobile */}
             <AnimatePresence>
                 {isMobile && isSidebarOpen && (
@@ -123,7 +118,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                              <motion.span
                                  initial={{ opacity: 0 }}
                                  animate={{ opacity: 1 }}
-                                 className="text-2xl text-lavender font-extrabold italic"
+                                 className="text-[28px] font-semibold italic text-lavender"
                                  style={{ fontFamily: 'var(--font-fraunces), serif' }}
                              >
                                  Zubizo
@@ -195,7 +190,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         {isMobile && (
                             <div className="flex items-center gap-2">
                                 <LogoIcon size={24} />
-                                 <span className="text-2xl text-lavender font-extrabold italic" style={{ fontFamily: 'var(--font-fraunces), serif' }}>Zubizo</span>
+                                 <span className="text-[28px] font-semibold italic text-lavender" style={{ fontFamily: 'var(--font-fraunces), serif' }}>Zubizo</span>
                             </div>
                         )}
                     </div>

@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
         return NextResponse.redirect(url);
     }
 
-    // Admin Route Protection
+    // 1. Admin Route Protection
     if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
         if (!adminToken) {
             const url = request.nextUrl.clone();
@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
         }
     }
 
-    // Employee Route Protection
+    // 2. Employee Route Protection
     if (pathname.startsWith('/employee') && pathname !== '/employee/login') {
         if (!employeeToken) {
             const url = request.nextUrl.clone();
@@ -30,14 +30,14 @@ export function middleware(request: NextRequest) {
         }
     }
 
-    // Prevent logged in admins from visiting admin login
+    // 3. Prevent logged in admins from visiting admin login
     if (pathname === '/admin/login' && adminToken) {
         const url = request.nextUrl.clone();
         url.pathname = '/admin/dashboard';
         return NextResponse.redirect(url);
     }
 
-    // Prevent logged in employees from visiting employee login
+    // 4. Prevent logged in employees from visiting employee login
     if (pathname === '/employee/login' && employeeToken) {
         const url = request.nextUrl.clone();
         url.pathname = '/employee/dashboard';
@@ -50,6 +50,7 @@ export function middleware(request: NextRequest) {
         !pathname.startsWith('/employee') &&
         !pathname.startsWith('/api') &&
         !pathname.startsWith('/coming-soon') &&
+        !pathname.startsWith('/policies') &&
         !pathname.includes('.') && 
         !pathname.startsWith('/_next');
 

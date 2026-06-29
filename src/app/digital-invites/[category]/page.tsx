@@ -21,7 +21,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { category } = await params;
     const titles: Record<string, string> = {
         image: "E-Invites (Image) | Premium Digital Collection | Zubizo",
-        video: "E-Invites (Video) | Animated Digital Collection | Zubizo",
         website: "E-Website Invites | Interactive Wedding Websites | Zubizo",
     };
 
@@ -34,12 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 const CATEGORY_MAP: Record<string, { title: string, subtitle: string, categoryName: string }> = {
     image: {
         title: "Image E-Invites",
-        subtitle: "Artisanal high-resolution designs crafted for elegant digital sharing.",
-        categoryName: "Digital E-Invite"
-    },
-    video: {
-        title: "Video E-Invites",
-        subtitle: "Cinematic animations with custom music for a grand digital reveal.",
+        subtitle: "Artisanal high-resolution designs crafted for elegant digital sharing. Available in High-Resolution JPEG, PNG & PDF formats for a flat price of ₹499.",
         categoryName: "Digital E-Invite"
     },
     website: {
@@ -98,26 +92,26 @@ export default async function CategoryPage({ params }: Props) {
     const serializedDesigns = JSON.parse(JSON.stringify(designs));
 
     return (
-        <main className="min-h-screen bg-pearl-white">
+        <main className="min-h-screen bg-pearl-white font-dmsans">
             <LuxuryNavbar />
 
             {/* Header */}
-            <section className="pt-32 pb-16 bg-white border-b border-charcoal/5">
+            <section className="pt-28 pb-12 bg-transparent border-b border-[#ae7fcb]/10">
                 <div className="site-container px-4">
                     {/* Breadcrumb */}
-                    <nav className="flex items-center gap-2 mb-8 text-[10px] font-black uppercase tracking-[0.2em] text-lavender/40">
-                        <Link href="/" className="hover:text-lavender transition-colors">Home</Link>
+                    <nav className="flex items-center gap-2 mb-8 text-[10px] font-bold uppercase tracking-[0.2em] text-[#6E4B8B]/60">
+                        <Link href="/" className="hover:text-[#ae7fcb] transition-colors">Home</Link>
                         <span>/</span>
-                        <Link href="/digital-invites" className="hover:text-lavender transition-colors">Digital Invites</Link>
+                        <Link href="/digital-invites" className="hover:text-[#ae7fcb] transition-colors">Digital Invites</Link>
                         <span>/</span>
-                        <span className="text-charcoal">{category}</span>
+                        <span className="text-slate-400">{category}</span>
                     </nav>
 
                     <div className="max-w-3xl">
-                        <h1 className="text-5xl md:text-6xl font-serif text-charcoal mb-6">
+                        <h1 className="text-5xl md:text-6xl font-italiana font-normal text-slate-800 mb-6">
                             {config.title}
                         </h1>
-                        <p className="text-lg text-charcoal/50 font-medium leading-relaxed">
+                        <p className="text-lg text-slate-500 font-light leading-relaxed">
                             {config.subtitle}
                         </p>
                     </div>
@@ -125,7 +119,7 @@ export default async function CategoryPage({ params }: Props) {
             </section>
 
             {/* Grid */}
-            <section className="py-20">
+            <section className="py-12">
                 <div className="site-container px-4">
                     {designs.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -139,8 +133,8 @@ export default async function CategoryPage({ params }: Props) {
                         </div>
                     ) : (
                         <div className="py-32 text-center">
-                            <p className="text-2xl font-serif italic text-charcoal/20">No designs found in this category.</p>
-                            <Link href="/digital-invites" className="mt-8 inline-block text-lavender font-bold text-xs uppercase tracking-widest border-b border-lavender/20 pb-1">Back to All Invites</Link>
+                            <p className="text-2xl font-italiana font-normal italic text-slate-400">No designs found in this category.</p>
+                            <Link href="/digital-invites" className="mt-8 inline-block text-[#6E4B8B] hover:text-[#ae7fcb] font-bold text-xs uppercase tracking-widest border-b border-[#ae7fcb]/20 pb-1">Back to All Invites</Link>
                         </div>
                     )}
                 </div>

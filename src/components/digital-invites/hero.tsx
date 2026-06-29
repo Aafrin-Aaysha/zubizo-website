@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export const DigitalInvitesHero = () => {
   return (
-    <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden bg-gradient-to-br from-lavender/10 via-pearl-white to-blush-rose">
+    <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden bg-gradient-to-br from-lavender/10 via-pearl-white to-blush-rose">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
         <motion.div 
@@ -34,33 +34,19 @@ export const DigitalInvitesHero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <span className="inline-block px-4 py-1.5 mb-6 text-[11px] font-black uppercase tracking-[0.3em] text-lavender bg-white/60 backdrop-blur-sm border border-lavender/10 rounded-full shadow-sm">
+            <span className="inline-block px-4 py-1.5 mb-6 text-[11px] font-bold uppercase tracking-[0.3em] text-[#6E4B8B] bg-white/60 backdrop-blur-sm border border-[#ae7fcb]/10 rounded-full shadow-sm">
               Artisanal Digital Experiences
             </span>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif text-charcoal leading-[0.9] mb-8 tracking-tight">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-italiana font-normal text-slate-800 leading-[0.9] mb-8 tracking-tight">
               Digital <br />
-              <span className="italic text-lavender">Wedding Invitations</span>
+              <span className="italic text-[#ae7fcb]">Wedding Invitations</span>
             </h1>
-            <p className="text-lg md:text-xl text-charcoal/60 font-medium max-w-2xl mx-auto mb-12 leading-relaxed">
+            <p className="text-lg md:text-xl text-slate-500 font-light max-w-2xl mx-auto mb-8 leading-relaxed">
               Elegant, interactive, and affordable invites tailored for your special day. 
               Handcrafted designs that bring your celebration to life in the digital realm.
             </p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6"
-          >
-            <Link 
-              href="#categories" 
-              className="group flex items-center gap-3 px-10 py-5 bg-lavender text-white rounded-full font-bold text-sm uppercase tracking-widest hover:bg-lavender/90 transition-all shadow-lg shadow-lavender/20 active:scale-95"
-            >
-              Explore Designs
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </motion.div>
         </div>
       </div>
 

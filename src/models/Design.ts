@@ -9,7 +9,8 @@ const PriceTierSchema = new mongoose.Schema({
 const AddOnSchema = new mongoose.Schema({
     label: { type: String, required: true },
     pricePerCard: { type: Number, required: true, default: 0 },
-    note: { type: String, default: '' } // e.g. "Free", "₹6 extra"
+    isFixedPrice: { type: Boolean, default: false },
+    note: { type: String, default: '' } // e.g. "Free", "₹6 extra", "One Time"
 }, { _id: false });
 
 const DesignMaterialSchema = new mongoose.Schema({
@@ -64,6 +65,10 @@ const DesignSchema = new mongoose.Schema({
         default: 50,
         min: 1
     },
+    basePrice: {
+        type: Number,
+        default: 0
+    },
     packages: {
         type: [PackageSchema],
         validate: {
@@ -85,11 +90,30 @@ const DesignSchema = new mongoose.Schema({
         ref: "Category",
         required: true
     },
+    options: {
+        hasEnvelope: { type: Boolean, default: false },
+        hasRibbon: { type: Boolean, default: false },
+        hasWaxSeal: { type: Boolean, default: false },
+        hasChart: { type: Boolean, default: false },
+        displayModelColours: { type: String, default: "" },
+        envelopeTierBSurcharge: { type: Number, default: 3 },
+        envelopeTierCSurcharge: { type: Number, default: 6 },
+        ribbonPremiumSurcharge: { type: Number, default: 2 },
+        images: {
+            type: Map,
+            of: String,
+            default: {}
+        }
+    },
     isTrending: {
         type: Boolean,
         default: false
     },
     isFeatured: {
+        type: Boolean,
+        default: false
+    },
+    isNewArrival: {
         type: Boolean,
         default: false
     },
@@ -99,6 +123,11 @@ const DesignSchema = new mongoose.Schema({
     },
     demoUrl: {
         type: String,
+        default: ""
+    },
+    packageName: {
+        type: String,
+        enum: ['', 'Starter', 'Value', 'Premium', 'Ultra'],
         default: ""
     },
     isActive: {

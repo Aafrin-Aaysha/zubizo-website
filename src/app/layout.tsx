@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Parisienne, Inter, Fraunces } from "next/font/google";
+import { Cormorant_Garamond, Parisienne, Inter, Fraunces, Italiana, DM_Sans, Viaoda_Libre } from "next/font/google";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -30,6 +30,25 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
   style: ["normal", "italic"],
+});
+
+const italiana = Italiana({
+  variable: "--font-italiana",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dmsans",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  style: ["normal", "italic"],
+});
+
+const viaodaLibre = Viaoda_Libre({
+  variable: "--font-viaoda",
+  subsets: ["latin"],
+  weight: ["400"],
 });
 
 import dbConnect from "@/lib/db";
@@ -101,7 +120,7 @@ export default function RootLayout({
         <link href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,300,400&display=swap" rel="stylesheet" />
       </head>
       <body
-        className={`${cormorantGaramond.variable} ${parisienne.variable} ${inter.variable} ${fraunces.variable} antialiased`}
+        className={`${cormorantGaramond.variable} ${parisienne.variable} ${inter.variable} ${fraunces.variable} ${italiana.variable} ${dmSans.variable} ${viaodaLibre.variable} antialiased`}
       >
         <GoogleAnalytics GA_MEASUREMENT_ID={gaId} />
         <ReactQueryProvider>

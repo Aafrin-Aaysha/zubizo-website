@@ -21,20 +21,6 @@ const pricingData = {
       cta: "Choose Image Invite",
       href: "/digital-invites/image",
       isRecommended: false
-    },
-    {
-      name: "Video Invite",
-      price: "1499",
-      description: "Cinematic reveal with custom animation.",
-      features: [
-        "Full HD MP4 Format",
-        "Custom Background Music",
-        "Instagram Reel Ready",
-        "Custom Couple Names"
-      ],
-      cta: "Choose Video Invite",
-      href: "/digital-invites/video",
-      isRecommended: false
     }
   ],
   websites: [
@@ -96,9 +82,9 @@ export const PricingSection = () => {
     const plans = pricingData[activeCategory];
 
     return (
-        <section id="pricing" className="py-32 bg-white">
+        <section id="pricing" className="py-16 bg-white">
             <div className="site-container">
-                <div className="text-center mb-16 px-4">
+                <div className="text-center mb-10 px-4">
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -106,10 +92,10 @@ export const PricingSection = () => {
                         viewport={{ once: true }}
                     >
                         <h2 className="text-4xl md:text-5xl font-serif text-charcoal mb-4">Timeless Value</h2>
-                        <p className="text-charcoal/50 font-medium max-w-xl mx-auto mb-12">
+                        <p className="text-charcoal/50 font-medium max-w-xl mx-auto mb-8">
                             Luxury digital experiences designed to fit every celebration.
                         </p>
-
+ 
                         {/* Tab Switcher */}
                         <div className="inline-flex p-1.5 bg-gray-50 rounded-2xl border border-charcoal/5 mb-8">
                             <button
@@ -143,7 +129,7 @@ export const PricingSection = () => {
                         transition={{ duration: 0.5 }}
                         className={cn(
                             "grid gap-8 px-4",
-                            activeCategory === 'invites' ? "grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+                            activeCategory === 'invites' ? "grid-cols-1 max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
                         )}
                     >
                         {plans.map((plan, idx) => (

@@ -2,55 +2,74 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Menu, X, ArrowRight } from "lucide-react";
+import { Search, Menu, X } from "lucide-react";
 import { LogoIcon } from "@/components/ui/logo-icon";
 import { cn } from "@/lib/utils";
 
 export const LuxuryNavbar = () => {
-    const [isOpen, setIsOpen] = React.useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
     const [searchQuery, setSearchQuery] = React.useState("");
     const [searchResults, setSearchResults] = React.useState<any[]>([]);
-    const [popularDesigns, setPopularDesigns] = React.useState<any[]>([]);
     const [isSearching, setIsSearching] = React.useState(false);
-    const [showDesktopResults, setShowDesktopResults] = React.useState(false);
+    const [showResultsDropdown, setShowResultsDropdown] = React.useState(false);
+    const [announcementIndex, setAnnouncementIndex] = React.useState(0);
+    const [isAnnouncementVisible, setIsAnnouncementVisible] = React.useState(true);
+    const [scrolled, setScrolled] = React.useState(false);
     
+    const router = useRouter();
     const pathname = usePathname();
-    const isHomePage = pathname === "/";
 
-    // Fetch popular designs on mount
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            router.push(`/catalog?search=${encodeURIComponent(searchQuery)}`);
+            setShowResultsDropdown(false);
+        }
+    };
+
+    const announcements = [
+        "✦ Personalisation on every order",
+        "✦ 2,0,0,000+ invitations delivered across India",
+        "✦ WhatsApp us — we respond within 2 hours ✦"
+    ];
+
     React.useEffect(() => {
-        const fetchPopular = async () => {
-            try {
-                const res = await fetch('/api/designs?isTrending=true&limit=6');
-                const data = await res.json();
-                if (res.ok) {
-                    setPopularDesigns(data);
-                    setSearchResults(data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch popular designs", error);
-            }
+        const interval = setInterval(() => {
+            setAnnouncementIndex((prev) => (prev + 1) % announcements.length);
+        }, 3500);
+        return () => clearInterval(interval);
+    }, []);
+
+    React.useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 40);
         };
-        fetchPopular();
+        handleScroll();
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
     React.useEffect(() => {
         const fetchResults = async () => {
-            if (searchQuery.length === 0) {
-                setSearchResults(popularDesigns);
-                setIsSearching(false);
+            if (searchQuery.length < 2) {
+                setSearchResults([]);
                 return;
             }
-
-            if (searchQuery.length < 2) return;
 
             setIsSearching(true);
             try {
                 const res = await fetch(`/api/designs?search=${searchQuery}`);
                 const data = await res.json();
-                if (res.ok) setSearchResults(data.slice(0, 6));
+                if (res.ok) {
+                    // Normalize prices like in homepage mapper
+                    const mapped = data.map((p: any) => ({
+                        ...p,
+                        defaultPrice: p.packages?.[0]?.priceTiers?.[0]?.pricePerCard || p.packages?.[0]?.pricePerCard || 50
+                    }));
+                    setSearchResults(mapped.slice(0, 5));
+                }
             } catch (error) {
                 console.error("Search failed:", error);
             } finally {
@@ -60,247 +79,188 @@ export const LuxuryNavbar = () => {
 
         const timer = setTimeout(fetchResults, 300);
         return () => clearTimeout(timer);
-    }, [searchQuery, popularDesigns]);
-
-    // Track scroll to switch between light (over hero) and dark (scrolled) text
-    const [scrolled, setScrolled] = React.useState(false);
-
-    React.useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 50);
-        };
-        // Initial check
-        handleScroll();
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    const isDarkHeroNavbar = isHomePage && !scrolled;
+    }, [searchQuery]);
 
     const navLinks = [
         { name: "Home", href: "/" },
         { name: "Catalogue", href: "/catalog" },
         { name: "Digital Invites", href: "/digital-invites" },
-        { name: "Our Story", href: "/#about" },
         { name: "Policies", href: "/policies" },
-        { name: "Contact", href: "/#contact" },
     ];
 
-    const renderSearchResults = (onItemClick?: () => void) => (
-        <div className="py-2 max-h-[60vh] overflow-y-auto scrollbar-hide">
-            {isSearching ? (
-                <div className="p-8 text-center">
-                    <div className="inline-block w-4 h-4 border-2 border-lavender/30 border-t-lavender rounded-full animate-spin mb-2" />
-                    <p className="text-[10px] font-black uppercase tracking-widest text-charcoal/20">Searching...</p>
-                </div>
-            ) : searchResults.length > 0 ? (
-                <div className="space-y-1">
-                    {searchQuery.length === 0 && (
-                        <div className="px-4 py-2">
-                            <h4 className="text-[10px] font-black uppercase tracking-widest text-lavender/60">Popular Designs</h4>
-                        </div>
-                    )}
-                    {searchResults.map((result) => (
-                        <Link
-                            key={result._id}
-                            href={`/catalog/${result.slug}`}
-                            className="flex items-center gap-4 p-3 rounded-2xl hover:bg-lavender/5 transition-colors group"
-                            onClick={() => {
-                                setSearchQuery("");
-                                if (onItemClick) onItemClick();
-                            }}
-                        >
-                            <div className="w-14 h-14 rounded-xl overflow-hidden shrink-0 bg-gray-50 border border-charcoal/5">
-                                <img src={result.images[0]} alt={result.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                            </div>
-                            <div className="flex-1 overflow-hidden">
-                                <p className="text-[13px] font-bold text-charcoal truncate group-hover:text-lavender transition-colors">{result.name}</p>
-                                <p className="text-[10px] font-medium text-charcoal/40 uppercase tracking-wider">{result.sku}</p>
-                            </div>
-                            <ArrowRight size={14} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-lavender" />
-                        </Link>
-                    ))}
-                </div>
-            ) : (
-                <div className="p-8 text-center text-charcoal/20">
-                    <p className="text-[10px] font-black uppercase tracking-widest ">No results found</p>
-                </div>
-            )}
-        </div>
-    );
-
     return (
-        <motion.nav
-            className={cn(
-                "fixed top-0 z-50 w-full transition-all duration-300 ease-in-out",
-                isDarkHeroNavbar
-                    ? "bg-transparent text-white"
-                    : "bg-[#FAF9F6]/95 backdrop-blur-md shadow-sm border-b border-black/5"
-            )}
-        >
-            <div className="site-container">
-                <div className="flex h-24 items-center px-4 lg:px-0">
-                    {/* 1. Brand Group (Desktop: Logo + Nav | Mobile: Icon Only) */}
-                    <div className="flex-1 lg:flex-none flex items-center justify-start gap-12">
-                        {/* Mobile Logo Icon */}
-                        <Link href="/" className="lg:hidden">
-                            <LogoIcon size={32} className="transition-colors duration-300 text-[#ae7fcb]" />
-                        </Link>
-
-                        {/* Desktop Logo (Icon + Text) */}
-                        <Link href="/" className="hidden lg:flex items-center gap-4 group">
-                            <LogoIcon size={40} className="transition-all group-hover:scale-110 duration-500 text-[#ae7fcb]" />
-                            <div className="flex flex-col leading-none pt-1">
-                                <span className="text-[28px] font-extrabold italic transition-colors duration-300 text-[#ae7fcb]" style={{ fontFamily: 'var(--font-fraunces), serif' }}>
-                                    Zubizo
-                                </span>
-                            </div>
-                        </Link>
-
-                        {/* Navigation Links (Desktop Only) */}
-                        <div className="hidden xl:flex items-center space-x-10">
-                            {navLinks.map((link) => (
-                                <Link
-                                    key={link.name}
-                                    href={link.href}
-                                    className={`font-sans text-[13px] font-medium uppercase tracking-[0.12em] transition-all relative group py-2 duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]/70 hover:text-[#ae7fcb]' : 'text-white/85 hover:text-white'}`}
+        <>
+            {/* 0. Announcement Bar */}
+            <AnimatePresence>
+                {isAnnouncementVisible && !scrolled && (
+                    <motion.div 
+                        exit={{ height: 0, opacity: 0 }}
+                        className="bg-[#6E4B8B] h-8 text-white flex items-center justify-center fixed top-0 left-0 right-0 z-[60] overflow-hidden"
+                    >
+                        <div className="site-container w-full flex items-center justify-center px-8">
+                            <AnimatePresence mode="wait">
+                                <motion.p
+                                    key={announcementIndex}
+                                    initial={{ y: 12, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    exit={{ y: -12, opacity: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="text-[11px] font-medium tracking-[0.06em] text-center"
                                 >
-                                    {link.name}
-                                    <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1.5px] rounded-full transition-all duration-300 group-hover:w-full ${!isDarkHeroNavbar ? 'bg-[#ae7fcb]' : 'bg-[#D6BFA3]'}`} />
-                                </Link>
-                            ))}
+                                    {announcements[announcementIndex]}
+                                </motion.p>
+                            </AnimatePresence>
                         </div>
-                    </div>
+                        <button 
+                            onClick={() => setIsAnnouncementVisible(false)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:opacity-100 opacity-70 text-sm font-bold w-6 h-6 flex items-center justify-center transition-opacity"
+                        >
+                            ×
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-                    {/* 2. Center Brand (Mobile Only) */}
-                    <div className="flex-[2] lg:hidden flex justify-center">
-                        <Link href="/" className="pt-1">
-                            <span className="text-[26px] font-extrabold italic transition-colors duration-300 text-[#ae7fcb]" style={{ fontFamily: 'var(--font-fraunces), serif' }}>
+            <nav
+                className={cn(
+                    "fixed z-50 w-full transition-all duration-300 ease-in-out h-[58px] flex items-center bg-[#FAF8F5]/90 backdrop-blur-md shadow-sm border-b border-black/5 text-slate-800",
+                    (isAnnouncementVisible && !scrolled) ? "top-8" : "top-0"
+                )}
+            >
+                <div className="site-container w-full flex items-center justify-between px-4 lg:px-6">
+                    {/* Logo/Brand (Left Column) */}
+                    <div className="flex-1 flex justify-start">
+                        <Link href="/" className="flex items-center gap-3 group">
+                            <LogoIcon size={30} className="text-[#ae7fcb]" />
+                            <span 
+                                className="text-[28px] font-semibold italic text-[#ae7fcb]"
+                                style={{ fontFamily: 'var(--font-fraunces), serif' }}
+                            >
                                 Zubizo
                             </span>
                         </Link>
                     </div>
 
-                    {/* 3. Global Actions (Search Desktop / Menu Mobile) */}
-                    <div className="flex-1 flex items-center justify-end lg:ml-32 gap-4 min-w-[32px] lg:min-w-[320px]">
-                        {/* Search (Desktop Only) */}
-                        <div className="hidden lg:flex items-center gap-4 flex-1 justify-end">
-                            <div className="relative w-full max-w-md">
-                                <input
-                                    type="text"
-                                    placeholder="Search by design name or SKU..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    onFocus={() => setShowDesktopResults(true)}
-                                    onBlur={() => setTimeout(() => setShowDesktopResults(false), 200)}
-                                    className={`w-full rounded-full py-3 px-10 text-[13px] font-medium transition-all outline-none duration-300 ${!isDarkHeroNavbar ? 'bg-[#1A1A1A]/[0.03] border border-[#1A1A1A]/5 focus:border-[#ae7fcb]/30 text-[#1A1A1A] placeholder:text-[#1A1A1A]/40' : 'bg-white/10 border border-white/15 focus:border-white/30 text-white placeholder:text-white/50'}`}
-                                />
-                                <Search size={14} className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${!isDarkHeroNavbar ? 'text-[#1A1A1A]/40' : 'text-white/40'}`} />
-
-                                {/* Search Results Dropdown */}
-                                <AnimatePresence>
-                                    {showDesktopResults && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: 10 }}
-                                            className="absolute top-full mt-4 w-full bg-pearl-white rounded-3xl shadow-luxury border border-charcoal/5 overflow-hidden p-2 z-50"
-                                        >
-                                            {renderSearchResults(() => setShowDesktopResults(false))}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        </div>
-
-                        {/* Mobile Menu Button */}
-                        <div className="lg:hidden transition-colors duration-300 text-[#ae7fcb]">
-                            <button
-                                onClick={() => setIsOpen(!isOpen)}
-                                className="p-3 hover:opacity-70 transition-opacity"
+                    {/* Nav Links (Center Column) */}
+                    <div className="hidden lg:flex flex-1 justify-center items-center space-x-8">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.name}
+                                href={link.href}
+                                className={cn(
+                                    "text-[12px] font-medium uppercase tracking-[0.1em] py-1.5 transition-colors relative group text-slate-600 hover:text-[#ae7fcb] whitespace-nowrap",
+                                    pathname === link.href && "text-[#ae7fcb]"
+                                )}
                             >
-                                {isOpen ? <X size={24} /> : <Menu size={24} />}
-                            </button>
+                                {link.name}
+                                <span className={cn(
+                                    "absolute bottom-0 left-0 h-[1.5px] transition-all duration-300 group-hover:w-full bg-[#ae7fcb]",
+                                    pathname === link.href ? "w-full" : "w-0"
+                                )} />
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* Search & Actions (Right Column) */}
+                    <div className="flex-1 flex justify-end items-center gap-4 relative">
+                        <div className="relative hidden md:block w-60">
+                            <input
+                                type="text"
+                                placeholder="Search catalogue..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                onFocus={() => setShowResultsDropdown(true)}
+                                onBlur={() => setTimeout(() => setShowResultsDropdown(false), 200)}
+                                className="w-full rounded-full py-1.5 pl-8 pr-4 text-[11px] font-medium transition-all outline-none border bg-slate-100 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-[#ae7fcb]/30"
+                            />
+                            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+
+                            {/* Dropdown Results */}
+                            <AnimatePresence>
+                                {showResultsDropdown && searchQuery.length >= 2 && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 8 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 8 }}
+                                        className="absolute top-full right-0 mt-3 w-[280px] bg-white border border-slate-100 rounded-2xl shadow-xl overflow-hidden p-2 z-50 text-slate-800"
+                                    >
+                                        {isSearching ? (
+                                            <div className="p-6 text-center text-slate-400 text-[10px] uppercase font-bold tracking-wider">
+                                                Searching...
+                                            </div>
+                                        ) : searchResults.length > 0 ? (
+                                            <div className="space-y-1">
+                                                {searchResults.map((p) => (
+                                                    <Link
+                                                        key={p._id}
+                                                        href={`/catalog/${p.slug}`}
+                                                        className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors"
+                                                    >
+                                                        <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-50 border border-slate-100">
+                                                            <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="text-[11px] font-bold text-slate-700 truncate">{p.name}</div>
+                                                            <div className="text-[9px] text-slate-400">from ₹{p.defaultPrice}</div>
+                                                        </div>
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="p-6 text-center text-slate-400 text-[10px]">No results found</div>
+                                        )}
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
+
+                        {/* Mobile Menu Trigger */}
+                        <button
+                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            className="lg:hidden p-2 text-slate-700 hover:opacity-80 transition-opacity"
+                        >
+                            {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                        </button>
                     </div>
                 </div>
-            </div>
+            </nav>
 
-            {/* Mobile Menu */}
+            {/* Mobile Menu Dropdown */}
             <AnimatePresence>
-                {isOpen && (
+                {isMobileMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, y: -20 }}
+                        initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        className="lg:hidden bg-pearl-white border-b border-charcoal/5 shadow-luxury max-h-[90vh] overflow-y-auto"
+                        exit={{ opacity: 0, y: -10 }}
+                        className="fixed left-0 right-0 z-40 bg-[#FAF8F5] border-b border-slate-100 shadow-xl p-6 space-y-6 pt-24"
                     >
-                        <div className="p-6 space-y-6">
-                            <div className="relative">
-                                <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-charcoal/20" />
-                                <input
-                                    type="text"
-                                    placeholder="Search by design name or SKU..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-charcoal/[0.03] border border-charcoal/5 rounded-2xl py-4 px-12 text-sm text-charcoal outline-none shadow-inner"
-                                />
-                                
-                                {/* Mobile Search Results Dropdown */}
-                                <AnimatePresence>
-                                    {searchQuery.length > 0 && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: 'auto' }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="mt-4 bg-white/50 rounded-2xl overflow-hidden border border-charcoal/5"
-                                        >
-                                            {renderSearchResults(() => setIsOpen(false))}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
+                        <div className="relative w-full">
+                            <input
+                                type="text"
+                                placeholder="Search catalogue..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full rounded-xl py-3 pl-10 pr-4 text-xs font-semibold bg-slate-100 border-none outline-none focus:ring-2 focus:ring-[#ae7fcb]/20"
+                            />
+                            <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                        </div>
 
-                            {/* Show popular designs in mobile menu even when search is empty */}
-                            {!searchQuery && (
-                                <div className="space-y-4">
-                                    <div className="px-2">
-                                        <h4 className="text-[10px] font-black uppercase tracking-widest text-lavender/60">Popular Designs</h4>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {popularDesigns.slice(0, 4).map((design) => (
-                                            <Link
-                                                key={design._id}
-                                                href={`/catalog/${design.slug}`}
-                                                onClick={() => setIsOpen(false)}
-                                                className="group block"
-                                            >
-                                                <div className="aspect-square rounded-2xl overflow-hidden bg-gray-50 border border-charcoal/5 mb-2 relative">
-                                                    <img src={design.images[0]} alt={design.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                                                </div>
-                                                <p className="text-[11px] font-bold text-charcoal truncate">{design.name}</p>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className="grid grid-cols-1 gap-2 pt-4 border-t border-charcoal/5">
-                                {navLinks.map((link) => (
-                                    <Link
-                                        key={link.name}
-                                        href={link.href}
-                                        onClick={() => setIsOpen(false)}
-                                        className="block py-4 px-6 text-sm font-semibold uppercase tracking-[0.1em] text-charcoal/70 hover:text-lavender hover:bg-lavender/5 rounded-2xl transition-all"
-                                    >
-                                        {link.name}
-                                    </Link>
-                                ))}
-                            </div>
+                        <div className="flex flex-col gap-4 text-center">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.name}
+                                    href={link.href}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="text-slate-700 font-bold uppercase tracking-wider text-xs py-2 hover:bg-[#ae7fcb]/10 rounded-xl"
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-        </motion.nav>
+        </>
     );
 };

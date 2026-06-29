@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { LuxuryNavbar } from "@/components/layout/luxury-navbar";
 import { LuxuryFooter } from "@/components/layout/luxury-footer";
 import {
@@ -245,13 +245,13 @@ function SectionHeading({
             className="flex items-center gap-4 mb-10"
         >
             <div
-                className={`w-12 h-12 rounded-2xl ${iconBg} flex items-center justify-center ${iconCls} border border-white shadow-sm shrink-0`}
+                className={`w-12 h-12 rounded-2xl ${iconBg} flex items-center justify-center ${iconCls} border border-[#ae7fcb]/10 shadow-sm shrink-0`}
             >
                 <Icon size={22} />
             </div>
             <div>
-                <h2 className="text-3xl font-black font-serif text-charcoal">{title}</h2>
-                <p className="text-xs text-neutral-400 font-semibold uppercase tracking-widest mt-0.5">
+                <h2 className="text-2xl md:text-3xl font-italiana font-normal text-slate-800">{title}</h2>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.15em] mt-0.5">
                     {subtitle}
                 </p>
             </div>
@@ -259,113 +259,133 @@ function SectionHeading({
     );
 }
 
-/* ─────────────────────────────────────────────
-   Page
-───────────────────────────────────────────── */
 export default function PoliciesPage() {
+    const [activeTab, setActiveTab] = React.useState<"terms" | "shipping" | "refund">("terms");
+
+    const tabs = [
+        { id: "terms", label: "Terms & Conditions" },
+        { id: "shipping", label: "Shipping Policy" },
+        { id: "refund", label: "Refund Policy" },
+    ] as const;
+
     return (
         <main className="min-h-screen bg-[#f9f9fb]">
             <LuxuryNavbar />
 
             {/* ── Hero ── */}
-            <section className="pt-40 pb-20 bg-white border-b border-charcoal/5">
+            <section className="pt-32 pb-12 bg-transparent border-b border-[#ae7fcb]/10">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
                     <motion.div
                         initial={{ opacity: 0, y: 28 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.7 }}
                     >
-                        <span className="text-lavender font-black uppercase tracking-[0.4em] text-[10px] mb-4 block">
+                        <span className="text-[#6E4B8B] tracking-[0.15em] font-bold uppercase text-[10px] mb-4 block">
                             LEGAL &amp; TRUST
                         </span>
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-charcoal font-serif mb-6 italic">
+                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-italiana font-normal text-slate-800 mb-6">
                             Our Policies
                         </h1>
-                        <p className="text-neutral-500 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-slate-550 text-sm md:text-base max-w-2xl mx-auto leading-relaxed font-light">
                             Transparency and trust at the heart of Zubizo. Please read
                             these policies carefully before placing your order.
                         </p>
                     </motion.div>
 
-                    {/* Quick-jump chips */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.25 }}
-                        className="flex flex-wrap justify-center gap-3 mt-10"
-                    >
-                        {[
-                            { label: "Terms & Conditions", href: "#terms" },
-                            { label: "Shipping Policy", href: "#shipping" },
-                            { label: "Refund Policy", href: "#refund" },
-                        ].map((item) => (
-                            <a
-                                key={item.href}
-                                href={item.href}
-                                className="text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-full border border-neutral-200 text-neutral-500 hover:border-lavender hover:text-lavender bg-white transition-all"
-                            >
-                                {item.label}
-                            </a>
-                        ))}
-                    </motion.div>
+                    {/* Interactive Tab Selector */}
+                    <div className="flex flex-wrap justify-center gap-3 mt-10">
+                        {tabs.map((tab) => {
+                            const isActive = activeTab === tab.id;
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`relative isolate text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-full border transition-all duration-300 outline-none ${
+                                        isActive 
+                                            ? "border-[#ae7fcb] text-white shadow-md shadow-[#ae7fcb]/15 bg-transparent" 
+                                            : "border-[#ae7fcb]/20 text-slate-600 hover:border-[#ae7fcb]/50 bg-white"
+                                    }`}
+                                >
+                                    {isActive && (
+                                        <motion.div
+                                            layoutId="activePolicyTab"
+                                            className="absolute inset-0 bg-[#ae7fcb] rounded-full"
+                                            style={{ zIndex: -1 }}
+                                            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                                        />
+                                    )}
+                                    <span className="relative z-10">{tab.label}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
             </section>
 
             {/* ── Content ── */}
-            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-24 space-y-28">
+            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
+                <AnimatePresence mode="wait">
+                    {activeTab === "terms" && (
+                        <motion.section
+                            key="terms"
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -15 }}
+                            transition={{ duration: 0.25 }}
+                            id="terms"
+                            className="space-y-8"
+                        >
+                            <SectionHeading
+                                icon={FileText}
+                                title="Terms & Conditions"
+                                subtitle="Governing your orders with Zubizo"
+                                iconCls="text-[#ae7fcb]"
+                                iconBg="bg-[#ae7fcb]/10"
+                            />
 
-                {/* ════════ Terms & Conditions ════════ */}
-                <section id="terms">
-                    <SectionHeading
-                        icon={FileText}
-                        title="Terms & Conditions"
-                        subtitle="Governing your orders with Zubizo"
-                        iconCls="text-lavender"
-                        iconBg="bg-lavender/10"
-                    />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {termsItems.map((item, i) => {
+                                    const Icon = item.icon;
+                                    return (
+                                        <motion.div
+                                            key={item.id}
+                                            custom={i}
+                                            initial="hidden"
+                                            whileInView="visible"
+                                            viewport={{ once: true }}
+                                            variants={fadeUp}
+                                            className="bg-white rounded-3xl border border-[#ae7fcb]/10 shadow-sm overflow-hidden flex flex-col justify-between"
+                                        >
+                                            <div className="p-6 md:p-8 flex-1 flex flex-col justify-between gap-4">
+                                                <div className="flex items-start gap-4">
+                                                    <div
+                                                        className={`w-11 h-11 rounded-2xl ${item.bg} flex items-center justify-center ${item.color} shrink-0`}
+                                                    >
+                                                        <Icon size={20} />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">
+                                                            {item.title}
+                                                        </h3>
 
-                    <div className="space-y-4">
-                        {termsItems.map((item, i) => {
-                            const Icon = item.icon;
-                            return (
-                                <motion.div
-                                    key={item.id}
-                                    custom={i}
-                                    initial="hidden"
-                                    whileInView="visible"
-                                    viewport={{ once: true }}
-                                    variants={fadeUp}
-                                    className={`bg-white rounded-3xl border ${item.border} shadow-sm overflow-hidden`}
-                                >
-                                    <div className="p-6 md:p-8">
-                                        {/* Card header */}
-                                        <div className="flex items-start gap-4">
-                                            <div
-                                                className={`w-11 h-11 rounded-2xl ${item.bg} flex items-center justify-center ${item.color} shrink-0`}
-                                            >
-                                                <Icon size={20} />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                    <h3 className="text-base font-black text-charcoal uppercase tracking-wide">
-                                                        {item.title}
-                                                    </h3>
-
-                                                {/* Points */}
-                                                <ul className="space-y-2.5">
-                                                    {item.points.map((point, j) => (
-                                                        <li
-                                                            key={j}
-                                                            className="flex items-start gap-3 text-sm text-neutral-600 leading-relaxed"
-                                                        >
-                                                            <span className={`mt-2 w-1.5 h-1.5 rounded-full ${item.bg} ring-1 ring-offset-1 ${item.color.replace("text-", "ring-")} shrink-0`} />
-                                                            {point}
-                                                        </li>
-                                                    ))}
-                                                </ul>
+                                                        {/* Points */}
+                                                        <ul className="space-y-2.5">
+                                                            {item.points.map((point, j) => (
+                                                                <li
+                                                                    key={j}
+                                                                    className="flex items-start gap-3 text-xs text-slate-600 leading-relaxed font-light"
+                                                                >
+                                                                    <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#ae7fcb] shrink-0" />
+                                                                    {point}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                </div>
 
                                                 {/* Optional highlight banner */}
                                                 {item.highlight && (
-                                                    <div className={`mt-4 flex items-start gap-2 ${item.bg} rounded-2xl px-4 py-3`}>
+                                                    <div className={`mt-2 flex items-start gap-2 ${item.bg} rounded-2xl px-4 py-3`}>
                                                         <Info size={14} className={`${item.color} shrink-0 mt-0.5`} />
                                                         <p className={`text-xs font-semibold ${item.color}`}>
                                                             {item.highlight}
@@ -373,122 +393,140 @@ export default function PoliciesPage() {
                                                     </div>
                                                 )}
                                             </div>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-                </section>
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
+                        </motion.section>
+                    )}
 
-                {/* ════════ Shipping Policy ════════ */}
-                <section id="shipping">
-                    <SectionHeading
-                        icon={Truck}
-                        title="Shipping Policy"
-                        subtitle="Delivery timelines & logistics"
-                        iconCls="text-teal-600"
-                        iconBg="bg-teal-50"
-                    />
+                    {activeTab === "shipping" && (
+                        <motion.section
+                            key="shipping"
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -15 }}
+                            transition={{ duration: 0.25 }}
+                            id="shipping"
+                            className="space-y-8"
+                        >
+                            <SectionHeading
+                                icon={Truck}
+                                title="Shipping Policy"
+                                subtitle="Delivery timelines & logistics"
+                                iconCls="text-teal-600"
+                                iconBg="bg-teal-50"
+                            />
 
-                    <div className="grid sm:grid-cols-2 gap-4">
-                        {shippingItems.map((item, i) => {
-                            const Icon = item.icon;
-                            return (
-                                <motion.div
-                                    key={i}
-                                    custom={i}
-                                    initial="hidden"
-                                    whileInView="visible"
-                                    viewport={{ once: true }}
-                                    variants={fadeUp}
-                                    className="bg-white rounded-3xl border border-neutral-100 shadow-sm p-6"
-                                >
-                                    <div className={`w-10 h-10 rounded-xl ${item.bg} flex items-center justify-center ${item.color} mb-4`}>
-                                        <Icon size={18} />
-                                    </div>
-                                    <h3 className="text-sm font-black text-charcoal uppercase tracking-wide mb-3">
-                                        {item.title}
-                                    </h3>
-                                    <ul className="space-y-2">
-                                        {item.points.map((point, j) => (
-                                            <li
-                                                key={j}
-                                                className="flex items-start gap-2.5 text-sm text-neutral-600 leading-relaxed"
-                                            >
-                                                <span className="mt-2 w-1.5 h-1.5 rounded-full bg-neutral-300 shrink-0" />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                {shippingItems.map((item, i) => {
+                                    const Icon = item.icon;
+                                    return (
+                                        <motion.div
+                                            key={i}
+                                            custom={i}
+                                            initial="hidden"
+                                            whileInView="visible"
+                                            viewport={{ once: true }}
+                                            variants={fadeUp}
+                                            className="bg-white rounded-3xl border border-[#ae7fcb]/10 shadow-sm p-6"
+                                        >
+                                            <div className={`w-10 h-10 rounded-xl ${item.bg} flex items-center justify-center ${item.color} mb-4`}>
+                                                <Icon size={18} />
+                                            </div>
+                                            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">
+                                                {item.title}
+                                            </h3>
+                                            <ul className="space-y-2">
+                                                {item.points.map((point, j) => (
+                                                    <li
+                                                        key={j}
+                                                        className="flex items-start gap-2.5 text-xs text-slate-600 leading-relaxed font-light"
+                                                    >
+                                                        <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#ae7fcb] shrink-0" />
+                                                        {point}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </motion.div>
+                                    );
+                                })}
+                            </div>
+                        </motion.section>
+                    )}
+
+                    {activeTab === "refund" && (
+                        <motion.section
+                            key="refund"
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -15 }}
+                            transition={{ duration: 0.25 }}
+                            id="refund"
+                            className="space-y-8"
+                        >
+                            <SectionHeading
+                                icon={RefreshCcw}
+                                title="Refund Policy"
+                                subtitle="Cancellations & returns"
+                                iconCls="text-rose-600"
+                                iconBg="bg-rose-50"
+                            />
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 18 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                className="bg-white rounded-3xl border border-[#ae7fcb]/10 shadow-sm p-6 md:p-8"
+                            >
+                                <ul className="space-y-4">
+                                    {refundPoints.map((point, i) => (
+                                        <li
+                                            key={i}
+                                            className="flex items-start gap-4"
+                                        >
+                                            <div className="w-1.5 h-1.5 rounded-full bg-[#ae7fcb] mt-2.5 shrink-0" />
+                                            <p className="text-xs text-slate-600 leading-relaxed font-light">
                                                 {point}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </motion.div>
-                            );
-                        })}
-                    </div>
-                </section>
+                                            </p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </motion.div>
 
-                {/* ════════ Refund Policy ════════ */}
-                <section id="refund">
-                    <SectionHeading
-                        icon={RefreshCcw}
-                        title="Refund Policy"
-                        subtitle="Cancellations & returns"
-                        iconCls="text-rose-600"
-                        iconBg="bg-rose-50"
-                    />
-
-                    <motion.div
-                        initial={{ opacity: 0, y: 18 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="bg-white rounded-3xl border border-rose-100 shadow-sm p-6 md:p-8"
-                    >
-                        <ul className="space-y-4">
-                            {refundPoints.map((point, i) => (
-                                <li
-                                    key={i}
-                                    className="flex items-start gap-4"
-                                >
-                                    <div className="w-1.5 h-1.5 rounded-full bg-rose-200 mt-2.5 shrink-0" />
-                                    <p className="text-sm text-neutral-700 leading-relaxed">
-                                        {point}
-                                    </p>
-                                </li>
-                            ))}
-                        </ul>
-                    </motion.div>
-
-                    {/* Warning banner */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 14 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: 0.15 }}
-                        className="mt-5 bg-amber-50 border border-amber-100 rounded-3xl p-5 flex items-start gap-4"
-                    >
-                        <AlertTriangle size={20} className="text-amber-500 shrink-0 mt-0.5" />
-                        <p className="text-sm text-amber-800 leading-relaxed">
-                            <strong>Important:</strong> Once a design is approved and production
-                            has begun, no cancellations or refunds are possible. Please review
-                            all details thoroughly before giving your approval.
-                        </p>
-                    </motion.div>
-                </section>
+                            {/* Warning banner */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 14 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.15 }}
+                                className="mt-5 bg-[#EDE8F6]/50 border border-[#ae7fcb]/15 rounded-3xl p-5 flex items-start gap-4"
+                            >
+                                <AlertTriangle size={20} className="text-[#6E4B8B] shrink-0 mt-0.5" />
+                                <p className="text-xs text-slate-600 leading-relaxed font-light">
+                                    <strong className="text-slate-800 font-bold">Important:</strong> Once a design is approved and production
+                                    has begun, no cancellations or refunds are possible. Please review
+                                    all details thoroughly before giving your approval.
+                                </p>
+                            </motion.div>
+                        </motion.section>
+                    )}
+                </AnimatePresence>
 
                 {/* ── Footer note ── */}
                 <motion.div
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    className="border-t border-neutral-100 pt-12 text-center"
+                    className="border-t border-[#ae7fcb]/10 pt-12 text-center mt-16"
                 >
-                    <p className="text-sm text-neutral-400 leading-relaxed max-w-lg mx-auto">
+                    <p className="text-xs text-slate-450 leading-relaxed max-w-lg mx-auto font-light">
                         Have questions about any of these policies? Reach out to us before
                         placing your order — we&apos;re happy to clarify anything.
                     </p>
                     <a
                         href="/contact"
-                        className="inline-flex items-center gap-2 mt-4 text-sm font-bold text-lavender hover:underline underline-offset-4 transition-all"
+                        className="inline-flex items-center gap-2 mt-4 text-xs font-bold text-[#6E4B8B] hover:text-[#ae7fcb] transition-all"
                     >
                         Contact us →
                     </a>

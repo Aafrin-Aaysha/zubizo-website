@@ -27,7 +27,6 @@ const Navbar = () => {
         { name: "Home", href: "/" },
         { name: "Catalogue", href: "/catalog" },
         { name: "Terms & Policy", href: "/policies" },
-        { name: "Contact", href: "/#contact" },
     ];
 
     const [settings, setSettings] = React.useState<any>(null);
@@ -87,7 +86,7 @@ const Navbar = () => {
                                 <Link
                                     key={link.name}
                                     href={link.href}
-                                    className="text-sm font-medium text-charcoal/80 transition-colors hover:text-lavender"
+                                    className="text-sm font-medium text-charcoal/80 transition-colors hover:text-lavender whitespace-nowrap"
                                 >
                                     {link.name}
                                 </Link>

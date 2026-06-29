@@ -41,6 +41,13 @@ interface ParsedPackage {
     priceTiers: PriceTier[];
 }
 
+interface ParsedAddOn {
+    label: string;
+    pricePerCard: number;
+    isFixedPrice: boolean;
+    note: string;
+}
+
 interface ParsedDesign {
     sku: string;
     name: string;
@@ -48,6 +55,7 @@ interface ParsedDesign {
     categoryId: string;
     minQuantity: number;
     packages: ParsedPackage[];
+    addOns: ParsedAddOn[];
     images: string[];
     isActive: boolean;
     isTrending: boolean;
@@ -78,6 +86,7 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
             categoryId: defaultCategoryId,
             minQuantity: 50, // Default, will update if lower tier found
             packages: [],
+            addOns: [],
             images: [],
             isActive: true,
             isTrending: false,
@@ -250,6 +259,41 @@ function parseDesignText(text: string, defaultCategoryId: string): ParsedDesign[
                     pricePerCard: parseFloat(singleQtyMatch[2])
                 });
                 parsingPriceTiers = true;
+                continue;
+            }
+
+            // 9. Parse Add-ons
+            const addonMatch = line.match(/^(?:Additional Charge|Add-?on|Extra)\s*[:：]?\s*(.+)/i);
+            if (addonMatch) {
+                const addonStr = addonMatch[1].trim();
+                let price = 0;
+                let label = addonStr;
+                let note = '';
+
+                // Extract price
+                const priceMatch = addonStr.match(/(?:₹|Rs\.?)\s*(\d+(?:\.\d+)?)/i);
+                if (priceMatch) {
+                    price = parseFloat(priceMatch[1]);
+                    label = label.replace(priceMatch[0], '').trim();
+                }
+
+                // Extract note in parentheses
+                const noteMatch = addonStr.match(/\(([^)]+)\)/);
+                if (noteMatch) {
+                    note = noteMatch[1].trim();
+                    label = label.replace(noteMatch[0], '').trim();
+                }
+
+                // Determine if it's fixed price
+                let isFixedPrice = false;
+                if (note.toLowerCase().includes('one time') || note.toLowerCase().includes('overall') || note.toLowerCase().includes('fixed')) {
+                    isFixedPrice = true;
+                }
+
+                // Remove trailing hyphens or dashes
+                label = label.replace(/[-–—]\s*$/, '').trim();
+
+                design.addOns.push({ label, pricePerCard: price, isFixedPrice, note });
                 continue;
             }
 
@@ -541,6 +585,7 @@ export default function BulkImportPage() {
                         inclusions: p.inclusions,
                         priceTiers: p.priceTiers
                     })),
+                    addOns: design.addOns,
                     images: imageUrls,
                     isActive: design.isActive,
                     isTrending: design.isTrending,
@@ -594,8 +639,8 @@ export default function BulkImportPage() {
                         <ArrowLeft size={18} />
                     </Link>
                     <div>
-                        <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-                            <Sparkles className="text-lavender" size={28} />
+                        <h1 className="text-2xl font-normal text-charcoal tracking-tight flex items-center gap-3">
+                            <Sparkles className="text-lavender" size={20} />
                             Bulk Import
                         </h1>
                         <p className="text-gray-500 mt-1 font-medium">Paste from WhatsApp → Parse → Upload Images → Import in seconds</p>
@@ -625,7 +670,7 @@ export default function BulkImportPage() {
                                 <FileText size={24} />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black text-charcoal">Step 1: Paste Design Data</h2>
+                                <h2 className="text-2xl font-normal text-charcoal">Step 1: Paste Design Data</h2>
                                 <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-0.5">Copy from WhatsApp and paste below</p>
                             </div>
                         </div>
@@ -903,7 +948,7 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => removePackage(dIdx, pIdx)}
-                                                                    className="absolute -top-2 -right-2 w-6 h-6 bg-white shadow-md border border-gray-100 rounded-full flex items-center justify-center text-red-400 opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-500"
+                                                                    className="absolute -top-2 -right-2 w-6 h-6 bg-white shadow-md border border-gray-100 rounded-full flex items-center justify-center text-red-400 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity hover:text-red-500"
                                                                 >
                                                                     <X size={12} />
                                                                 </button>
@@ -1044,7 +1089,7 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                                                         </div>
                                                                     )}
                                                                     {design._status !== 'success' && (
-                                                                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                                                                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-20">
                                                                             {imgIdx > 0 && (
                                                                                 <button 
                                                                                     onClick={(e) => {
@@ -1094,7 +1139,7 @@ Included: PREMIUM BOARDS – 300 GSM (Linen / Needle Point)
                                                                     )}
 
                                                                     {design._status !== 'success' && (
-                                                                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                                                                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-20">
                                                                             { (design.images.length > 0 || fIdx > 0) && (
                                                                                 <button 
                                                                                     onClick={(e) => {
