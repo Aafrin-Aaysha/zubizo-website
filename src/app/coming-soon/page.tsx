@@ -386,6 +386,7 @@ export default function ComingSoonPage() {
                                 <h2 className="text-3xl font-normal tracking-tight text-slate-800" style={{ fontFamily: 'var(--font-italiana), serif' }}>
                                     Zubizo Policies
                                 </h2>
+                                <p className="text-slate-500 text-sm mt-3 font-dmsans tracking-wide max-w-md mx-auto">
                                     Transparency and trust at the heart of Zubizo. Please review our terms, shipping, and refund policies.
                                 </p>
                             </div>
