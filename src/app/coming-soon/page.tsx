@@ -489,7 +489,7 @@ export default function ComingSoonPage() {
                     </motion.div>
                 )}
             </AnimatePresence>
-=======
+
             {/* Bottom policies link */}
             <motion.div 
                 initial={{ opacity: 0 }}

@@ -54,8 +54,8 @@ export function middleware(request: NextRequest) {
         !pathname.includes('.') && 
         !pathname.startsWith('/_next');
 
-    // MAINTENANCE_MODE defaults to true on master branch unless explicitly configured as 'false'
-    const isMaintenanceMode = process.env.MAINTENANCE_MODE !== 'false';
+    // MAINTENANCE_MODE defaults to false to allow the live site to be visible
+    const isMaintenanceMode = process.env.MAINTENANCE_MODE === 'true';
 
     if (isMaintenanceMode && isPublicPage) {
         const url = request.nextUrl.clone();
